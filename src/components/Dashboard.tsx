@@ -1,0 +1,309 @@
+import React, { useState, useEffect } from 'react';
+import { api, type User, type Recycler, type DeviceSubmission } from '../services/api';
+import { AIScan } from './AIScan';
+import { RecyclerMap } from './RecyclerMap';
+import { PickupTracker } from './PickupTracker';
+import { ImpactDashboard } from './ImpactDashboard';
+import { RewardsLeaderboard } from './RewardsLeaderboard';
+import { AdminPanel } from './AdminPanel';
+import { Chatbot } from './Chatbot';
+import { 
+  Home, Sparkles, MapPin, Truck, BarChart3, Trophy, Shield, 
+  LogOut, Leaf, Zap, Calendar, Heart, ShieldAlert 
+} from 'lucide-react';
+
+interface DashboardProps {
+  user: User;
+  onLogout: () => void;
+}
+
+type TabType = 'overview' | 'scan' | 'map' | 'pickup' | 'impact' | 'rewards' | 'admin';
+
+export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
+  const [activeTab, setActiveTab] = useState<TabType>('overview');
+  const [userPoints, setUserPoints] = useState(user.eco_points);
+  const [history, setHistory] = useState<DeviceSubmission[]>([]);
+  const [selectedRecyclerForPickup, setSelectedRecyclerForPickup] = useState<Recycler | null>(null);
+  const [fetchingHistory, setFetchingHistory] = useState(true);
+
+  // Load User submission history
+  const loadHistory = async () => {
+    setFetchingHistory(true);
+    try {
+      const data = await api.getHistory();
+      setHistory(data);
+    } catch (err) {
+      console.error('Failed to load history:', err);
+    } finally {
+      setFetchingHistory(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'overview') {
+      loadHistory();
+    }
+  }, [activeTab]);
+
+  const handleSelectRecyclerForPickup = (recycler: Recycler) => {
+    setSelectedRecyclerForPickup(recycler);
+    setActiveTab('pickup'); // Switch tab to pickup tracker
+  };
+
+  const handleClearPreselectedRecycler = () => {
+    setSelectedRecyclerForPickup(null);
+  };
+
+  const handleUpdatePoints = (points: number) => {
+    setUserPoints(prev => prev + points);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#070b13] flex flex-col md:flex-row text-gray-200">
+      
+      {/* Sidebar Navigation */}
+      <aside className="w-full md:w-64 bg-[#0a0f1d] border-b md:border-b-0 md:border-r border-white/5 flex flex-col justify-between flex-shrink-0 z-20">
+        
+        <div className="space-y-6 py-6">
+          {/* Logo */}
+          <div className="px-6 flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+              <Leaf size={18} className="text-black font-extrabold" />
+            </div>
+            <span className="text-lg font-bold tracking-tight text-white font-mono">
+              ECOTRACK<span className="text-emerald-400">.AI</span>
+            </span>
+          </div>
+
+          {/* Navigation Links */}
+          <nav className="px-3 space-y-1">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
+                ${activeTab === 'overview' ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/15' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            >
+              <Home size={18} /> Overview
+            </button>
+            
+            <button
+              onClick={() => setActiveTab('scan')}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
+                ${activeTab === 'scan' ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/15' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            >
+              <Sparkles size={18} /> AI Device Scan
+            </button>
+
+            <button
+              onClick={() => setActiveTab('map')}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
+                ${activeTab === 'map' ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/15' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            >
+              <MapPin size={18} /> Locator Map
+            </button>
+
+            <button
+              onClick={() => setActiveTab('pickup')}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
+                ${activeTab === 'pickup' ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/15' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            >
+              <Truck size={18} /> Pickup Scheduler
+            </button>
+
+            <button
+              onClick={() => setActiveTab('impact')}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
+                ${activeTab === 'impact' ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/15' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            >
+              <BarChart3 size={18} /> Impact Dashboard
+            </button>
+
+            <button
+              onClick={() => setActiveTab('rewards')}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
+                ${activeTab === 'rewards' ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/15' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            >
+              <Trophy size={18} /> Rewards Hub
+            </button>
+
+            <button
+              onClick={() => setActiveTab('admin')}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
+                ${activeTab === 'admin' ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/15' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            >
+              <Shield size={18} /> Admin Console
+            </button>
+          </nav>
+        </div>
+
+        {/* User profile footer section */}
+        <div className="p-4 border-t border-white/5 bg-black/20 space-y-4">
+          <div className="flex items-center gap-3">
+            <img 
+              src={user.avatar_url} 
+              alt={user.full_name} 
+              className="w-10 h-10 rounded-xl bg-black/40 border border-white/10"
+            />
+            <div className="truncate">
+              <h4 className="text-sm font-bold text-white truncate">{user.full_name}</h4>
+              <span className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
+                <Zap size={10} className="fill-emerald-400" /> {userPoints} EcoPoints
+              </span>
+            </div>
+          </div>
+          
+          <button
+            onClick={onLogout}
+            className="w-full py-2.5 rounded-xl border border-rose-500/20 text-rose-400 hover:bg-rose-500/10 active:bg-rose-500/20 font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <LogOut size={14} /> Log Out
+          </button>
+        </div>
+
+      </aside>
+
+      {/* Main View Area */}
+      <main className="flex-grow p-6 md:p-10 w-full overflow-y-auto">
+        
+        {/* Tab Routing Router */}
+        {activeTab === 'overview' && (
+          <div className="space-y-8 animate-in fade-in duration-300">
+            {/* Greeting */}
+            <div>
+              <h2 className="text-3xl font-extrabold text-white">Eco Portal Overview</h2>
+              <p className="text-gray-400 mt-1">Welcome back, {user.full_name}! Let's recycle electronics safely and offsets carbon footprint.</p>
+            </div>
+
+            {/* Quick Cards Info */}
+            <div className="grid sm:grid-cols-3 gap-6">
+              
+              <div className="p-5 rounded-2xl glass-panel border-white/5 space-y-4 flex flex-col justify-between">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Device Scanning</span>
+                  <Sparkles className="text-emerald-400" size={18} />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-white font-bold text-sm">Need to Recycle?</h4>
+                  <p className="text-xs text-gray-400 leading-normal">Snap a picture with your webcam to classify materials and get estimates.</p>
+                </div>
+                <button 
+                  onClick={() => setActiveTab('scan')}
+                  className="w-full mt-2 py-2 bg-emerald-500 text-black font-semibold text-xs rounded-lg hover:bg-emerald-400 transition-colors cursor-pointer"
+                >
+                  Open Scanner
+                </button>
+              </div>
+
+              <div className="p-5 rounded-2xl glass-panel border-white/5 space-y-4 flex flex-col justify-between">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Certified Locator</span>
+                  <MapPin className="text-teal-400" size={18} />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-white font-bold text-sm">Find Nearby Hubs</h4>
+                  <p className="text-xs text-gray-400 leading-normal">Locate authorized collectors who handle toxic materials properly.</p>
+                </div>
+                <button 
+                  onClick={() => setActiveTab('map')}
+                  className="w-full mt-2 py-2 bg-teal-500 text-black font-semibold text-xs rounded-lg hover:bg-teal-400 transition-colors cursor-pointer"
+                >
+                  Locate Center
+                </button>
+              </div>
+
+              <div className="p-5 rounded-2xl glass-panel border-white/5 space-y-4 flex flex-col justify-between">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Eco Achievements</span>
+                  <Trophy className="text-amber-400" size={18} />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-white font-bold text-sm">Leaderboard & Prizes</h4>
+                  <p className="text-xs text-gray-400 leading-normal">Complete tasks to collect badges and climb the community ranks.</p>
+                </div>
+                <button 
+                  onClick={() => setActiveTab('rewards')}
+                  className="w-full mt-2 py-2 bg-amber-500 text-black font-semibold text-xs rounded-lg hover:bg-amber-400 transition-colors cursor-pointer"
+                >
+                  View Rewards
+                </button>
+              </div>
+
+            </div>
+
+            {/* Submission History Section */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <Calendar className="text-emerald-400" size={20} /> Your Recycling History
+              </h3>
+
+              {fetchingHistory ? (
+                <div className="p-12 border border-white/5 rounded-2xl bg-black/20 text-center text-gray-500 text-sm">
+                  <span className="text-emerald-400 font-semibold animate-pulse">Loading submission records...</span>
+                </div>
+              ) : history.length > 0 ? (
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {history.map((item) => (
+                    <div key={item.id} className="p-4 rounded-xl glass-panel border-white/5 flex gap-4 hover:border-emerald-500/20 transition-all">
+                      <img 
+                        src={item.image_url} 
+                        alt={item.device_name}
+                        className="w-20 h-20 rounded-lg object-cover bg-black/40 border border-white/10 flex-shrink-0"
+                      />
+                      <div className="space-y-1 truncate">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-white font-bold text-sm truncate">{item.device_name}</h4>
+                          <span className="text-[9px] bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">{item.category}</span>
+                        </div>
+                        <p className="text-xs text-gray-400 flex items-center gap-1"><ShieldAlert size={12} className="text-rose-400" /> Hazard: {item.hazard_level.substring(0, 15)}...</p>
+                        <p className="text-xs text-emerald-400 font-bold flex items-center gap-1"><Heart size={12} fill="currentColor" /> Recycled Value: ${item.recycling_val.toFixed(2)}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-12 border border-dashed border-white/10 rounded-2xl bg-black/10 text-center text-gray-500 text-sm flex flex-col items-center justify-center gap-2">
+                  <Sparkles size={32} className="text-gray-600 animate-pulse" />
+                  <p className="font-semibold text-gray-400">No recycled devices logged yet</p>
+                  <p className="text-xs text-gray-500 max-w-xs leading-normal">Go to the AI Device Scan tab to submit your first electronic device for recycling.</p>
+                </div>
+              )}
+            </div>
+
+          </div>
+        )}
+
+        {activeTab === 'scan' && (
+          <AIScan onSuccess={loadHistory} updateUserPoints={handleUpdatePoints} />
+        )}
+
+        {activeTab === 'map' && (
+          <RecyclerMap onSelectRecyclerForPickup={handleSelectRecyclerForPickup} />
+        )}
+
+        {activeTab === 'pickup' && (
+          <PickupTracker 
+            preselectedRecycler={selectedRecyclerForPickup} 
+            onClearPreselection={handleClearPreselectedRecycler}
+            updateUserPoints={handleUpdatePoints}
+          />
+        )}
+
+        {activeTab === 'impact' && (
+          <ImpactDashboard />
+        )}
+
+        {activeTab === 'rewards' && (
+          <RewardsLeaderboard userPoints={userPoints} />
+        )}
+
+        {activeTab === 'admin' && (
+          <AdminPanel />
+        )}
+
+      </main>
+
+      {/* Floating chatbot assistant */}
+      <Chatbot />
+
+    </div>
+  );
+};
