@@ -315,3 +315,70 @@
   animation: portal-unlock 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* --- New Next-Gen Animations --- */
+
+/* 1. Holographic Warp Entrance */
+@keyframes holo-warp {
+  0% {
+    opacity: 0;
+    transform: perspective(1000px) rotateX(12deg) rotateY(-8deg) scale(0.92) translateY(30px);
+    filter: brightness(1.4) blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1) translateY(0);
+    filter: brightness(1) blur(0px);
+  }
+}
+.animate-holo-warp {
+  animation: holo-warp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* 2. Aurora Glow Wave */
+@keyframes aurora-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.2), inset 0 0 10px rgba(20, 184, 166, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.4), inset 0 0 20px rgba(59, 130, 246, 0.2);
+    border-color: rgba(6, 182, 212, 0.6);
+  }
+}
+.animate-aurora-glow {
+  animation: aurora-glow 4s ease-in-out infinite;
+}
+
+/* 3. Magnetic Levitating Tilt */
+@keyframes magnetic-levitate {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  33% {
+    transform: translateY(-8px) rotate(1deg) scale(1.01);
+  }
+  66% {
+    transform: translateY(4px) rotate(-1deg) scale(0.99);
+  }
+}
+.animate-magnetic-tilt {
+  animation: magnetic-levitate 5s ease-in-out infinite;
+}
+
+/* 4. Electro Shock Pulse */
+@keyframes electro-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 25px rgba(52, 211, 153, 0.4);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-electro-hover:hover {
+  animation: electro-pulse 0.5s ease-in-out infinite;
+}
+

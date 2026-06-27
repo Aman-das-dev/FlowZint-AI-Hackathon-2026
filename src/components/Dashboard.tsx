@@ -293,19 +293,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         )}
 
         {activeTab === 'scan' && (
-          <div className="animate-orbit-in">
+          <div className="animate-holo-warp">
             <AIScan onSuccess={loadHistory} updateUserPoints={handleUpdatePoints} />
           </div>
         )}
 
         {activeTab === 'map' && (
-          <div className="animate-float-up">
+          <div className="animate-aurora-glow rounded-2xl p-1">
             <RecyclerMap onSelectRecyclerForPickup={handleSelectRecyclerForPickup} />
           </div>
         )}
 
         {activeTab === 'pickup' && (
-          <div className="animate-weightless">
+          <div className="animate-magnetic-tilt">
             <PickupTracker 
               preselectedRecycler={selectedRecyclerForPickup} 
               onClearPreselection={handleClearPreselectedRecycler}
@@ -315,19 +315,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         )}
 
         {activeTab === 'impact' && (
-          <div className="animate-levitate">
+          <div className="animate-holo-warp">
             <ImpactDashboard />
           </div>
         )}
 
         {activeTab === 'rewards' && (
-          <div className="animate-zero-g">
+          <div className="animate-aurora-glow rounded-2xl p-1">
             <RewardsLeaderboard userPoints={userPoints} />
           </div>
         )}
 
         {activeTab === 'admin' && (
-          <div className="animate-quantum">
+          <div className="animate-magnetic-tilt">
             <AdminPanel />
           </div>
         )}
