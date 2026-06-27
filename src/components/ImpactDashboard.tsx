@@ -49,8 +49,8 @@ export const ImpactDashboard: React.FC = () => {
       {/* Stats Cards Grid */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         
-        <div className="p-5 rounded-2xl glass-panel border-white/5 flex flex-col justify-between hover:border-emerald-500/20 transition-colors">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+        <div className="p-5 rounded-2xl glass-panel border-white/5 flex flex-col justify-between hover:border-emerald-500/30 hover:scale-105 transition-all duration-300 shadow-lg animate-orbit-in animate-quantum" style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 animate-zero-g">
             <Leaf size={20} />
           </div>
           <div className="mt-4 space-y-1">
@@ -59,8 +59,8 @@ export const ImpactDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl glass-panel border-white/5 flex flex-col justify-between hover:border-teal-500/20 transition-colors">
-          <div className="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400">
+        <div className="p-5 rounded-2xl glass-panel border-white/5 flex flex-col justify-between hover:border-teal-500/30 hover:scale-105 transition-all duration-300 shadow-lg animate-orbit-in animate-quantum" style={{ animationDelay: '200ms', animationFillMode: 'both' }}>
+          <div className="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 animate-zero-g">
             <Droplets size={20} />
           </div>
           <div className="mt-4 space-y-1">
@@ -69,8 +69,8 @@ export const ImpactDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl glass-panel border-white/5 flex flex-col justify-between hover:border-cyan-500/20 transition-colors">
-          <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+        <div className="p-5 rounded-2xl glass-panel border-white/5 flex flex-col justify-between hover:border-cyan-500/30 hover:scale-105 transition-all duration-300 shadow-lg animate-orbit-in animate-quantum" style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+          <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 animate-zero-g">
             <Calendar size={20} />
           </div>
           <div className="mt-4 space-y-1">
@@ -79,8 +79,8 @@ export const ImpactDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl glass-panel border-white/5 flex flex-col justify-between hover:border-amber-500/20 transition-colors">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+        <div className="p-5 rounded-2xl glass-panel border-white/5 flex flex-col justify-between hover:border-amber-500/30 hover:scale-105 transition-all duration-300 shadow-lg animate-orbit-in animate-quantum" style={{ animationDelay: '400ms', animationFillMode: 'both' }}>
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 animate-zero-g">
             <ShieldAlert size={20} />
           </div>
           <div className="mt-4 space-y-1">
@@ -89,8 +89,8 @@ export const ImpactDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl glass-panel border-white/5 flex flex-col justify-between hover:border-indigo-500/20 transition-colors">
-          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+        <div className="p-5 rounded-2xl glass-panel border-white/5 flex flex-col justify-between hover:border-indigo-500/30 hover:scale-105 transition-all duration-300 shadow-lg animate-orbit-in animate-quantum" style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
+          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 animate-zero-g">
             <Award size={20} />
           </div>
           <div className="mt-4 space-y-1">

@@ -93,8 +93,8 @@ export const AdminPanel: React.FC = () => {
       {/* Admin metrics counters grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         
-        <div className="p-5 rounded-2xl glass-panel border-white/5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 flex-shrink-0">
+        <div className="p-5 rounded-2xl glass-panel border-white/5 flex items-center gap-4 hover:border-blue-500/30 hover:scale-105 transition-all duration-300 shadow-lg animate-orbit-in animate-quantum" style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
+          <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 flex-shrink-0 animate-zero-g">
             <Users size={22} />
           </div>
           <div>
@@ -103,8 +103,8 @@ export const AdminPanel: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl glass-panel border-white/5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 flex-shrink-0">
+        <div className="p-5 rounded-2xl glass-panel border-white/5 flex items-center gap-4 hover:border-emerald-500/30 hover:scale-105 transition-all duration-300 shadow-lg animate-orbit-in animate-quantum" style={{ animationDelay: '200ms', animationFillMode: 'both' }}>
+          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 flex-shrink-0 animate-zero-g">
             <Activity size={22} />
           </div>
           <div>
@@ -113,8 +113,8 @@ export const AdminPanel: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl glass-panel border-white/5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 flex-shrink-0">
+        <div className="p-5 rounded-2xl glass-panel border-white/5 flex items-center gap-4 hover:border-teal-500/30 hover:scale-105 transition-all duration-300 shadow-lg animate-orbit-in animate-quantum" style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
+          <div className="w-12 h-12 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 flex-shrink-0 animate-zero-g">
             <Leaf size={22} />
           </div>
           <div>
@@ -123,8 +123,8 @@ export const AdminPanel: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl glass-panel border-white/5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 flex-shrink-0">
+        <div className="p-5 rounded-2xl glass-panel border-white/5 flex items-center gap-4 hover:border-amber-500/30 hover:scale-105 transition-all duration-300 shadow-lg animate-orbit-in animate-quantum" style={{ animationDelay: '400ms', animationFillMode: 'both' }}>
+          <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 flex-shrink-0 animate-zero-g">
             <DollarSign size={22} />
           </div>
           <div>

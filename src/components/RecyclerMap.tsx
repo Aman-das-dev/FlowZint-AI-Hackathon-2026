@@ -161,7 +161,7 @@ export const RecyclerMap: React.FC<RecyclerMapProps> = ({ onSelectRecyclerForPic
       <div className="grid lg:grid-cols-12 gap-8 items-stretch h-[600px]">
         
         {/* Left Columns: Interactive Map */}
-        <div className="lg:col-span-8 rounded-2xl overflow-hidden border border-white/10 relative h-[400px] lg:h-full">
+        <div className="lg:col-span-8 rounded-2xl overflow-hidden border border-emerald-500/20 hover:border-emerald-500/40 relative h-[400px] lg:h-full transition-all shadow-xl animate-float-up">
           {loading ? (
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
               <span className="text-emerald-400 font-semibold animate-pulse">Loading maps engine...</span>
@@ -171,16 +171,16 @@ export const RecyclerMap: React.FC<RecyclerMapProps> = ({ onSelectRecyclerForPic
           )}
 
           {/* Map Overlay Badge */}
-          <div className="absolute top-4 left-4 z-10 bg-[#0f172a]/95 border border-white/10 rounded-xl px-4 py-2 text-xs flex items-center gap-2 shadow-lg backdrop-blur-md">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span> User Position
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 ml-2"></span> Recyclers
+          <div className="absolute top-4 left-4 z-10 bg-[#0f172a]/95 border border-white/10 rounded-xl px-4 py-2 text-xs flex items-center gap-2 shadow-lg backdrop-blur-md animate-zero-g">
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span> User Position
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 ml-2 animate-pulse"></span> Recyclers
           </div>
         </div>
 
         {/* Right Columns: Recycler Info Details Card */}
-        <div className="lg:col-span-4 flex flex-col">
+        <div className="lg:col-span-4 flex flex-col animate-orbit-in">
           {selectedRecycler ? (
-            <div className="rounded-2xl glass-panel p-6 border-white/10 space-y-6 flex-grow flex flex-col justify-between">
+            <div className="rounded-2xl glass-panel p-6 border-white/10 space-y-6 flex-grow flex flex-col justify-between hover:border-emerald-500/30 transition-all shadow-xl animate-quantum">
               
               <div className="space-y-4">
                 {/* Header */}

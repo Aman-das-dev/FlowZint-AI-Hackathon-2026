@@ -162,10 +162,10 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
       <div className="grid lg:grid-cols-12 gap-8 items-start">
         
         {/* Left Side: Schedule Form (Col-5) */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="rounded-2xl glass-panel p-6 border-white/10 space-y-5">
+        <div className="lg:col-span-5 space-y-6 animate-orbit-in">
+          <div className="rounded-2xl glass-panel p-6 border-white/10 space-y-5 hover:border-emerald-500/30 transition-all shadow-xl animate-quantum">
             <h3 className="text-xl font-bold text-white flex items-center gap-2">
-              <Calendar className="text-emerald-400" size={20} /> Schedule Collection
+              <Calendar className="text-emerald-400 animate-pulse" size={20} /> Schedule Collection
             </h3>
 
             {scheduledSuccess && (
