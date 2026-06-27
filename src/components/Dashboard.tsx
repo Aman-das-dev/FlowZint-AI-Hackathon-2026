@@ -100,23 +100,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
           <nav className="px-3 space-y-1.5">
             <button
               onClick={() => setActiveTab('overview')}
-              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-quantum
-                ${activeTab === 'overview' ? 'bg-gradient-to-r from-emerald-500 to-teal-400 text-black shadow-lg shadow-emerald-500/25 scale-[1.02]' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-electro-hover
+                ${activeTab === 'overview' ? 'bg-gradient-to-r from-emerald-500 to-teal-400 text-black shadow-lg shadow-emerald-500/25 scale-[1.02] animate-pulsar-ripple' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
             >
               <Home size={18} className={activeTab === 'overview' ? 'animate-pulse' : ''} /> Overview
             </button>
             
             <button
               onClick={() => setActiveTab('scan')}
-              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-quantum
-                ${activeTab === 'scan' ? 'bg-gradient-to-r from-teal-400 to-cyan-400 text-black shadow-lg shadow-teal-400/25 scale-[1.02]' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-cyber-float
+                ${activeTab === 'scan' ? 'bg-gradient-to-r from-teal-400 to-cyan-400 text-black shadow-lg shadow-teal-400/25 scale-[1.02] animate-aurora-glow' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
             >
               <Sparkles size={18} className={activeTab === 'scan' ? 'animate-spin' : ''} /> AI Device Scan
             </button>
 
             <button
               onClick={() => setActiveTab('map')}
-              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-quantum
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-magnetic-tilt
                 ${activeTab === 'map' ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-black shadow-lg shadow-cyan-400/25 scale-[1.02]' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
             >
               <MapPin size={18} className={activeTab === 'map' ? 'animate-bounce' : ''} /> Locator Map
@@ -124,23 +124,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
 
             <button
               onClick={() => setActiveTab('pickup')}
-              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-quantum
-                ${activeTab === 'pickup' ? 'bg-gradient-to-r from-emerald-400 to-lime-400 text-black shadow-lg shadow-emerald-400/25 scale-[1.02]' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-cyber-float
+                ${activeTab === 'pickup' ? 'bg-gradient-to-r from-emerald-400 to-lime-400 text-black shadow-lg shadow-emerald-400/25 scale-[1.02] animate-pulsar-ripple' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
             >
               <Truck size={18} className={activeTab === 'pickup' ? 'animate-pulse' : ''} /> Pickup Scheduler
             </button>
 
             <button
               onClick={() => setActiveTab('impact')}
-              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-quantum
-                ${activeTab === 'impact' ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-purple-500/25 scale-[1.02]' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-electro-hover
+                ${activeTab === 'impact' ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-purple-500/25 scale-[1.02] animate-aurora-glow' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
             >
               <BarChart3 size={18} className={activeTab === 'impact' ? 'animate-pulse' : ''} /> Impact Dashboard
             </button>
 
             <button
               onClick={() => setActiveTab('rewards')}
-              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-quantum
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-magnetic-tilt
                 ${activeTab === 'rewards' ? 'bg-gradient-to-r from-amber-400 to-yellow-400 text-black shadow-lg shadow-amber-400/25 scale-[1.02]' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
             >
               <Trophy size={18} className={activeTab === 'rewards' ? 'animate-bounce' : ''} /> Rewards Hub
@@ -148,8 +148,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
 
             <button
               onClick={() => setActiveTab('admin')}
-              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-quantum
-                ${activeTab === 'admin' ? 'bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/25 scale-[1.02]' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-electro-hover
+                ${activeTab === 'admin' ? 'bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/25 scale-[1.02] animate-aurora-glow' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
             >
               <Shield size={18} className={activeTab === 'admin' ? 'animate-pulse' : ''} /> Admin Console
             </button>

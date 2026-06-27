@@ -382,3 +382,32 @@
   animation: electro-pulse 0.5s ease-in-out infinite;
 }
 
+/* 5. Neon Pulsar Ripple */
+@keyframes pulsar-ripple {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+.animate-pulsar-ripple {
+  animation: pulsar-ripple 2s infinite;
+}
+
+/* 6. Cyber Float Hover */
+@keyframes cyber-float {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-3px) translateX(4px);
+  }
+}
+.animate-cyber-float:hover {
+  animation: cyber-float 1.5s ease-in-out infinite;
+}
+
