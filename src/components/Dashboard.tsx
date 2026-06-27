@@ -168,18 +168,18 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         {activeTab === 'overview' && (
           <div className="space-y-8 animate-in fade-in duration-300">
             {/* Greeting */}
-            <div>
+            <div className="animate-float-up" style={{ animationDelay: '50ms' }}>
               <h2 className="text-3xl font-extrabold text-white">Eco Portal Overview</h2>
-              <p className="text-gray-400 mt-1">Welcome back, {user.full_name}! Let's recycle electronics safely and offsets carbon footprint.</p>
+              <p className="text-gray-400 mt-1">Welcome back, {user.full_name}! Let's recycle electronics safely and offset carbon footprint.</p>
             </div>
 
             {/* Quick Cards Info */}
             <div className="grid sm:grid-cols-3 gap-6">
               
-              <div className="p-5 rounded-2xl glass-panel border-white/5 space-y-4 flex flex-col justify-between">
+              <div className="p-5 rounded-2xl glass-panel border-white/5 space-y-4 flex flex-col justify-between animate-orbit-in animate-quantum hover:scale-[1.03] hover:border-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300" style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Device Scanning</span>
-                  <Sparkles className="text-emerald-400" size={18} />
+                  <Sparkles className="text-emerald-400 animate-pulse" size={18} />
                 </div>
                 <div className="space-y-1">
                   <h4 className="text-white font-bold text-sm">Need to Recycle?</h4>
@@ -187,16 +187,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 </div>
                 <button 
                   onClick={() => setActiveTab('scan')}
-                  className="w-full mt-2 py-2 bg-emerald-500 text-black font-semibold text-xs rounded-lg hover:bg-emerald-400 transition-colors cursor-pointer"
+                  className="w-full mt-2 py-2.5 bg-emerald-500 text-black font-bold text-xs rounded-xl hover:bg-emerald-400 active:scale-95 transition-all cursor-pointer shadow-lg shadow-emerald-500/20 animate-quantum"
                 >
                   Open Scanner
                 </button>
               </div>
 
-              <div className="p-5 rounded-2xl glass-panel border-white/5 space-y-4 flex flex-col justify-between">
+              <div className="p-5 rounded-2xl glass-panel border-white/5 space-y-4 flex flex-col justify-between animate-orbit-in animate-quantum hover:scale-[1.03] hover:border-teal-500/30 hover:shadow-xl hover:shadow-teal-500/10 transition-all duration-300" style={{ animationDelay: '250ms', animationFillMode: 'both' }}>
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Certified Locator</span>
-                  <MapPin className="text-teal-400" size={18} />
+                  <MapPin className="text-teal-400 animate-pulse" size={18} />
                 </div>
                 <div className="space-y-1">
                   <h4 className="text-white font-bold text-sm">Find Nearby Hubs</h4>
@@ -204,16 +204,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 </div>
                 <button 
                   onClick={() => setActiveTab('map')}
-                  className="w-full mt-2 py-2 bg-teal-500 text-black font-semibold text-xs rounded-lg hover:bg-teal-400 transition-colors cursor-pointer"
+                  className="w-full mt-2 py-2.5 bg-teal-500 text-black font-bold text-xs rounded-xl hover:bg-teal-400 active:scale-95 transition-all cursor-pointer shadow-lg shadow-teal-500/20 animate-quantum"
                 >
                   Locate Center
                 </button>
               </div>
 
-              <div className="p-5 rounded-2xl glass-panel border-white/5 space-y-4 flex flex-col justify-between">
+              <div className="p-5 rounded-2xl glass-panel border-white/5 space-y-4 flex flex-col justify-between animate-orbit-in animate-quantum hover:scale-[1.03] hover:border-amber-500/30 hover:shadow-xl hover:shadow-amber-500/10 transition-all duration-300" style={{ animationDelay: '400ms', animationFillMode: 'both' }}>
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Eco Achievements</span>
-                  <Trophy className="text-amber-400" size={18} />
+                  <Trophy className="text-amber-400 animate-pulse" size={18} />
                 </div>
                 <div className="space-y-1">
                   <h4 className="text-white font-bold text-sm">Leaderboard & Prizes</h4>
@@ -221,7 +221,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 </div>
                 <button 
                   onClick={() => setActiveTab('rewards')}
-                  className="w-full mt-2 py-2 bg-amber-500 text-black font-semibold text-xs rounded-lg hover:bg-amber-400 transition-colors cursor-pointer"
+                  className="w-full mt-2 py-2.5 bg-amber-500 text-black font-bold text-xs rounded-xl hover:bg-amber-400 active:scale-95 transition-all cursor-pointer shadow-lg shadow-amber-500/20 animate-quantum"
                 >
                   View Rewards
                 </button>
@@ -230,7 +230,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
             </div>
 
             {/* Submission History Section */}
-            <div className="space-y-4">
+            <div className="space-y-4 animate-float-up" style={{ animationDelay: '550ms', animationFillMode: 'both' }}>
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
                 <Calendar className="text-emerald-400" size={20} /> Your Recycling History
               </h3>
@@ -242,7 +242,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
               ) : history.length > 0 ? (
                 <div className="grid sm:grid-cols-2 gap-4">
                   {history.map((item) => (
-                    <div key={item.id} className="p-4 rounded-xl glass-panel border-white/5 flex gap-4 hover:border-emerald-500/20 transition-all">
+                    <div key={item.id} className="p-4 rounded-xl glass-panel border-white/5 flex gap-4 hover:border-emerald-500/30 hover:scale-[1.02] transition-all duration-300 animate-quantum">
                       <img 
                         src={item.image_url} 
                         alt={item.device_name}
@@ -260,9 +260,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                   ))}
                 </div>
               ) : (
-                <div className="p-12 border border-dashed border-white/10 rounded-2xl bg-black/10 text-center text-gray-500 text-sm flex flex-col items-center justify-center gap-2">
-                  <Sparkles size={32} className="text-gray-600 animate-pulse" />
-                  <p className="font-semibold text-gray-400">No recycled devices logged yet</p>
+                <div className="p-12 border border-dashed border-white/10 rounded-2xl bg-black/10 text-center text-gray-500 text-sm flex flex-col items-center justify-center gap-2 hover:border-emerald-500/20 transition-all">
+                  <Sparkles size={36} className="text-emerald-400/80 animate-zero-g" />
+                  <p className="font-semibold text-gray-300 text-base">No recycled devices logged yet</p>
                   <p className="text-xs text-gray-500 max-w-xs leading-normal">Go to the AI Device Scan tab to submit your first electronic device for recycling.</p>
                 </div>
               )}
