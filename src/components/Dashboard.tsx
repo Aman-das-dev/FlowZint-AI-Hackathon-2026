@@ -25,6 +25,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   const [history, setHistory] = useState<DeviceSubmission[]>([]);
   const [selectedRecyclerForPickup, setSelectedRecyclerForPickup] = useState<Recycler | null>(null);
   const [fetchingHistory, setFetchingHistory] = useState(true);
+  const [showWelcomeToast, setShowWelcomeToast] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowWelcomeToast(false);
+    }, 4500);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Load User submission history
   const loadHistory = async () => {
@@ -59,10 +67,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#070b13] flex flex-col md:flex-row text-gray-200">
+    <div className="min-h-screen bg-[#070b13] flex flex-col md:flex-row text-gray-200 animate-portal-unlock overflow-hidden relative">
       
+      {/* Floating Login Verification Toast */}
+      {showWelcomeToast && (
+        <div className="fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-emerald-950/90 border border-emerald-500/40 text-emerald-300 shadow-2xl shadow-emerald-500/20 backdrop-blur-md animate-float-up">
+          <div className="w-8 h-8 rounded-xl bg-emerald-500 text-black flex items-center justify-center font-extrabold shadow-md animate-pulse">
+            ✓
+          </div>
+          <div>
+            <h4 className="text-xs font-extrabold uppercase tracking-wider text-emerald-400">Portal Access Unlocked</h4>
+            <p className="text-xs text-emerald-200/90 font-medium">Authentication Verified. Welcome, {user.full_name}!</p>
+          </div>
+        </div>
+      )}
+
       {/* Sidebar Navigation */}
-      <aside className="w-full md:w-64 bg-[#0a0f1d] border-b md:border-b-0 md:border-r border-white/5 flex flex-col justify-between flex-shrink-0 z-20">
+      <aside className="w-full md:w-64 bg-[#0a0f1d] border-b md:border-b-0 md:border-r border-white/5 flex flex-col justify-between flex-shrink-0 z-20 animate-fade-in-left">
         
         <div className="space-y-6 py-6">
           {/* Logo */}
