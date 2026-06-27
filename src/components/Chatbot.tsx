@@ -51,7 +51,7 @@ export const Chatbot: React.FC = () => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-black flex items-center justify-center shadow-2xl shadow-emerald-500/30 hover:scale-110 active:scale-95 transition-all cursor-pointer border border-white/10 animate-levitate animate-quantum"
+          className="w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-black flex items-center justify-center shadow-2xl shadow-emerald-500/30 hover:scale-110 active:scale-95 transition-all cursor-pointer border border-white/10 animate-magnetic-tilt animate-electro-hover"
           title="Consult Eco-Assistant"
         >
           <MessageSquare size={24} />
@@ -60,7 +60,7 @@ export const Chatbot: React.FC = () => {
 
       {/* Chat window panel */}
       {isOpen && (
-        <div className="w-80 sm:w-96 h-[500px] rounded-2xl glass-panel border border-emerald-500/30 flex flex-col justify-between overflow-hidden shadow-2xl animate-orbit-in animate-quantum">
+        <div className="w-80 sm:w-96 h-[500px] rounded-2xl glass-panel border border-emerald-500/30 flex flex-col justify-between overflow-hidden shadow-2xl animate-holo-warp animate-aurora-glow">
           
           {/* Header */}
           <div className="p-4 bg-gradient-to-r from-emerald-950/40 to-teal-950/40 border-b border-white/10 flex justify-between items-center">

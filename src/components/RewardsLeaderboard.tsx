@@ -59,10 +59,10 @@ export const RewardsLeaderboard: React.FC<RewardsLeaderboardProps> = ({ userPoin
       <div className="grid lg:grid-cols-12 gap-8 items-start">
         
         {/* Left Columns: Gamified user summary & achievements (Col-7) */}
-        <div className="lg:col-span-7 space-y-6 animate-orbit-in">
+        <div className="lg:col-span-7 space-y-6 animate-holo-warp">
           
           {/* User Score Summary Card */}
-          <div className={`rounded-2xl glass-panel p-6 border ${currentTier.border} bg-gradient-to-br from-emerald-950/10 via-[#070b13] to-teal-950/10 grid sm:grid-cols-3 gap-6 items-center shadow-xl animate-quantum hover:scale-[1.02] transition-all`}>
+          <div className={`rounded-2xl glass-panel p-6 border ${currentTier.border} bg-gradient-to-br from-emerald-950/10 via-[#070b13] to-teal-950/10 grid sm:grid-cols-3 gap-6 items-center shadow-xl animate-aurora-glow hover:scale-[1.02] transition-all`}>
             <div className="space-y-1 text-center sm:text-left">
               <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Active Tier</span>
               <span className={`block text-xl font-bold ${currentTier.color}`}>{currentTier.name}</span>
@@ -82,7 +82,7 @@ export const RewardsLeaderboard: React.FC<RewardsLeaderboardProps> = ({ userPoin
           </div>
 
           {/* Badges Grid */}
-          <div className="rounded-2xl glass-panel p-6 border-white/5 space-y-5 animate-float-up" style={{ animationDelay: '200ms' }}>
+          <div className="rounded-2xl glass-panel p-6 border-white/5 space-y-5 animate-magnetic-tilt" style={{ animationDelay: '200ms' }}>
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               <Award className="text-emerald-400 animate-pulse" size={18} /> Achievement Badges
             </h3>
@@ -93,10 +93,10 @@ export const RewardsLeaderboard: React.FC<RewardsLeaderboardProps> = ({ userPoin
                 return (
                   <div 
                     key={badge.name}
-                    className={`p-4 rounded-xl border transition-all duration-300 flex items-start gap-3.5 animate-quantum hover:scale-105
+                    className={`p-4 rounded-xl border transition-all duration-300 flex items-start gap-3.5 animate-electro-hover hover:scale-105
                       ${isUnlocked ? 'bg-emerald-500/5 border-emerald-500/30 text-white shadow-lg shadow-emerald-500/5' : 'bg-white/2 border-white/5 opacity-50'}`}
                   >
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-white/5 border border-white/5 flex-shrink-0 ${isUnlocked ? 'animate-zero-g' : ''}`}>
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-white/5 border border-white/5 flex-shrink-0 ${isUnlocked ? 'animate-magnetic-tilt' : ''}`}>
                       {badge.emoji}
                     </div>
                     <div className="space-y-1 truncate">
