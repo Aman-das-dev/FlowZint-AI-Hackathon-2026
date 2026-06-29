@@ -9,7 +9,7 @@ import { AdminPanel } from './AdminPanel';
 import { Chatbot } from './Chatbot';
 import { 
   Home, Sparkles, MapPin, Truck, BarChart3, Trophy, Shield, 
-  LogOut, Leaf, Zap, Calendar, Heart, ShieldAlert 
+  LogOut, Leaf, Zap, Calendar, Heart, ShieldAlert, Menu, X 
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -22,6 +22,7 @@ type TabType = 'overview' | 'scan' | 'map' | 'pickup' | 'impact' | 'rewards' | '
 export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [userPoints, setUserPoints] = useState(user.eco_points);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [history, setHistory] = useState<DeviceSubmission[]>([]);
   const [selectedRecyclerForPickup, setSelectedRecyclerForPickup] = useState<Recycler | null>(null);
   const [fetchingHistory, setFetchingHistory] = useState(true);
@@ -67,102 +68,141 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#070b13] flex flex-col md:flex-row text-gray-200 animate-portal-unlock overflow-hidden relative">
+    <div className="min-h-screen bg-[#F8F9FA] flex flex-col md:flex-row text-[#333333] animate-fade-in-up overflow-hidden relative">
       
+      {/* Mobile Top Header (Visible only on mobile screen) */}
+      <div className="md:hidden w-full bg-[#38523A] text-white px-5 py-3 flex justify-between items-center z-30 shadow-md">
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setIsSidebarOpen(true)}
+            className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+          >
+            <Menu size={20} />
+          </button>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-[#D9E335] flex items-center justify-center">
+              <Leaf size={16} className="text-[#38523A] font-extrabold" />
+            </div>
+            <span className="text-base font-bold tracking-tight text-white font-mono">
+              ECOTRACK<span className="text-[#D9E335]">.AI</span>
+            </span>
+          </div>
+        </div>
+        <div className="text-xs font-bold bg-[#D9E335]/20 border border-[#D9E335]/30 rounded-lg px-2.5 py-1 flex items-center gap-1">
+          <Zap size={12} className="fill-emerald-400 text-emerald-400" /> {userPoints} pts
+        </div>
+      </div>
+
+      {/* Backdrop overlay for mobile drawer */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-30 md:hidden animate-fade-in"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Floating Login Verification Toast */}
       {showWelcomeToast && (
-        <div className="fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-emerald-950/90 border border-emerald-500/40 text-emerald-300 shadow-2xl shadow-emerald-500/20 backdrop-blur-md animate-float-up">
-          <div className="w-8 h-8 rounded-xl bg-emerald-500 text-black flex items-center justify-center font-extrabold shadow-md animate-pulse">
+        <div className="fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-[#38523A] border border-[#84B056]/40 text-white shadow-2xl shadow-[#38523A]/20 backdrop-blur-md animate-fade-in-up">
+          <div className="w-8 h-8 rounded-xl bg-[#D9E335] text-[#38523A] flex items-center justify-center font-extrabold shadow-md">
             ✓
           </div>
           <div>
-            <h4 className="text-xs font-extrabold uppercase tracking-wider text-emerald-400">Portal Access Unlocked</h4>
-            <p className="text-xs text-emerald-200/90 font-medium">Authentication Verified. Welcome, {user.full_name}!</p>
+            <h4 className="text-xs font-extrabold uppercase tracking-wider text-[#D9E335]">Portal Access Unlocked</h4>
+            <p className="text-xs text-white/90 font-medium">Authentication Verified. Welcome, {user.full_name}!</p>
           </div>
         </div>
       )}
 
       {/* Sidebar Navigation */}
-      <aside className="w-full md:w-64 bg-[#0a0f1d] border-b md:border-b-0 md:border-r border-white/5 flex flex-col justify-between flex-shrink-0 z-20 animate-fade-in-left">
+      <aside className={`fixed inset-y-0 left-0 w-64 z-40 bg-[#38523A] flex flex-col justify-between flex-shrink-0 border-r border-white/10 transition-transform duration-300 md:relative md:translate-x-0 md:flex ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
         
+        {/* Close Button on Mobile */}
+        <button 
+          onClick={() => setIsSidebarOpen(false)}
+          className="md:hidden absolute top-5 right-5 text-white/70 hover:text-white p-1 rounded-lg hover:bg-white/10"
+        >
+          <X size={20} />
+        </button>
+
         <div className="space-y-6 py-6">
           {/* Logo */}
           <div className="px-6 flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-              <Leaf size={18} className="text-black font-extrabold" />
+            <div className="w-9 h-9 rounded-xl bg-[#D9E335] flex items-center justify-center shadow-lg">
+              <Leaf size={18} className="text-[#38523A] font-extrabold" />
             </div>
             <span className="text-lg font-bold tracking-tight text-white font-mono">
-              ECOTRACK<span className="text-emerald-400">.AI</span>
+              ECOTRACK<span className="text-[#D9E335]">.AI</span>
             </span>
           </div>
 
           {/* Navigation Links */}
           <nav className="px-3 space-y-1.5">
             <button
-              onClick={() => setActiveTab('overview')}
-              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-electro-hover
-                ${activeTab === 'overview' ? 'bg-gradient-to-r from-emerald-500 to-teal-400 text-black shadow-lg shadow-emerald-500/25 scale-[1.02] animate-pulsar-ripple' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
+              onClick={() => { setActiveTab('overview'); setIsSidebarOpen(false); }}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
+                ${activeTab === 'overview' ? 'bg-[#D9E335] text-[#38523A] shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10 hover:translate-x-1'}`}
             >
-              <Home size={18} className={activeTab === 'overview' ? 'animate-pulse' : ''} /> Overview
+              <Home size={18} /> Overview
             </button>
             
             <button
-              onClick={() => setActiveTab('scan')}
-              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-cyber-float
-                ${activeTab === 'scan' ? 'bg-gradient-to-r from-teal-400 to-cyan-400 text-black shadow-lg shadow-teal-400/25 scale-[1.02] animate-aurora-glow' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
+              onClick={() => { setActiveTab('scan'); setIsSidebarOpen(false); }}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
+                ${activeTab === 'scan' ? 'bg-[#D9E335] text-[#38523A] shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10 hover:translate-x-1'}`}
             >
-              <Sparkles size={18} className={activeTab === 'scan' ? 'animate-spin' : ''} /> AI Device Scan
+              <Sparkles size={18} /> AI Device Scan
             </button>
 
             <button
-              onClick={() => setActiveTab('map')}
-              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-magnetic-tilt
-                ${activeTab === 'map' ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-black shadow-lg shadow-cyan-400/25 scale-[1.02]' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
+              onClick={() => { setActiveTab('map'); setIsSidebarOpen(false); }}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
+                ${activeTab === 'map' ? 'bg-[#D9E335] text-[#38523A] shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10 hover:translate-x-1'}`}
             >
-              <MapPin size={18} className={activeTab === 'map' ? 'animate-bounce' : ''} /> Locator Map
+              <MapPin size={18} /> Locator Map
             </button>
 
             <button
-              onClick={() => setActiveTab('pickup')}
-              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-cyber-float
-                ${activeTab === 'pickup' ? 'bg-gradient-to-r from-emerald-400 to-lime-400 text-black shadow-lg shadow-emerald-400/25 scale-[1.02] animate-pulsar-ripple' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
+              onClick={() => { setActiveTab('pickup'); setIsSidebarOpen(false); }}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
+                ${activeTab === 'pickup' ? 'bg-[#D9E335] text-[#38523A] shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10 hover:translate-x-1'}`}
             >
-              <Truck size={18} className={activeTab === 'pickup' ? 'animate-pulse' : ''} /> Pickup Scheduler
+              <Truck size={18} /> Pickup Scheduler
             </button>
 
             <button
-              onClick={() => setActiveTab('impact')}
-              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-electro-hover
-                ${activeTab === 'impact' ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-purple-500/25 scale-[1.02] animate-aurora-glow' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
+              onClick={() => { setActiveTab('impact'); setIsSidebarOpen(false); }}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
+                ${activeTab === 'impact' ? 'bg-[#D9E335] text-[#38523A] shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10 hover:translate-x-1'}`}
             >
-              <BarChart3 size={18} className={activeTab === 'impact' ? 'animate-pulse' : ''} /> Impact Dashboard
+              <BarChart3 size={18} /> Impact Dashboard
             </button>
 
             <button
-              onClick={() => setActiveTab('rewards')}
-              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-magnetic-tilt
-                ${activeTab === 'rewards' ? 'bg-gradient-to-r from-amber-400 to-yellow-400 text-black shadow-lg shadow-amber-400/25 scale-[1.02]' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
+              onClick={() => { setActiveTab('rewards'); setIsSidebarOpen(false); }}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
+                ${activeTab === 'rewards' ? 'bg-[#D9E335] text-[#38523A] shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10 hover:translate-x-1'}`}
             >
-              <Trophy size={18} className={activeTab === 'rewards' ? 'animate-bounce' : ''} /> Rewards Hub
+              <Trophy size={18} /> Rewards Hub
             </button>
 
             <button
-              onClick={() => setActiveTab('admin')}
-              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer animate-electro-hover
-                ${activeTab === 'admin' ? 'bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/25 scale-[1.02] animate-aurora-glow' : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'}`}
+              onClick={() => { setActiveTab('admin'); setIsSidebarOpen(false); }}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
+                ${activeTab === 'admin' ? 'bg-[#D9E335] text-[#38523A] shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10 hover:translate-x-1'}`}
             >
-              <Shield size={18} className={activeTab === 'admin' ? 'animate-pulse' : ''} /> Admin Console
+              <Shield size={18} /> Admin Console
             </button>
           </nav>
         </div>
 
         {/* User profile footer section */}
-        <div className="p-4 border-t border-white/5 bg-black/20 space-y-4">
+        <div className="p-4 border-t border-white/10 bg-black/20 space-y-4">
           <div className="flex items-center gap-3">
             <img 
               src={user.avatar_url} 
               alt={user.full_name} 
-              className="w-10 h-10 rounded-xl bg-black/40 border border-white/10"
+              className="w-10 h-10 rounded-xl bg-white/10 border border-white/20"
             />
             <div className="truncate">
               <h4 className="text-sm font-bold text-white truncate">{user.full_name}</h4>

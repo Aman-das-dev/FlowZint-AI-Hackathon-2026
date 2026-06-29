@@ -47,7 +47,7 @@ export const AdminPanel: React.FC = () => {
         dragging: false
       }).setView([37.776, -122.425], 12);
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(miniMapRef.current);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(miniMapRef.current);
 
       // Render heatmap circles
       HEATMAP_POINTS.forEach(pt => {

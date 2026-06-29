@@ -37,10 +37,10 @@ export const RewardsLeaderboard: React.FC<RewardsLeaderboardProps> = ({ userPoin
   }, [userPoints]);
 
   const getTier = (points: number) => {
-    if (points >= 1500) return { name: 'Zero-Waste Master', color: 'text-amber-400', border: 'border-amber-400/40', next: 'Max Level' };
-    if (points >= 1000) return { name: 'Gold Safeguard', color: 'text-yellow-400', border: 'border-yellow-400/40', next: '1,500 pts for Zero-Waste' };
-    if (points >= 500) return { name: 'Silver Recycler', color: 'text-slate-300', border: 'border-slate-300/40', next: '1,000 pts for Gold' };
-    return { name: 'Green Recruit', color: 'text-emerald-400', border: 'border-emerald-500/30', next: '500 pts for Silver' };
+    if (points >= 1500) return { name: 'Zero-Waste Master', color: 'text-amber-600', border: 'border-amber-200', next: 'Max Level' };
+    if (points >= 1000) return { name: 'Gold Safeguard', color: 'text-yellow-600', border: 'border-yellow-200', next: '1,500 pts for Zero-Waste' };
+    if (points >= 500) return { name: 'Silver Recycler', color: 'text-slate-600', border: 'border-slate-300', next: '1,000 pts for Gold' };
+    return { name: 'Green Recruit', color: 'text-emerald-700', border: 'border-emerald-200', next: '500 pts for Silver' };
   };
 
   const currentTier = getTier(userPoints);
@@ -62,7 +62,7 @@ export const RewardsLeaderboard: React.FC<RewardsLeaderboardProps> = ({ userPoin
         <div className="lg:col-span-7 space-y-6 animate-holo-warp">
           
           {/* User Score Summary Card */}
-          <div className={`rounded-2xl glass-panel p-6 border ${currentTier.border} bg-gradient-to-br from-emerald-950/10 via-[#070b13] to-teal-950/10 grid sm:grid-cols-3 gap-6 items-center shadow-xl animate-aurora-glow hover:scale-[1.02] transition-all`}>
+          <div className={`rounded-2xl p-6 border ${currentTier.border} bg-gradient-to-br from-[#f0f7e8] via-white to-[#eaf1ea] grid sm:grid-cols-3 gap-6 items-center shadow-xl hover:scale-[1.02] transition-all`}>
             <div className="space-y-1 text-center sm:text-left">
               <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Active Tier</span>
               <span className={`block text-xl font-bold ${currentTier.color}`}>{currentTier.name}</span>
@@ -70,14 +70,14 @@ export const RewardsLeaderboard: React.FC<RewardsLeaderboardProps> = ({ userPoin
             
             <div className="space-y-1 text-center">
               <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Total EcoPoints</span>
-              <span className="block text-4xl font-black text-white flex items-center justify-center gap-1">
-                <Zap size={24} className="fill-emerald-400 text-emerald-400 animate-pulse" /> {userPoints}
+              <span className="block text-4xl font-black text-slate-800 flex items-center justify-center gap-1">
+                <Zap size={24} className="fill-emerald-600 text-emerald-600 animate-pulse" /> {userPoints}
               </span>
             </div>
 
             <div className="space-y-1 text-center sm:text-right">
               <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Position Rank</span>
-              <span className="block text-2xl font-bold text-white">#{userRank || 'N/A'}</span>
+              <span className="block text-2xl font-bold text-slate-800">#{userRank || 'N/A'}</span>
             </div>
           </div>
 
@@ -93,10 +93,10 @@ export const RewardsLeaderboard: React.FC<RewardsLeaderboardProps> = ({ userPoin
                 return (
                   <div 
                     key={badge.name}
-                    className={`p-4 rounded-xl border transition-all duration-300 flex items-start gap-3.5 animate-electro-hover hover:scale-105
-                      ${isUnlocked ? 'bg-emerald-500/5 border-emerald-500/30 text-white shadow-lg shadow-emerald-500/5' : 'bg-white/2 border-white/5 opacity-50'}`}
+                    className={`p-4 rounded-xl border transition-all duration-300 flex items-start gap-3.5 hover:scale-105
+                      ${isUnlocked ? 'bg-emerald-50 border-emerald-200 text-slate-800 shadow-sm' : 'bg-slate-50 border-slate-100 opacity-60'}`}
                   >
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-white/5 border border-white/5 flex-shrink-0 ${isUnlocked ? 'animate-magnetic-tilt' : ''}`}>
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-white border border-gray-200 flex-shrink-0 ${isUnlocked ? 'animate-magnetic-tilt' : ''}`}>
                       {badge.emoji}
                     </div>
                     <div className="space-y-1 truncate">
@@ -131,7 +131,7 @@ export const RewardsLeaderboard: React.FC<RewardsLeaderboardProps> = ({ userPoin
                   <div 
                     key={item.full_name}
                     className={`p-3 rounded-xl border flex items-center justify-between transition-all
-                      ${item.is_current ? 'bg-emerald-500/10 border-emerald-500/30 shadow-lg shadow-emerald-500/5' : 'bg-white/5 border-white/5'}`}
+                      ${item.is_current ? 'bg-emerald-50 border-emerald-200 shadow-sm' : 'bg-slate-50 border-slate-100'}`}
                   >
                     <div className="flex items-center gap-3">
                       {/* Rank Indicator */}
@@ -144,17 +144,17 @@ export const RewardsLeaderboard: React.FC<RewardsLeaderboardProps> = ({ userPoin
                       <img 
                         src={item.avatar_url} 
                         alt={item.full_name} 
-                        className="w-8 h-8 rounded-lg bg-black/40 border border-white/10"
+                        className="w-8 h-8 rounded-lg bg-slate-200 border border-gray-200"
                       />
                       
                       {/* Name */}
-                      <span className={`text-sm font-semibold truncate max-w-[150px] ${item.is_current ? 'text-emerald-400 font-bold' : 'text-white'}`}>
+                      <span className={`text-sm font-semibold truncate max-w-[150px] ${item.is_current ? 'text-emerald-700 font-bold' : 'text-slate-800'}`}>
                         {item.full_name}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 font-bold text-sm text-white">
-                      <Zap size={14} className="text-emerald-400 fill-emerald-400" /> {item.eco_points} <span className="text-[10px] text-gray-500 font-normal">pts</span>
+                    <div className="flex items-center gap-1.5 font-bold text-sm text-slate-800">
+                      <Zap size={14} className="text-emerald-600 fill-emerald-600" /> {item.eco_points} <span className="text-[10px] text-gray-500 font-normal">pts</span>
                     </div>
 
                   </div>

@@ -49,8 +49,8 @@ export const RecyclerMap: React.FC<RecyclerMapProps> = ({ onSelectRecyclerForPic
         zoomControl: false // Disable default zoom control to place it custom
       }).setView([37.778, -122.425], 13);
 
-      // Add elegant dark tiles (CARTO DB Dark Matter looks extremely premium and match our dark theme!)
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      // Add elegant light tiles matching our eco theme
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         attribution: '© OpenStreetMap contributors © CARTO',
         subdomains: 'abcd',
         maxZoom: 20
