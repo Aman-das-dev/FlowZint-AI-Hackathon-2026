@@ -161,8 +161,8 @@ export const AIScan: React.FC<AIScanProps> = ({ onSuccess, updateUserPoints }) =
       <div className="grid lg:grid-cols-12 gap-8 items-start">
         
         {/* Left Hand side: Scanning Frame & Action Buttons */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="relative aspect-video lg:aspect-square w-full rounded-2xl border-2 border-dashed border-white/10 overflow-hidden bg-black/40 flex flex-col items-center justify-center">
+        <div className="lg:col-span-5 space-y-6 animate-holo-warp">
+          <div className="relative aspect-video lg:aspect-square w-full rounded-2xl border-2 border-dashed border-emerald-500/30 overflow-hidden bg-black/40 flex flex-col items-center justify-center transition-all animate-aurora-glow shadow-xl">
             
             {cameraActive ? (
               <div className="absolute inset-0 flex flex-col justify-between">
@@ -185,13 +185,13 @@ export const AIScan: React.FC<AIScanProps> = ({ onSuccess, updateUserPoints }) =
                 <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-4 px-4 z-10">
                   <button 
                     onClick={captureFrame}
-                    className="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-sm shadow-lg flex items-center gap-2 cursor-pointer"
+                    className="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-sm shadow-lg flex items-center gap-2 cursor-pointer animate-electro-hover"
                   >
                     <Camera size={18} /> Snap Photo
                   </button>
                   <button 
                     onClick={stopCamera}
-                    className="px-6 py-2.5 rounded-xl bg-rose-500/20 border border-rose-500/40 hover:bg-rose-500/30 text-rose-300 font-bold text-sm cursor-pointer"
+                    className="px-6 py-2.5 rounded-xl bg-rose-500/20 border border-rose-500/40 hover:bg-rose-500/30 text-rose-300 font-bold text-sm cursor-pointer animate-electro-hover"
                   >
                     Cancel
                   </button>
@@ -210,14 +210,14 @@ export const AIScan: React.FC<AIScanProps> = ({ onSuccess, updateUserPoints }) =
                     <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent top-0 animate-bounce duration-1000"></div>
                     <div className="flex flex-col items-center gap-3">
                       <RefreshCw className="animate-spin text-emerald-400" size={32} />
-                      <span className="text-emerald-400 font-bold text-sm uppercase tracking-widest">AI Categorization...</span>
+                      <span className="text-emerald-400 font-bold text-sm uppercase tracking-widest animate-pulse">AI Categorization...</span>
                     </div>
                   </div>
                 )}
               </div>
             ) : (
               <div className="p-6 text-center space-y-4">
-                <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mx-auto">
+                <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mx-auto animate-magnetic-tilt">
                   <Upload size={28} />
                 </div>
                 <div>
@@ -225,7 +225,7 @@ export const AIScan: React.FC<AIScanProps> = ({ onSuccess, updateUserPoints }) =
                   <p className="text-xs text-gray-500 mt-1">Supports PNG, JPG, JPEG up to 10MB</p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-                  <label className="px-5 py-2.5 rounded-xl border border-white/10 hover:border-emerald-500/30 hover:bg-emerald-500/5 text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 justify-center">
+                  <label className="px-5 py-2.5 rounded-xl border border-white/10 hover:border-emerald-500/30 hover:bg-emerald-500/5 text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 justify-center animate-electro-hover">
                     <Upload size={16} /> Choose File
                     <input 
                       type="file" 
@@ -236,7 +236,7 @@ export const AIScan: React.FC<AIScanProps> = ({ onSuccess, updateUserPoints }) =
                   </label>
                   <button 
                     onClick={startCamera}
-                    className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm transition-all cursor-pointer flex items-center gap-2 justify-center shadow-lg shadow-emerald-500/15"
+                    className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm transition-all cursor-pointer flex items-center gap-2 justify-center shadow-lg shadow-emerald-500/15 animate-electro-hover"
                   >
                     <Camera size={16} /> Use Camera
                   </button>

@@ -192,14 +192,9 @@ export const api = {
   },
 
   async getHistory(): Promise<DeviceSubmission[]> {
-    const token = getAuthToken() || "";
-    const formData = new FormData();
-    formData.append("authorization", token ? `Bearer ${token}` : "");
-
     const res = await fetch(`${API_BASE}/devices/history`, {
-      method: "POST",
-      headers: getHeaders(true),
-      body: formData,
+      method: "GET",
+      headers: getHeaders(),
     });
     if (!res.ok) {
       throw new Error("Failed to fetch submission history");

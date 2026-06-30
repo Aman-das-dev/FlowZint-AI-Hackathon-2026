@@ -49,8 +49,8 @@ export const RecyclerMap: React.FC<RecyclerMapProps> = ({ onSelectRecyclerForPic
         zoomControl: false // Disable default zoom control to place it custom
       }).setView([37.778, -122.425], 13);
 
-      // Add elegant dark tiles (CARTO DB Dark Matter looks extremely premium and match our dark theme!)
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      // Add elegant light tiles matching our eco theme
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         attribution: '© OpenStreetMap contributors © CARTO',
         subdomains: 'abcd',
         maxZoom: 20
@@ -161,7 +161,7 @@ export const RecyclerMap: React.FC<RecyclerMapProps> = ({ onSelectRecyclerForPic
       <div className="grid lg:grid-cols-12 gap-8 items-stretch h-[600px]">
         
         {/* Left Columns: Interactive Map */}
-        <div className="lg:col-span-8 rounded-2xl overflow-hidden border border-white/10 relative h-[400px] lg:h-full">
+        <div className="lg:col-span-8 rounded-2xl overflow-hidden border border-emerald-500/20 hover:border-emerald-500/40 relative h-[400px] lg:h-full transition-all shadow-xl animate-holo-warp">
           {loading ? (
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
               <span className="text-emerald-400 font-semibold animate-pulse">Loading maps engine...</span>
@@ -171,16 +171,16 @@ export const RecyclerMap: React.FC<RecyclerMapProps> = ({ onSelectRecyclerForPic
           )}
 
           {/* Map Overlay Badge */}
-          <div className="absolute top-4 left-4 z-10 bg-[#0f172a]/95 border border-white/10 rounded-xl px-4 py-2 text-xs flex items-center gap-2 shadow-lg backdrop-blur-md">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span> User Position
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 ml-2"></span> Recyclers
+          <div className="absolute top-4 left-4 z-10 bg-[#0f172a]/95 border border-white/10 rounded-xl px-4 py-2 text-xs flex items-center gap-2 shadow-lg backdrop-blur-md animate-magnetic-tilt">
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span> User Position
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 ml-2 animate-pulse"></span> Recyclers
           </div>
         </div>
 
         {/* Right Columns: Recycler Info Details Card */}
-        <div className="lg:col-span-4 flex flex-col">
+        <div className="lg:col-span-4 flex flex-col animate-holo-warp">
           {selectedRecycler ? (
-            <div className="rounded-2xl glass-panel p-6 border-white/10 space-y-6 flex-grow flex flex-col justify-between">
+            <div className="rounded-2xl glass-panel p-6 border-white/10 space-y-6 flex-grow flex flex-col justify-between hover:border-emerald-500/30 transition-all shadow-xl animate-electro-hover">
               
               <div className="space-y-4">
                 {/* Header */}

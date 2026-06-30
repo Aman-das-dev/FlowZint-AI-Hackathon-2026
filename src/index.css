@@ -3,11 +3,20 @@
 @layer base {
   body {
     font-family: 'Inter', sans-serif;
+    background-color: #F8F9FA;
+    color: #1e293b; /* slate-800 */
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Amatic SC', cursive;
+    color: #38523A;
   }
+}
+
+/* Force select dropdown option colors to be legible in light theme */
+select option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
 }
 
 /* Custom Scrollbars */
@@ -17,67 +26,150 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #cbd5e1;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #10b981;
+  background: #84B056;
 }
 
-/* Glassmorphism Classes */
-.glass-panel {
-  background: rgba(17, 24, 39, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.glass-panel-hover {
+/* Base Light Theme Card Overrides (Transforms all glassmorphism to eco-friendly 3D card layout) */
+.glass-panel, .eco-card {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+  color: #1e293b !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.glass-panel-hover:hover {
-  background: rgba(17, 24, 39, 0.8);
-  border-color: rgba(16, 185, 129, 0.3);
-  box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.2);
+.glass-panel-hover:hover, .eco-card-hover:hover {
+  background-color: #ffffff !important;
+  border-color: #84B056 !important;
+  box-shadow: 0 10px 25px -5px rgba(56, 82, 58, 0.1), 0 8px 10px -6px rgba(56, 82, 58, 0.05) !important;
   transform: translateY(-2px);
 }
 
-.glass-input {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
+/* Input Fields Styles (Glass & Eco Inputs) */
+.glass-input, .eco-input {
+  background-color: #ffffff !important;
+  border: 2px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  border-radius: 12px !important;
   transition: all 0.2s ease;
 }
 
-.glass-input:focus {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: #10b981;
-  outline: none;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+.glass-input:focus, .eco-input:focus {
+  border-color: #84B056 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(132, 176, 86, 0.2) !important;
+}
+
+/* Global Text contrast fixes inside main content area & panels */
+main h1, main h2, main h3, main h4, main h5, main h6,
+.glass-panel h1, .glass-panel h2, .glass-panel h3, .glass-panel h4, .glass-panel h5, .glass-panel h6 {
+  color: #38523A !important;
+}
+
+main p, .glass-panel p, .eco-card p {
+  color: #475569 !important; /* slate-600 */
+}
+
+/* Force dark color on elements previously hardcoded to white/light grey text */
+.glass-panel .text-white, .eco-card .text-white, main .text-white,
+.glass-panel .text-gray-100, .eco-card .text-gray-100, main .text-gray-100,
+.glass-panel .text-gray-200, .eco-card .text-gray-200, main .text-gray-200,
+.glass-panel .text-gray-300, .eco-card .text-gray-300, main .text-gray-300 {
+  color: #0f172a !important; /* dark slate */
+}
+
+.glass-panel .text-gray-400, .eco-card .text-gray-400, main .text-gray-400,
+.glass-panel .text-gray-500, .eco-card .text-gray-500, main .text-gray-500 {
+  color: #475569 !important; /* slate-600 */
+}
+
+/* Enhance text colors for accent labels to ensure accessibility on light background */
+.text-emerald-400 {
+  color: #047857 !important; /* emerald-700 */
+}
+.text-teal-400 {
+  color: #0f766e !important; /* teal-700 */
+}
+.text-cyan-400 {
+  color: #0e7490 !important; /* cyan-700 */
+}
+.text-amber-400 {
+  color: #b45309 !important; /* amber-700 */
+}
+.text-rose-400 {
+  color: #be123c !important; /* rose-700 */
+}
+.text-blue-400 {
+  color: #1d4ed8 !important; /* blue-700 */
+}
+
+/* Dynamic background/border overrides for cards */
+.glass-panel .bg-black\/20, .eco-card .bg-black\/20, main .bg-black\/20,
+.glass-panel .bg-black\/40, .eco-card .bg-black\/40, main .bg-black\/40,
+.glass-panel .bg-black\/10, .eco-card .bg-black\/10, main .bg-black\/10 {
+  background-color: #f1f5f9 !important; /* slate-100 */
+}
+
+.glass-panel .border-white\/5, .eco-card .border-white\/5, main .border-white\/5,
+.glass-panel .border-white\/10, .eco-card .border-white\/10, main .border-white\/10 {
+  border-color: #cbd5e1 !important; /* slate-300 */
+}
+
+/* Sidebar Specific Styles (needs to stay dark green for layout contrast) */
+aside {
+  background-color: #38523A !important;
+  color: #ffffff !important;
+}
+
+aside h1, aside h2, aside h3, aside h4, aside h5, aside h6, aside span, aside p {
+  color: #ffffff !important;
+}
+
+aside .text-gray-400, aside .text-white\/70 {
+  color: #cbd5e1 !important;
+}
+
+aside button {
+  color: #ffffff !important;
+}
+
+aside button:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Maintain custom color on active sidebar item */
+aside button.bg-\[\#D9E335\] {
+  background-color: #D9E335 !important;
+  color: #38523A !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+aside button.bg-\[\#D9E335\] * {
+  color: #38523A !important;
+}
+
+/* Map Light Theme Customizer (Fix Leaflet popups and widgets) */
+.leaflet-popup-content-wrapper {
+  background: #ffffff !important;
+  color: #1e293b !important;
+  border-radius: 12px !important;
+}
+
+.leaflet-popup-tip {
+  background: #ffffff !important;
 }
 
 /* Custom animations */
-@keyframes pulse-slow {
-  0%, 100% {
-    opacity: 0.2;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.4;
-    transform: scale(1.05);
-  }
-}
-
-.animate-pulse-slow {
-  animation: pulse-slow 8s infinite ease-in-out;
-}
-
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -89,212 +181,19 @@
   }
 }
 
-@keyframes fadeInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-32px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translateX(32px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-12px);
-  }
-}
-
 .animate-fade-in-up {
   animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.animate-fade-in-left {
-  animation: fadeInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-fade-in-right {
-  animation: fadeInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-float {
-  animation: float 4s ease-in-out infinite;
-}
-
-/* --- 8 Anti-Gravity scroll & hover animations --- */
-
-/* 1. Float Up */
-@keyframes float-up-entry {
-  0% {
-    transform: translateY(60px);
-    opacity: 0;
-  }
-  100% {
+@keyframes bounceSoft {
+  0%, 100% {
     transform: translateY(0);
-    opacity: 1;
-  }
-}
-@keyframes float-idle {
-  0%, 100% {
-    transform: translateY(0px);
   }
   50% {
-    transform: translateY(-12px);
+    transform: translateY(-10px);
   }
-}
-.animate-float-up {
-  animation: float-up-entry 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards, float-idle 5s ease-in-out infinite 0.8s;
 }
 
-/* 2. Levitate */
-@keyframes levitate-idle {
-  0%, 100% {
-    transform: translateY(-5px) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-12px) rotate(-1deg);
-  }
-  50% {
-    transform: translateY(-8px) rotate(0.5deg);
-  }
-  75% {
-    transform: translateY(-15px) rotate(-0.5deg);
-  }
+.animate-bounce-soft {
+  animation: bounceSoft 3s ease-in-out infinite;
 }
-.animate-levitate {
-  animation: levitate-idle 6s ease-in-out infinite;
-}
-
-/* 3. Orbit In */
-@keyframes orbit-in-entry {
-  0% {
-    transform: rotate3d(1, 1, 1, -15deg) translate3d(-60px, -30px, -50px) scale(0.9);
-    opacity: 0;
-  }
-  100% {
-    transform: rotate3d(0, 0, 0, 0deg) translate3d(0, 0, 0) scale(1);
-    opacity: 1;
-  }
-}
-@keyframes orbit-drift {
-  0%, 100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  50% {
-    transform: translate(6px, -6px) rotate(1.5deg);
-  }
-}
-.animate-orbit-in {
-  animation: orbit-in-entry 1s cubic-bezier(0.16, 1, 0.3, 1) forwards, orbit-drift 8s ease-in-out infinite 1s;
-}
-
-/* 4. Bubble Rise */
-@keyframes bubble-rise {
-  0% {
-    transform: translateY(120vh) translateX(0) scale(0.6);
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.4;
-  }
-  80% {
-    opacity: 0.4;
-  }
-  100% {
-    transform: translateY(-20vh) translateX(30px) scale(1.3);
-    opacity: 0;
-  }
-}
-.bubble {
-  position: absolute;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, rgba(52, 211, 153, 0.15), rgba(20, 184, 166, 0.03));
-  backdrop-filter: blur(1px);
-  pointer-events: none;
-  animation: bubble-rise 14s linear infinite;
-  z-index: 1;
-}
-
-/* 5. Zero Gravity */
-@keyframes zero-g-drift {
-  0%, 100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  33% {
-    transform: translate(8px, -15px) rotate(2deg);
-  }
-  66% {
-    transform: translate(-10px, -5px) rotate(-1.5deg);
-  }
-}
-.animate-zero-g {
-  animation: zero-g-drift 10s ease-in-out infinite;
-}
-
-/* 6. Weightless Drift */
-@keyframes weightless-sway {
-  0%, 100% {
-    transform: translateX(0) rotate(0deg);
-  }
-  50% {
-    transform: translateX(15px) rotate(3deg);
-  }
-}
-.animate-weightless {
-  animation: weightless-sway 7s ease-in-out infinite;
-}
-
-/* 7. Anti-Grav Y-Spin */
-@keyframes anti-grav-spin {
-  0% {
-    transform: rotateY(0deg) translateY(0);
-  }
-  50% {
-    transform: rotateY(180deg) translateY(-8px);
-  }
-  100% {
-    transform: rotateY(360deg) translateY(0);
-  }
-}
-.animate-anti-grav {
-  animation: anti-grav-spin 12s linear infinite;
-  perspective: 1000px;
-}
-
-/* 8. Quantum Wobble (Hover) */
-@keyframes quantum-shiver {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
-  }
-  20% {
-    transform: translate(-1px, 1px) scale(1.01);
-  }
-  40% {
-    transform: translate(1px, -1px) scale(0.99);
-  }
-  60% {
-    transform: translate(-1px, -1px) scale(1.01);
-  }
-  80% {
-    transform: translate(1px, 1px) scale(0.99);
-  }
-}
-.animate-quantum:hover {
-  animation: quantum-shiver 0.3s linear infinite;
-}
-

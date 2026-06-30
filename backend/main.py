@@ -595,6 +595,7 @@ async def detect_device(
     }
 
 @app.get("/api/devices/history")
+@app.post("/api/devices/history")
 def get_submission_history(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
     current_user = get_current_user_from_header(authorization, db)
     submissions = db.query(DeviceSubmissionDB).filter(DeviceSubmissionDB.user_id == current_user.id).order_by(DeviceSubmissionDB.submitted_at.desc()).all()
