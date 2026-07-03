@@ -19,11 +19,10 @@ interface DashboardProps {
 
 type TabType = 'overview' | 'scan' | 'map' | 'pickup' | 'impact' | 'rewards' | 'admin';
 
-const ADMIN_EMAILS = [
-  'biswajitsahoo1410@gmail.com',
-  'amanprasaddas5@gmail.com',
-  'ranjanrashmi933@gmail.com'
-];
+const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || "")
+  .split(",")
+  .map((email: string) => email.trim().toLowerCase())
+  .filter(Boolean);
 
 export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   const [activeTab, setActiveTab] = useState<TabType>('overview');

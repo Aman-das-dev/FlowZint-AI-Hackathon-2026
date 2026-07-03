@@ -29,7 +29,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
     try {
       if (isLogin) {
-        if (email.trim() === 'admin@ecotrack.ai' && password === 'adminpassword123') {
+        const defaultAdminEmail = import.meta.env.VITE_DEFAULT_ADMIN_EMAIL || 'admin@ecotrack.ai';
+        const defaultAdminPassword = import.meta.env.VITE_DEFAULT_ADMIN_PASSWORD || 'adminpassword123';
+        if (email.trim() === defaultAdminEmail && password === defaultAdminPassword) {
           sessionStorage.setItem('is_admin_auth', 'true');
           try {
             const data = await api.login(email.trim(), password);
@@ -37,7 +39,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
           } catch (err) {
             onAuthSuccess({
               id: 9999,
-              email: 'admin@ecotrack.ai',
+              email: defaultAdminEmail,
               full_name: 'EcoTrack Admin',
               eco_points: 5000
             });
