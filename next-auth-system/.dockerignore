@@ -1,0 +1,14 @@
+node_modules
+.next
+out
+build
+.git
+.gitignore
+.env
+.env.local
+*.db
+*.db-journal
+Dockerfile
+docker-compose.yml
+README.md
+AUTH_README.md
