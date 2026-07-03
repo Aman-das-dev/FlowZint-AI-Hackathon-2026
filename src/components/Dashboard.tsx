@@ -19,6 +19,11 @@ interface DashboardProps {
 
 type TabType = 'overview' | 'scan' | 'map' | 'pickup' | 'impact' | 'rewards' | 'admin';
 
+const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || "")
+  .split(",")
+  .map((email: string) => email.trim().toLowerCase())
+  .filter(Boolean);
+
 export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [userPoints, setUserPoints] = useState(user.eco_points);
@@ -186,13 +191,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
               <Trophy size={18} /> Rewards Hub
             </button>
 
-            <button
-              onClick={() => { setActiveTab('admin'); setIsSidebarOpen(false); }}
-              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
-                ${activeTab === 'admin' ? 'bg-[#D9E335] text-[#38523A] shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10 hover:translate-x-1'}`}
-            >
-              <Shield size={18} /> Admin Console
-            </button>
+            {ADMIN_EMAILS.includes(user.email) && (
+              <button
+                onClick={() => { setActiveTab('admin'); setIsSidebarOpen(false); }}
+                className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
+                  ${activeTab === 'admin' ? 'bg-[#D9E335] text-[#38523A] shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10 hover:translate-x-1'}`}
+              >
+                <Shield size={18} /> Admin Console
+              </button>
+            )}
           </nav>
         </div>
 
@@ -366,9 +373,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
           </div>
         )}
 
-        {activeTab === 'admin' && (
+        {activeTab === 'admin' && ADMIN_EMAILS.includes(user.email) && (
           <div className="animate-magnetic-tilt">
-            <AdminPanel />
+            <AdminPanel user={user} />
           </div>
         )}
 
