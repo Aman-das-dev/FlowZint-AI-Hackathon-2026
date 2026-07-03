@@ -25,7 +25,7 @@ const ADMIN_EMAILS = [
   'ranjanrashmi933@gmail.com'
 ];
 
-export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) =>>,StartLine:20,TargetContent: {
+export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [userPoints, setUserPoints] = useState(user.eco_points);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
