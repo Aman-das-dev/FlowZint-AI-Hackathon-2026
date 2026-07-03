@@ -504,6 +504,66 @@ DEVICE_DATASET = {
         "repair_val": 30.00,
         "scrap_val": 2.10,
         "explanation": "Smartwatches have extremely miniature PCBs, micro-lithium batteries, and water-sealed aluminum or stainless steel cases. They require specialized manual tools to extract metals without triggering chemical leaks."
+    },
+    "battery": {
+        "category": "Batteries",
+        "hazard_level": "Extreme (Lithium, Acid leak hazard, Cadmium)",
+        "estimated_life_months": 6,
+        "market_val": 5.0,
+        "recycling_val": 1.50,
+        "repair_val": 0.00,
+        "scrap_val": 0.50,
+        "explanation": "Batteries pose critical environmental threats. They contain heavy metals and acids that leak if casing rusts, and lithium-ion cells can short-circuit causing intense chemical landfill fires."
+    },
+    "keyboard": {
+        "category": "Input Devices",
+        "hazard_level": "Low (ABS Plastics, copper contacts)",
+        "estimated_life_months": 48,
+        "market_val": 15.0,
+        "recycling_val": 1.00,
+        "repair_val": 5.00,
+        "scrap_val": 0.30,
+        "explanation": "Keyboards are mostly made of recyclable ABS and polycarbonate thermoplastics, with thin copper tracks. Recycling isolates the plastic shell for clean compounding pellet recovery."
+    },
+    "mouse": {
+        "category": "Input Devices",
+        "hazard_level": "Low (Plastics, tiny PCB)",
+        "estimated_life_months": 36,
+        "market_val": 10.0,
+        "recycling_val": 0.80,
+        "repair_val": 3.00,
+        "scrap_val": 0.20,
+        "explanation": "Computer mice are processed through bulk electronics shredders. Plastics are separated by flotation tanks, and copper wires/scroll wheels are captured for metal refining."
+    },
+    "monitor": {
+        "category": "Displays",
+        "hazard_level": "High (Mercury lamps in older LCDs, leaded glass)",
+        "estimated_life_months": 36,
+        "market_val": 85.0,
+        "recycling_val": 6.00,
+        "repair_val": 25.00,
+        "scrap_val": 2.50,
+        "explanation": "Monitors carry high hazard indices. Glass panels must be separated carefully from internal printed boards, and CCFL mercury tubes require vacuum gas extraction to avoid air pollution."
+    },
+    "desktop": {
+        "category": "Computers",
+        "hazard_level": "Medium (Heavy metal solder, steel frame)",
+        "estimated_life_months": 48,
+        "market_val": 220.0,
+        "recycling_val": 22.00,
+        "repair_val": 90.00,
+        "scrap_val": 15.00,
+        "explanation": "Desktop computers are modular and yield high metal recovery. Their heavy sheet-steel chassis is melted down, while RAM, CPU pins, and circuit traces yield gold and palladium."
+    },
+    "printer": {
+        "category": "Office Equipment",
+        "hazard_level": "Medium (Toner powder, ink cartridge residues, motors)",
+        "estimated_life_months": 36,
+        "market_val": 60.0,
+        "recycling_val": 4.50,
+        "repair_val": 20.00,
+        "scrap_val": 1.80,
+        "explanation": "Printers contain carcinogenic toner dust and liquid inks. Recycling centers safely extract the ink cartridge and toner assemblies before shredding the remaining metal and plastic housings."
     }
 }
 
@@ -527,13 +587,32 @@ async def detect_device(
     
     # Decide which device we are detecting
     # Look at the filename, or standard label sent, or custom label
-    detect_key = "smartphone" # Default
     search_str = (custom_label or file.filename or "").lower()
     
+    detect_key = None
+    
+    # Try exact match or substring match first
     for key in DEVICE_DATASET.keys():
         if key in search_str:
             detect_key = key
             break
+            
+    # Synonym matching if no match was found
+    if not detect_key:
+        if any(term in search_str for term in ["phone", "mobile", "cel", "webcam", "capture", "blob", "image", "jpg", "png", "pic", "photo", "img"]):
+            detect_key = "smartphone"
+        elif any(term in search_str for term in ["pc", "computer", "tower", "cpu"]):
+            detect_key = "desktop"
+        elif any(term in search_str for term in ["display", "screen", "lcd", "led"]):
+            detect_key = "monitor"
+        elif any(term in search_str for term in ["pad", "ipod", "note"]):
+            detect_key = "tablet"
+        elif any(term in search_str for term in ["wire", "cable", "adapter", "plug"]):
+            detect_key = "charger"
+            
+    # Default fallback to "smartphone" (Mobile Devices) for any other image
+    if not detect_key:
+        detect_key = "smartphone"
 
     data = DEVICE_DATASET[detect_key]
     
@@ -619,51 +698,87 @@ def get_submission_history(authorization: Optional[str] = Header(None), db: Sess
 RECYCLERS_LIST = [
     {
         "id": 1,
-        "name": "EcoSafe Recycling Solutions",
-        "address": "452 Green Tech Parkway, Silicon Hills",
-        "latitude": 37.7749,
-        "longitude": -122.4194,
+        "name": "EcoRecycle India Hub",
+        "address": "Block 4, Outer Ring Road, Manyata Tech Park, Bengaluru, Karnataka 560045",
+        "latitude": 12.9716,
+        "longitude": 77.5946,
         "pickup_available": True,
         "rating": 4.8,
-        "contact_phone": "+1 (555) 326-7233",
-        "working_hours": "08:00 AM - 06:00 PM",
+        "contact_phone": "+91 80 2364 8876",
+        "working_hours": "09:00 AM - 06:00 PM",
         "accepted_categories": ["Computers", "Displays", "Mobile Devices", "Accessories"]
     },
     {
         "id": 2,
-        "name": "E-Scrap Solutions Co.",
-        "address": "902 Renew Way, Innovation District",
-        "latitude": 37.7833,
-        "longitude": -122.4167,
+        "name": "Croma E-Waste Collection Point",
+        "address": "Linking Road, Santacruz West, Mumbai, Maharashtra 400054",
+        "latitude": 19.0760,
+        "longitude": 72.8777,
         "pickup_available": True,
         "rating": 4.6,
-        "contact_phone": "+1 (555) 782-9921",
-        "working_hours": "09:00 AM - 05:00 PM",
+        "contact_phone": "+91 22 6699 9921",
+        "working_hours": "10:00 AM - 08:00 PM",
         "accepted_categories": ["Computers", "Accessories", "Networking", "Batteries"]
     },
     {
         "id": 3,
-        "name": "GreenByte Certified Disposal",
-        "address": "12 Sustainable Drive, Metro Center",
-        "latitude": 37.7699,
-        "longitude": -122.4468,
-        "pickup_available": False,
+        "name": "Delhi E-Waste Management Facility",
+        "address": "Okhla Industrial Area Phase 3, New Delhi, Delhi 110020",
+        "latitude": 28.6139,
+        "longitude": 77.2090,
+        "pickup_available": True,
         "rating": 4.9,
-        "contact_phone": "+1 (555) 234-8876",
-        "working_hours": "08:00 AM - 04:00 PM",
+        "contact_phone": "+91 11 4160 3211",
+        "working_hours": "09:00 AM - 05:00 PM",
         "accepted_categories": ["Mobile Devices", "Displays", "Wearables", "Batteries"]
     },
     {
         "id": 4,
-        "name": "Future-Eco Metals & Alloys",
-        "address": "77 Refinery Road, Industrial Sector",
-        "latitude": 37.7942,
-        "longitude": -122.3996,
-        "pickup_available": True,
+        "name": "Hyderabad Green Planet Recyclers",
+        "address": "HITEC City Phase 2, Madhapur, Hyderabad, Telangana 500081",
+        "latitude": 17.3850,
+        "longitude": 78.4867,
+        "pickup_available": False,
         "rating": 4.5,
-        "contact_phone": "+1 (555) 912-3211",
-        "working_hours": "07:00 AM - 06:00 PM",
+        "contact_phone": "+91 40 9123 3211",
+        "working_hours": "08:00 AM - 06:00 PM",
         "accepted_categories": ["Computers", "Peripherals", "Displays", "Batteries"]
+    },
+    {
+        "id": 5,
+        "name": "Chennai E-Disposal & Recovery Hub",
+        "address": "Rajiv Gandhi Salai, IT Corridor, Sholinganallur, Chennai, Tamil Nadu 600119",
+        "latitude": 13.0827,
+        "longitude": 80.2707,
+        "pickup_available": True,
+        "rating": 4.7,
+        "contact_phone": "+91 44 2450 1199",
+        "working_hours": "09:00 AM - 06:00 PM",
+        "accepted_categories": ["Computers", "Displays", "Networking", "Accessories"]
+    },
+    {
+        "id": 6,
+        "name": "Pune CleanTech Recyclers",
+        "address": "Hinjawadi Phase 1, Infotech Park, Pune, Maharashtra 411057",
+        "latitude": 18.5204,
+        "longitude": 73.8567,
+        "pickup_available": True,
+        "rating": 4.6,
+        "contact_phone": "+91 20 6710 4400",
+        "working_hours": "09:30 AM - 06:30 PM",
+        "accepted_categories": ["Mobile Devices", "Displays", "Wearables", "Batteries"]
+    },
+    {
+        "id": 7,
+        "name": "Kolkata Eco-Scrap Recovery Systems",
+        "address": "Salt Lake Sector V, Electronics Complex, Kolkata, West Bengal 700091",
+        "latitude": 22.5726,
+        "longitude": 88.3639,
+        "pickup_available": False,
+        "rating": 4.4,
+        "contact_phone": "+91 33 2357 5566",
+        "working_hours": "10:00 AM - 05:30 PM",
+        "accepted_categories": ["Computers", "Accessories", "Networking", "Peripherals"]
     }
 ]
 

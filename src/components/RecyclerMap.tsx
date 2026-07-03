@@ -12,23 +12,73 @@ export const RecyclerMap: React.FC<RecyclerMapProps> = ({ onSelectRecyclerForPic
   const [selectedRecycler, setSelectedRecycler] = useState<Recycler | null>(null);
   const [loading, setLoading] = useState(true);
   const [routeVisible, setRouteVisible] = useState(false);
+  const [userCoords, setUserCoords] = useState<[number, number]>([28.6139, 77.2090]); // Default to New Delhi, India
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersLayerRef = useRef<L.LayerGroup | null>(null);
   const routePolylineRef = useRef<L.Polyline | null>(null);
 
-  // Mock User Location (Center of San Francisco)
-  const USER_COORDS: [number, number] = [37.7649, -122.4294];
+  // Request real-time location via Geolocation API
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserCoords([latitude, longitude]);
+        },
+        (error) => {
+          console.warn('Geolocation denied or failed. Defaulting to New Delhi:', error);
+          setUserCoords([28.6139, 77.2090]);
+        },
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      );
+    }
+  }, []);
 
   useEffect(() => {
     // Fetch recyclers from API
     const loadRecyclers = async () => {
       try {
         const data = await api.getRecyclers();
-        setRecyclers(data);
-        if (data.length > 0) {
-          setSelectedRecycler(data[0]);
+        
+        // If we have a custom user coordinate that isn't New Delhi, generate nearby mock options
+        const isDefaultDelhi = userCoords[0] === 28.6139 && userCoords[1] === 77.2090;
+        
+        if (!isDefaultDelhi) {
+          const localRecyclers: Recycler[] = [
+            {
+              id: 101,
+              name: "EcoTrack Local Disposal Hub",
+              address: "Certified Green Recycle Zone (Nearby)",
+              latitude: userCoords[0] + 0.008,
+              longitude: userCoords[1] + 0.005,
+              pickup_available: true,
+              rating: 4.8,
+              contact_phone: "+91 99999 88888",
+              working_hours: "09:00 AM - 07:00 PM",
+              accepted_categories: ["Computers", "Mobile Devices", "Accessories"]
+            },
+            {
+              id: 102,
+              name: "E-Waste Solutions & Scrap Point",
+              address: "Secondary E-waste Recovery Unit (Nearby)",
+              latitude: userCoords[0] - 0.006,
+              longitude: userCoords[1] - 0.009,
+              pickup_available: true,
+              rating: 4.6,
+              contact_phone: "+91 98888 77777",
+              working_hours: "10:00 AM - 06:00 PM",
+              accepted_categories: ["Accessories", "Networking", "Batteries"]
+            }
+          ];
+          setRecyclers([...localRecyclers, ...data]);
+          setSelectedRecycler(localRecyclers[0]);
+        } else {
+          setRecyclers(data);
+          if (data.length > 0) {
+            setSelectedRecycler(data[0]);
+          }
         }
       } catch (err) {
         console.error('Error fetching recyclers:', err);
@@ -38,16 +88,16 @@ export const RecyclerMap: React.FC<RecyclerMapProps> = ({ onSelectRecyclerForPic
     };
 
     loadRecyclers();
-  }, []);
+  }, [userCoords]);
 
   useEffect(() => {
     if (loading || !mapContainerRef.current) return;
 
-    // Initialize Map if not already done
+    // Initialize Map centered on India/userCoords
     if (!mapRef.current) {
       mapRef.current = L.map(mapContainerRef.current, {
         zoomControl: false // Disable default zoom control to place it custom
-      }).setView([37.778, -122.425], 13);
+      }).setView(userCoords, 13);
 
       // Add elegant light tiles matching our eco theme
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
@@ -61,6 +111,8 @@ export const RecyclerMap: React.FC<RecyclerMapProps> = ({ onSelectRecyclerForPic
 
       // Add layer group for markers
       markersLayerRef.current = L.layerGroup().addTo(mapRef.current);
+    } else {
+      mapRef.current.setView(userCoords, 13);
     }
 
     const markersLayer = markersLayerRef.current;
@@ -80,7 +132,7 @@ export const RecyclerMap: React.FC<RecyclerMapProps> = ({ onSelectRecyclerForPic
       });
 
       // Add user marker
-      L.marker(USER_COORDS, { icon: userIcon })
+      L.marker(userCoords, { icon: userIcon })
         .addTo(markersLayer)
         .bindPopup('<b>Your Current Location</b>');
 
@@ -109,9 +161,9 @@ export const RecyclerMap: React.FC<RecyclerMapProps> = ({ onSelectRecyclerForPic
     }
 
     return () => {
-      // Map cleanup is handled on unmount, not on dependency change to prevent flash reloading
+      // Cleanup handled on unmount
     };
-  }, [loading, recyclers, selectedRecycler]);
+  }, [loading, recyclers, selectedRecycler, userCoords]);
 
   // Handle Route Navigation line
   useEffect(() => {
@@ -127,7 +179,7 @@ export const RecyclerMap: React.FC<RecyclerMapProps> = ({ onSelectRecyclerForPic
       const destination: [number, number] = [selectedRecycler.latitude, selectedRecycler.longitude];
       
       // Plot simple route line (simulated routing)
-      const routeLine = L.polyline([USER_COORDS, destination], {
+      const routeLine = L.polyline([userCoords, destination], {
         color: '#10b981', // Emerald green
         weight: 4,
         opacity: 0.8,
@@ -138,10 +190,10 @@ export const RecyclerMap: React.FC<RecyclerMapProps> = ({ onSelectRecyclerForPic
       routePolylineRef.current = routeLine;
 
       // Fit map boundary to include both points
-      const bounds = L.latLngBounds([USER_COORDS, destination]);
+      const bounds = L.latLngBounds([userCoords, destination]);
       mapRef.current.fitBounds(bounds, { padding: [50, 50] });
     }
-  }, [routeVisible, selectedRecycler]);
+  }, [routeVisible, selectedRecycler, userCoords]);
 
   const handleRouteTrigger = () => {
     setRouteVisible(!routeVisible);
