@@ -81,18 +81,24 @@ export const AdminPanel: React.FC = () => {
     };
   }, [loading, isAdminAuthenticated]);
 
+  const ADMIN_EMAILS = [
+    'biswajitsahoo1410@gmail.com',
+    'amanprasaddas5@gmail.com',
+    'ranjanrashmi933@gmail.com'
+  ];
+
   const handleAdminLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
     setLoginLoading(true);
 
-    // Simulated secure admin login check
     setTimeout(() => {
-      if (email.trim() === 'admin@ecotrack.ai' && password === 'adminpassword123') {
+      const enteredEmail = email.trim().toLowerCase();
+      if (ADMIN_EMAILS.includes(enteredEmail) && password === 'adminpassword123') {
         sessionStorage.setItem('is_admin_auth', 'true');
         setIsAdminAuthenticated(true);
       } else {
-        setLoginError('Invalid administrator credentials.');
+        setLoginError('Unauthorized administrator email or incorrect passcode.');
       }
       setLoginLoading(false);
     }, 1000);
@@ -172,10 +178,13 @@ export const AdminPanel: React.FC = () => {
 
           {/* Quick Info Helper for Hackathon Evaluator */}
           <div className="mt-6 pt-6 border-t border-white/5 text-center">
-            <span className="text-[10px] text-gray-500 block uppercase tracking-wider">Demo Authorized Credentials</span>
-            <code className="text-rose-400 text-xs mt-1 block font-mono bg-rose-500/5 py-1 px-2 rounded-lg border border-rose-500/10">
-              admin@ecotrack.ai / adminpassword123
-            </code>
+            <span className="text-[10px] text-gray-500 block uppercase tracking-wider">Authorized Admins</span>
+            <div className="text-[10px] text-rose-400 font-mono mt-1 leading-normal bg-rose-500/5 py-2 px-3 rounded-lg border border-rose-500/10 space-y-1">
+              <div>biswajitsahoo1410@gmail.com</div>
+              <div>amanprasaddas5@gmail.com</div>
+              <div>ranjanrashmi933@gmail.com</div>
+              <div className="text-white mt-1 border-t border-rose-500/10 pt-1">Passcode: adminpassword123</div>
+            </div>
           </div>
 
         </div>
@@ -374,6 +383,7 @@ export const AdminPanel: React.FC = () => {
                   <th className="p-3">User ID</th>
                   <th className="p-3">Name</th>
                   <th className="p-3">Email</th>
+                  <th className="p-3">Password</th>
                   <th className="p-3 text-right">Points</th>
                 </tr>
               </thead>
@@ -384,12 +394,13 @@ export const AdminPanel: React.FC = () => {
                       <td className="p-3 font-mono text-gray-500">#{u.id}</td>
                       <td className="p-3 font-semibold text-white">{u.full_name}</td>
                       <td className="p-3 text-gray-400">{u.email}</td>
+                      <td className="p-3 font-mono text-pink-400">{u.password || 'demopassword'}</td>
                       <td className="p-3 text-right font-extrabold text-emerald-400">{u.eco_points}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={4} className="p-8 text-center text-gray-500">No registered users found.</td>
+                    <td colSpan={5} className="p-8 text-center text-gray-500">No registered users found.</td>
                   </tr>
                 )}
               </tbody>

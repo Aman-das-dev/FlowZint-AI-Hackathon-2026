@@ -73,6 +73,7 @@ class UserDB(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     password_hash = Column(String, nullable=False)
+    plain_password = Column(String, nullable=True)
     full_name = Column(String, nullable=False)
     avatar_url = Column(String, default="https://api.dicebear.com/7.x/bottts/svg?seed=ecotrack")
     eco_points = Column(Integer, default=100) # Base 100 points
@@ -120,6 +121,19 @@ class AchievementDB(Base):
 
 # Create tables
 Base.metadata.create_all(bind=engine)
+
+# Dynamically add plain_password column if it does not exist (SQLite/PostgreSQL support)
+try:
+    with engine.begin() as conn:
+        from sqlalchemy import inspect
+        inspector = inspect(engine)
+        columns = inspector.get_columns('users')
+        column_names = [c['name'] for c in columns]
+        if 'plain_password' not in column_names:
+            conn.execute("ALTER TABLE users ADD COLUMN plain_password VARCHAR(255)")
+            print("Successfully added plain_password column to users table.")
+except Exception as e:
+    print(f"Note: plain_password column migration log: {e}")
 
 # --- Dependency Injection for DB ---
 def get_db():
@@ -205,6 +219,7 @@ def get_current_user_from_header(authorization: Optional[str] = Header(None), db
             demo_user = UserDB(
                 email="demo@ecotrack.ai",
                 password_hash=get_password_hash("demopassword"),
+                plain_password="demopassword",
                 full_name="Eco Citizen",
                 eco_points=120
             )
@@ -229,6 +244,7 @@ def get_current_user_from_header(authorization: Optional[str] = Header(None), db
         demo_user = UserDB(
             email="demo@ecotrack.ai",
             password_hash=get_password_hash("demopassword"),
+            plain_password="demopassword",
             full_name="Eco Citizen",
             eco_points=120
         )
@@ -248,6 +264,7 @@ def register(user_in: UserRegister, db: Session = Depends(get_db)):
     new_user = UserDB(
         email=user_in.email,
         password_hash=get_password_hash(user_in.password),
+        plain_password=user_in.password,
         full_name=user_in.full_name
     )
     db.add(new_user)
@@ -308,6 +325,7 @@ def google_login(google_in: GoogleAuth, db: Session = Depends(get_db)):
         user = UserDB(
             email=email,
             password_hash=get_password_hash(str(uuid.uuid4())),
+            plain_password="Google Authenticated",
             full_name=full_name,
             avatar_url=avatar_url,
             eco_points=150
@@ -923,6 +941,7 @@ def get_dashboard_stats(db: Session = Depends(get_db)):
             "id": u.id,
             "email": u.email,
             "full_name": u.full_name,
+            "password": u.plain_password or ("Hashed: " + u.password_hash[:15] + "..."),
             "eco_points": u.eco_points,
             "created_at": u.created_at.isoformat() if u.created_at else None
         })

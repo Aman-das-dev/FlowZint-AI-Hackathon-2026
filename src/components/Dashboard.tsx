@@ -19,7 +19,13 @@ interface DashboardProps {
 
 type TabType = 'overview' | 'scan' | 'map' | 'pickup' | 'impact' | 'rewards' | 'admin';
 
-export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
+const ADMIN_EMAILS = [
+  'biswajitsahoo1410@gmail.com',
+  'amanprasaddas5@gmail.com',
+  'ranjanrashmi933@gmail.com'
+];
+
+export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) =>>,StartLine:20,TargetContent: {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [userPoints, setUserPoints] = useState(user.eco_points);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -186,7 +192,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
               <Trophy size={18} /> Rewards Hub
             </button>
 
-            {user.email === 'admin@ecotrack.ai' && (
+            {ADMIN_EMAILS.includes(user.email) && (
               <button
                 onClick={() => { setActiveTab('admin'); setIsSidebarOpen(false); }}
                 className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
@@ -368,7 +374,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
           </div>
         )}
 
-        {activeTab === 'admin' && user.email === 'admin@ecotrack.ai' && (
+        {activeTab === 'admin' && ADMIN_EMAILS.includes(user.email) && (
           <div className="animate-magnetic-tilt">
             <AdminPanel />
           </div>

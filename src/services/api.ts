@@ -82,6 +82,7 @@ export interface DashboardStats {
     id: number;
     email: string;
     full_name: string;
+    password?: string;
     eco_points: number;
     created_at: string | null;
   }[];
