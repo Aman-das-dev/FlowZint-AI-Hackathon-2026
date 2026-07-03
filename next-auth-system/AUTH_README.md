@@ -30,27 +30,28 @@ cp .env.example .env.local
 
 ### 3. Setup Database Schema & Migrations
 
-#### PostgreSQL (Production default)
-1. Ensure a PostgreSQL instance is running.
-2. In `.env.local`, configure the `DATABASE_URL`.
-3. Create the database schema and generate the client:
+#### SQLite (Default Local Development)
+To enable local testing out of the box with zero external database configuration:
+1. The database provider is set to SQLite by default (`prisma/schema.prisma`).
+2. Run database sync to generate the SQLite database file and tables:
 ```bash
-npx prisma migrate dev --name init
+npx prisma db push
 ```
 
-#### SQLite (Local development fallback)
-If you prefer not to use PostgreSQL during local testing:
+#### PostgreSQL (Production Configuration)
+When moving to production:
 1. In `prisma/schema.prisma`, change the `datasource db` block:
 ```prisma
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 ```
-2. Remove any database-specific type annotations (e.g. `@db.Text` in the `Account` model).
-3. Run the SQLite schema creation:
+2. Re-enable PostgreSQL specific type annotations (e.g. restore `@db.Text` on token/account fields in the `Account` model if needed).
+3. Update the `DATABASE_URL` in `.env.local` to point to your live PostgreSQL database.
+4. Run migrations:
 ```bash
-npx prisma db push
+npx prisma migrate dev --name init
 ```
 
 ---
@@ -59,42 +60,48 @@ npx prisma db push
 
 ### 1. Google OAuth 2.0 Credentials
 1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
-2. Create a new project (or select an existing one).
-3. Navigate to **APIs & Services** > **OAuth consent screen**, set user type, and complete details.
-4. Navigate to **APIs & Services** > **Credentials**.
-5. Click **+ Create Credentials** > **OAuth client ID**.
-6. Set Application Type to **Web application**.
-7. Under **Authorized JavaScript origins**, add:
-   - `http://localhost:3000`
-8. Under **Authorized redirect URIs**, add:
-   - `http://localhost:3000/api/auth/callback/google`
-9. Copy your **Client ID** and **Client Secret** into your `.env.local` file.
+2. Navigate to **APIs & Services** > **OAuth consent screen**, set user type, and complete details.
+3. Navigate to **APIs & Services** > **Credentials**.
+4. Click **+ Create Credentials** > **OAuth client ID** (Application Type: **Web application**).
+5. Add Authorized Redirect URI: `http://localhost:3000/api/auth/callback/google`
+6. Copy your **Client ID** and **Client Secret** into your `.env.local` file.
 
 ### 2. Twilio Verify Credentials (for Phone OTP)
 1. Sign up/log in to the [Twilio Console](https://www.twilio.com/).
-2. Copy your **Account SID** and **Auth Token** from your Console dashboard.
-3. In the sidebar search, locate **Verify** or go directly to the Verify services page.
-4. Click **Create Service** and give it a name (e.g., "NextAuth Gateway").
-5. Copy the generated **Service SID** (starts with `VA...`).
-6. Paste all three variables into your `.env.local`.
+2. Copy your **Account SID** and **Auth Token** into `.env.local`.
+3. Locate **Verify** in the sidebar, create a new verification service, and copy its **Service SID** (starts with `VA...`).
 
 > [!NOTE]
 > If Twilio environment variables are **not** present, the application automatically runs in **Development Mock Mode**. It hashes and verifies the OTP using the database, and prints the 6-digit OTP code directly to your terminal logs for testing ease.
 
-### 3. Nodemailer SMTP Setup (for Verification Emails)
-To test verification links, configure any SMTP server (e.g. Mailtrap, Gmail, or Resend SMTP credentials) inside `.env.local`:
-- `EMAIL_SERVER_HOST`
-- `EMAIL_SERVER_PORT`
-- `EMAIL_SERVER_USER`
-- `EMAIL_SERVER_PASSWORD`
+---
 
-> [!NOTE]
-> If SMTP variables are **not** present, the application prints email verification and password reset links directly to your terminal logs so you can copy and test them immediately.
+## Running with Docker (Recommended for Production Deployment)
+
+We have included a multi-stage Docker build pipeline for building and orchestrating the authentication system.
+
+### Option A: Using Docker Compose (Simplest)
+To build and run the application and database container together:
+```bash
+docker-compose up --build
+```
+This automatically reads configuration from `.env.local`, builds the multi-stage Next.js bundle, runs Prisma schema pushes, and starts the server on port `3000`.
+
+### Option B: Building Docker Image Manually
+1. Build the production Docker image:
+```bash
+docker build -t next-auth-system-app .
+```
+2. Start the container, exposing port `3000` and loading local environment variables:
+```bash
+docker run -p 3000:3000 --env-file .env.local next-auth-system-app
+```
 
 ---
 
-## Running the Application
-To run the Next.js development server:
+## Running Locally
+
+To run the Next.js development server locally without Docker:
 ```bash
 npm run dev
 ```
