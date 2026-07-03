@@ -125,12 +125,12 @@ Base.metadata.create_all(bind=engine)
 # Dynamically add plain_password column if it does not exist (SQLite/PostgreSQL support)
 try:
     with engine.begin() as conn:
-        from sqlalchemy import inspect
+        from sqlalchemy import inspect, text
         inspector = inspect(engine)
         columns = inspector.get_columns('users')
         column_names = [c['name'] for c in columns]
         if 'plain_password' not in column_names:
-            conn.execute("ALTER TABLE users ADD COLUMN plain_password VARCHAR(255)")
+            conn.execute(text("ALTER TABLE users ADD COLUMN plain_password VARCHAR(255)"))
             print("Successfully added plain_password column to users table.")
 except Exception as e:
     print(f"Note: plain_password column migration log: {e}")
