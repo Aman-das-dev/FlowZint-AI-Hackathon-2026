@@ -916,6 +916,32 @@ def get_dashboard_stats(db: Session = Depends(get_db)):
             "carbon": round(data["carbon"])
         })
     
+    # Fetch list of users
+    users_list = []
+    for u in db.query(UserDB).order_by(UserDB.created_at.desc()).all():
+        users_list.append({
+            "id": u.id,
+            "email": u.email,
+            "full_name": u.full_name,
+            "eco_points": u.eco_points,
+            "created_at": u.created_at.isoformat() if u.created_at else None
+        })
+        
+    # Fetch list of device submissions
+    submissions_list = []
+    for s in db.query(DeviceSubmissionDB).order_by(DeviceSubmissionDB.submitted_at.desc()).all():
+        user = db.query(UserDB).filter(UserDB.id == s.user_id).first()
+        user_email = user.email if user else "Unknown User"
+        submissions_list.append({
+            "id": s.id,
+            "user_email": user_email,
+            "device_name": s.device_name,
+            "category": s.category,
+            "hazard_level": s.hazard_level,
+            "market_val": s.market_val,
+            "submitted_at": s.submitted_at.isoformat() if s.submitted_at else None
+        })
+
     return {
         "metrics": {
             "carbon_saved": round(carbon_saved, 1),
@@ -930,7 +956,9 @@ def get_dashboard_stats(db: Session = Depends(get_db)):
             "total_revenue": round(total_revenue, 2)
         },
         "device_categories": categories_chart,
-        "historical_analytics": historical_pickups
+        "historical_analytics": historical_pickups,
+        "users": users_list,
+        "submissions": submissions_list
     }
 
 # --- AI Chatbot Assistant ---

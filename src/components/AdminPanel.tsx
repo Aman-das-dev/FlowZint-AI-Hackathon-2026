@@ -354,6 +354,105 @@ export const AdminPanel: React.FC = () => {
 
       </div>
 
+      {/* Admin Registered Users & Submissions lists */}
+      <div className="grid lg:grid-cols-12 gap-8">
+        
+        {/* Registered Users Table (Col-5) */}
+        <div className="lg:col-span-5 rounded-2xl glass-panel p-6 border-white/5 space-y-4 flex flex-col">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <Users size={18} className="text-blue-400" /> Registered Node Users
+            </h3>
+            <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 text-xs font-bold border border-blue-500/20">
+              {stats.users?.length ?? 0} total
+            </span>
+          </div>
+          <div className="overflow-x-auto mt-2 max-h-72 overflow-y-auto custom-scrollbar border border-white/5 rounded-xl">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-white/5 border-b border-white/5 text-gray-400 uppercase tracking-wider font-bold">
+                  <th className="p-3">User ID</th>
+                  <th className="p-3">Name</th>
+                  <th className="p-3">Email</th>
+                  <th className="p-3 text-right">Points</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5 text-gray-300">
+                {stats.users && stats.users.length > 0 ? (
+                  stats.users.map((u) => (
+                    <tr key={u.id} className="hover:bg-white/5 transition-colors">
+                      <td className="p-3 font-mono text-gray-500">#{u.id}</td>
+                      <td className="p-3 font-semibold text-white">{u.full_name}</td>
+                      <td className="p-3 text-gray-400">{u.email}</td>
+                      <td className="p-3 text-right font-extrabold text-emerald-400">{u.eco_points}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="p-8 text-center text-gray-500">No registered users found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* E-Waste Device Submissions Table (Col-7) */}
+        <div className="lg:col-span-7 rounded-2xl glass-panel p-6 border-white/5 space-y-4 flex flex-col">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <Activity size={18} className="text-emerald-400" /> E-Waste Submissions Log
+            </h3>
+            <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
+              {stats.submissions?.length ?? 0} total
+            </span>
+          </div>
+          <div className="overflow-x-auto mt-2 max-h-72 overflow-y-auto custom-scrollbar border border-white/5 rounded-xl">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-white/5 border-b border-white/5 text-gray-400 uppercase tracking-wider font-bold">
+                  <th className="p-3">Email</th>
+                  <th className="p-3">Device</th>
+                  <th className="p-3">Category</th>
+                  <th className="p-3">Hazard</th>
+                  <th className="p-3 text-right">Value</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5 text-gray-300">
+                {stats.submissions && stats.submissions.length > 0 ? (
+                  stats.submissions.map((s) => (
+                    <tr key={s.id} className="hover:bg-white/5 transition-colors">
+                      <td className="p-3 text-gray-400 font-medium">{s.user_email}</td>
+                      <td className="p-3 font-bold text-white">{s.device_name}</td>
+                      <td className="p-3">
+                        <span className="px-2 py-0.5 rounded bg-white/5 text-gray-300 border border-white/5">
+                          {s.category}
+                        </span>
+                      </td>
+                      <td className="p-3 font-medium">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          s.hazard_level.toLowerCase().includes('high') || s.hazard_level.toLowerCase().includes('extreme')
+                            ? 'bg-rose-500/15 text-rose-400 border border-rose-500/20'
+                            : 'bg-amber-500/15 text-amber-400 border border-amber-500/20'
+                        }`}>
+                          {s.hazard_level.split(' ')[0]}
+                        </span>
+                      </td>
+                      <td className="p-3 text-right font-extrabold text-teal-400">${s.market_val.toFixed(2)}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="p-8 text-center text-gray-500">No submissions logged yet.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
     </div>
   );
 };
