@@ -320,21 +320,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                 {isLogin ? 'Sign up' : 'Login'}
               </button>
             </div>
-
-            {isLogin && (
-              <div className="mt-4 pt-4 border-t border-gray-100 text-center">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail('admin@ecotrack.ai');
-                    setPassword('adminpassword123');
-                  }}
-                  className="text-xs text-rose-500 hover:text-rose-600 font-bold flex items-center justify-center gap-1 mx-auto hover:underline cursor-pointer"
-                >
-                  ⚡ Sign in as Administrator (Autofill)
-                </button>
-              </div>
-            )}
           </div>
         )}
       </div>
