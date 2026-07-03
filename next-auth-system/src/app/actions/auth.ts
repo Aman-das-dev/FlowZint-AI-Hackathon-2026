@@ -59,6 +59,7 @@ export async function registerUser(values: z.infer<typeof registerSchema>) {
         },
       });
 
+      let verifyLink = "";
       const verificationToken = crypto.randomBytes(32).toString("hex");
       const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
@@ -71,7 +72,7 @@ export async function registerUser(values: z.infer<typeof registerSchema>) {
       });
 
       const appUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-      const verifyLink = `${appUrl}/api/auth/verify-email?token=${verificationToken}`;
+      verifyLink = `${appUrl}/api/auth/verify-email?token=${verificationToken}`;
 
       if (process.env.EMAIL_SERVER_USER) {
         await transporter.sendMail({
@@ -83,11 +84,17 @@ export async function registerUser(values: z.infer<typeof registerSchema>) {
       } else {
         console.log(`[DEV MODE] Email verification link for ${email}: ${verifyLink}`);
       }
+
+      return { 
+        success: "User registered successfully! Please check your email for a verification link.",
+        devVerifyLink: process.env.NODE_ENV !== "production" ? verifyLink : undefined 
+      };
     } catch (emailErr) {
       console.error("Nodemailer failed, skipping link send:", emailErr);
+      return { 
+        success: "User registered successfully! Please check your email for a verification link." 
+      };
     }
-
-    return { success: "User registered successfully! Please check your email for a verification link." };
   } catch (err: any) {
     return { error: "Registration failed. Please try again." };
   }
