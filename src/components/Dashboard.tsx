@@ -186,13 +186,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
               <Trophy size={18} /> Rewards Hub
             </button>
 
-            <button
-              onClick={() => { setActiveTab('admin'); setIsSidebarOpen(false); }}
-              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
-                ${activeTab === 'admin' ? 'bg-[#D9E335] text-[#38523A] shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10 hover:translate-x-1'}`}
-            >
-              <Shield size={18} /> Admin Console
-            </button>
+            {user.email === 'admin@ecotrack.ai' && (
+              <button
+                onClick={() => { setActiveTab('admin'); setIsSidebarOpen(false); }}
+                className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
+                  ${activeTab === 'admin' ? 'bg-[#D9E335] text-[#38523A] shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10 hover:translate-x-1'}`}
+              >
+                <Shield size={18} /> Admin Console
+              </button>
+            )}
           </nav>
         </div>
 
@@ -366,7 +368,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
           </div>
         )}
 
-        {activeTab === 'admin' && (
+        {activeTab === 'admin' && user.email === 'admin@ecotrack.ai' && (
           <div className="animate-magnetic-tilt">
             <AdminPanel />
           </div>
