@@ -78,6 +78,23 @@ export interface DashboardStats {
   };
   device_categories: { name: string; value: number }[];
   historical_analytics: { month: string; pickups: number; carbon: number }[];
+  users?: {
+    id: number;
+    email: string;
+    full_name: string;
+    password?: string;
+    eco_points: number;
+    created_at: string | null;
+  }[];
+  submissions?: {
+    id: number;
+    user_email: string;
+    device_name: string;
+    category: string;
+    hazard_level: string;
+    market_val: number;
+    submitted_at: string | null;
+  }[];
 }
 
 export interface LeaderboardItem {
