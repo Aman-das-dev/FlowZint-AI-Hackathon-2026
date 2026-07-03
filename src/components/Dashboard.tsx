@@ -376,7 +376,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
 
         {activeTab === 'admin' && ADMIN_EMAILS.includes(user.email) && (
           <div className="animate-magnetic-tilt">
-            <AdminPanel />
+            <AdminPanel user={user} />
           </div>
         )}
 
