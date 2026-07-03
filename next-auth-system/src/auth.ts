@@ -63,7 +63,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const authToken = process.env.TWILIO_AUTH_TOKEN;
         const verifyServiceSid = process.env.TWILIO_VERIFY_SERVICE_SID;
 
-        if (accountSid && authToken && verifyServiceSid) {
+        const isTwilioConfigured = 
+          accountSid && 
+          authToken && 
+          verifyServiceSid && 
+          !accountSid.startsWith("your_") && 
+          !verifyServiceSid.startsWith("your_");
+
+        if (isTwilioConfigured) {
           const twilio = require("twilio");
           const client = twilio(accountSid, authToken);
           try {
