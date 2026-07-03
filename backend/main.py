@@ -33,10 +33,23 @@ DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./ecotrack.db")
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-if DATABASE_URL.startswith("sqlite"):
+try:
+    if DATABASE_URL.startswith("sqlite"):
+        engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+        with engine.connect() as conn:
+            pass
+    else:
+        engine = create_engine(DATABASE_URL)
+        with engine.connect() as conn:
+            pass
+except Exception as e:
+    print("\n" + "="*80)
+    print(f"WARNING: Failed to connect to database at: {DATABASE_URL}")
+    print(f"DATABASE ERROR: {e}")
+    print("EcoTrack AI will automatically fall back to SQLite: sqlite:///./ecotrack.db")
+    print("="*80 + "\n")
+    DATABASE_URL = "sqlite:///./ecotrack.db"
     engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-else:
-    engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
