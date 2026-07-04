@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  auth-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: next-auth-system-app
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    volumes:
+      - auth-db-volume:/app/prisma
+    restart: always
+
+volumes:
+  auth-db-volume:

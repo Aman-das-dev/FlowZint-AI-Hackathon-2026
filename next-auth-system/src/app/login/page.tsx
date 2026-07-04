@@ -26,9 +26,16 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const verified = searchParams.get("verified");
+  const oauthError = searchParams.get("error");
 
   const [activeTab, setActiveTab] = useState<TabType>("email");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(
+    oauthError === "OAuthAccountNotLinked"
+      ? "An account with this email already exists using another sign-in method. Please sign in using your existing credentials."
+      : oauthError
+      ? "Authentication failed. Please try again."
+      : ""
+  );
   const [success, setSuccess] = useState(
     verified ? "Your email has been verified successfully! You can now log in." : ""
   );

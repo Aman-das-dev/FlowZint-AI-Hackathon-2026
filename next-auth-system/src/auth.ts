@@ -57,19 +57,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!parsed.success) return null;
 
         const { phone, otp } = parsed.data;
+        const cleanPhone = phone.trim();
 
         // Verify Twilio Verify Service if SID is configured
         const accountSid = process.env.TWILIO_ACCOUNT_SID;
         const authToken = process.env.TWILIO_AUTH_TOKEN;
         const verifyServiceSid = process.env.TWILIO_VERIFY_SERVICE_SID;
 
-        if (accountSid && authToken && verifyServiceSid) {
+        const isTwilioConfigured = 
+          accountSid && 
+          authToken && 
+          verifyServiceSid && 
+          !accountSid.startsWith("your_") && 
+          !verifyServiceSid.startsWith("your_");
+
+        if (isTwilioConfigured) {
           const twilio = require("twilio");
           const client = twilio(accountSid, authToken);
           try {
             const verification = await client.verify.v2
               .services(verifyServiceSid)
-              .verificationChecks.create({ to: phone, code: otp });
+              .verificationChecks.create({ to: cleanPhone, code: otp });
 
             if (verification.status !== "approved") return null;
           } catch (err) {
@@ -78,29 +86,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
         } else {
           // Fallback to local DB-hashed Verification
-          const otpRecord = await db.otpCode.findUnique({ where: { phone } });
+          console.log(`[AUTH] Verifying OTP local fallback. Phone: "${cleanPhone}", OTP input: "${otp}"`);
+          const otpRecord = await db.otpCode.findUnique({ where: { phone: cleanPhone } });
+          console.log("[AUTH] otpRecord found:", otpRecord);
           if (!otpRecord) return null;
 
           if (new Date() > otpRecord.expiresAt) {
-            await db.otpCode.delete({ where: { phone } });
+            console.log("[AUTH] OTP record expired.");
+            await db.otpCode.delete({ where: { phone: cleanPhone } });
             return null;
           }
 
           const isOtpValid = await bcrypt.compare(otp, otpRecord.codeHash);
+          console.log("[AUTH] isOtpValid:", isOtpValid);
           if (!isOtpValid) return null;
 
           // Delete OTP code on success
-          await db.otpCode.delete({ where: { phone } });
+          await db.otpCode.delete({ where: { phone: cleanPhone } });
         }
 
         // Fetch or Create phone user
-        let user = await db.user.findUnique({ where: { phone } });
+        let user = await db.user.findUnique({ where: { phone: cleanPhone } });
         if (!user) {
           user = await db.user.create({
             data: {
-              phone,
+              phone: cleanPhone,
               phoneVerified: new Date(),
-              name: `Phone User ${phone.slice(-4)}`,
+              name: `Phone User ${cleanPhone.slice(-4)}`,
             },
           });
         } else if (!user.phoneVerified) {

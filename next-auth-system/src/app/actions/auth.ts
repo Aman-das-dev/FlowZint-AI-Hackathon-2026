@@ -59,6 +59,7 @@ export async function registerUser(values: z.infer<typeof registerSchema>) {
         },
       });
 
+      let verifyLink = "";
       const verificationToken = crypto.randomBytes(32).toString("hex");
       const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
@@ -70,7 +71,8 @@ export async function registerUser(values: z.infer<typeof registerSchema>) {
         },
       });
 
-      const verifyLink = `http://localhost:3000/api/auth/verify-email?token=${verificationToken}`;
+      const appUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+      verifyLink = `${appUrl}/api/auth/verify-email?token=${verificationToken}`;
 
       if (process.env.EMAIL_SERVER_USER) {
         await transporter.sendMail({
@@ -82,11 +84,17 @@ export async function registerUser(values: z.infer<typeof registerSchema>) {
       } else {
         console.log(`[DEV MODE] Email verification link for ${email}: ${verifyLink}`);
       }
+
+      return { 
+        success: "User registered successfully! Please check your email for a verification link.",
+        devVerifyLink: process.env.NODE_ENV !== "production" ? verifyLink : undefined 
+      };
     } catch (emailErr) {
       console.error("Nodemailer failed, skipping link send:", emailErr);
+      return { 
+        success: "User registered successfully! Please check your email for a verification link." 
+      };
     }
-
-    return { success: "User registered successfully! Please check your email for a verification link." };
   } catch (err: any) {
     return { error: "Registration failed. Please try again." };
   }
@@ -129,12 +137,18 @@ export async function sendOtp(phone: string) {
       create: { phone: cleanPhone, codeHash, expiresAt },
     });
 
-    // Check Twilio credentials
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
     const verifyServiceSid = process.env.TWILIO_VERIFY_SERVICE_SID;
 
-    if (accountSid && authToken && verifyServiceSid) {
+    const isTwilioConfigured = 
+      accountSid && 
+      authToken && 
+      verifyServiceSid && 
+      !accountSid.startsWith("your_") && 
+      !verifyServiceSid.startsWith("your_");
+
+    if (isTwilioConfigured) {
       const twilio = require("twilio");
       const client = twilio(accountSid, authToken);
       await client.verify.v2
@@ -176,7 +190,8 @@ export async function requestPasswordReset(email: string) {
       create: { identifier: email, token: resetToken, expires: expiry },
     });
 
-    const resetLink = `http://localhost:3000/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
+    const appUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+    const resetLink = `${appUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
 
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_SERVER_HOST || "localhost",

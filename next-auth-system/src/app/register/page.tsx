@@ -10,6 +10,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [devVerifyLink, setDevVerifyLink] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [name, setName] = useState("");
@@ -20,6 +21,7 @@ export default function RegisterPage() {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setDevVerifyLink("");
     setLoading(true);
 
     try {
@@ -28,6 +30,9 @@ export default function RegisterPage() {
         setError(res.error);
       } else {
         setSuccess(res.success || "Account created successfully!");
+        if (res.devVerifyLink) {
+          setDevVerifyLink(res.devVerifyLink);
+        }
         setName("");
         setEmail("");
         setPassword("");
@@ -67,9 +72,19 @@ export default function RegisterPage() {
           </div>
         )}
         {success && (
-          <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium rounded-xl flex items-center gap-3">
-            <ShieldCheck size={18} className="flex-shrink-0 text-emerald-400" />
-            <span>{success}</span>
+          <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium rounded-xl flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <ShieldCheck size={18} className="flex-shrink-0 text-emerald-400" />
+              <span>{success}</span>
+            </div>
+            {devVerifyLink && (
+              <a
+                href={devVerifyLink}
+                className="mt-2 text-xs text-blue-400 hover:text-blue-300 underline font-mono break-all self-start"
+              >
+                [Dev Mode] Click here to verify email directly
+              </a>
+            )}
           </div>
         )}
 
