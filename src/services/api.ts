@@ -142,6 +142,19 @@ export const api = {
     return data;
   },
 
+  async recoverAccount(email: string, recoveryCode: string, newPassword: string): Promise<any> {
+    const res = await fetch(`${API_BASE}/auth/recover`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify({ email, recovery_code: recoveryCode, new_password: newPassword }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || "Recovery failed");
+    }
+    return res.json();
+  },
+
   async login(email: string, password: string): Promise<any> {
     const res = await fetch(`${API_BASE}/auth/login`, {
       method: "POST",

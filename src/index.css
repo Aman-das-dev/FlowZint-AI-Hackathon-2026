@@ -1,199 +1,250 @@
 @import "tailwindcss";
 
+/* ============================================================
+   CSS CUSTOM PROPERTIES — Light Theme (Default)
+   ============================================================ */
+:root {
+  --bg-primary:      #F8F9FA;
+  --bg-card:         #ffffff;
+  --bg-card-hover:   #f0f7f0;
+  --bg-input:        #ffffff;
+  --bg-sidebar:      #38523A;
+  --bg-muted:        #f1f5f9;
+
+  --text-primary:    #1e293b;
+  --text-secondary:  #475569;
+  --text-muted:      #94a3b8;
+  --text-on-sidebar: #ffffff;
+
+  --border-color:    #e2e8f0;
+  --border-input:    #cbd5e1;
+  --border-focus:    #84B056;
+
+  --accent-forest:   #38523A;
+  --accent-green:    #84B056;
+  --accent-yellow:   #D9E335;
+
+  --shadow-card:     0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+  --shadow-elevated: 0 10px 25px -5px rgba(56,82,58,0.12), 0 8px 10px -6px rgba(56,82,58,0.06);
+
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #cbd5e1;
+}
+
+/* ============================================================
+   CSS CUSTOM PROPERTIES — Dark Theme  (Obsidian & Neon Emerald)
+   ============================================================ */
+.dark {
+  --bg-primary:      #090D14;
+  --bg-card:         #111827;
+  --bg-card-hover:   #1F2937;
+  --bg-input:        #090D14;
+  --bg-sidebar:      #030712;
+  --bg-muted:        #1F2937;
+
+  --text-primary:    #F9FAFB;
+  --text-secondary:  #9CA3AF;
+  --text-muted:      #6B7280;
+  --text-on-sidebar: #F9FAFB;
+
+  --border-color:    #374151;
+  --border-input:    #4B5563;
+  --border-focus:    #10B981;
+
+  --accent-forest:   #34D399;
+  --accent-green:    #10B981;
+  --accent-yellow:   #FBBF24;
+
+  --shadow-card:     0 4px 6px -1px rgba(0,0,0,0.5), 0 2px 4px -1px rgba(0,0,0,0.3);
+  --shadow-elevated: 0 10px 25px -5px rgba(0,0,0,0.7), 0 8px 10px -6px rgba(0,0,0,0.5);
+
+  --scrollbar-track: #111827;
+  --scrollbar-thumb: #374151;
+
+  color-scheme: dark;
+}
+
+/* ============================================================
+   BASE GLOBAL STYLES
+   ============================================================ */
 @layer base {
   body {
     font-family: 'Inter', sans-serif;
-    background-color: #F8F9FA;
-    color: #1e293b; /* slate-800 */
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.35s ease, color 0.35s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Amatic SC', cursive;
-    color: #38523A;
+    color: var(--accent-forest);
   }
 }
 
-/* Force select dropdown option colors to be legible in light theme */
+/* ============================================================
+   SCROLLBAR STYLES
+   ============================================================ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-green); }
+
+/* Force select dropdown option colors */
 select option {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
 }
 
-/* Custom Scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #84B056;
-}
-
-/* Base Light Theme Card Overrides (Transforms all glassmorphism to eco-friendly 3D card layout) */
+/* ============================================================
+   CARD & GLASS PANEL
+   ============================================================ */
 .glass-panel, .eco-card {
-  background-color: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
   border-radius: 16px !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
-  color: #1e293b !important;
+  box-shadow: var(--shadow-card) !important;
+  color: var(--text-primary) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-panel-hover:hover, .eco-card-hover:hover {
-  background-color: #ffffff !important;
-  border-color: #84B056 !important;
-  box-shadow: 0 10px 25px -5px rgba(56, 82, 58, 0.1), 0 8px 10px -6px rgba(56, 82, 58, 0.05) !important;
+  background-color: var(--bg-card-hover) !important;
+  border-color: var(--accent-green) !important;
+  box-shadow: var(--shadow-elevated) !important;
   transform: translateY(-2px);
 }
 
-/* Input Fields Styles (Glass & Eco Inputs) */
+/* ============================================================
+   INPUT FIELDS
+   ============================================================ */
 .glass-input, .eco-input {
-  background-color: #ffffff !important;
-  border: 2px solid #cbd5e1 !important;
-  color: #0f172a !important;
+  background-color: var(--bg-input) !important;
+  border: 2px solid var(--border-input) !important;
+  color: var(--text-primary) !important;
   border-radius: 12px !important;
   transition: all 0.2s ease;
 }
 
 .glass-input:focus, .eco-input:focus {
-  border-color: #84B056 !important;
+  border-color: var(--border-focus) !important;
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(132, 176, 86, 0.2) !important;
+  box-shadow: 0 0 0 3px rgba(132, 176, 86, 0.25) !important;
 }
 
-/* Global Text contrast fixes inside main content area & panels */
+/* ============================================================
+   TEXT CONTRAST — MAIN CONTENT AREA
+   ============================================================ */
 main h1, main h2, main h3, main h4, main h5, main h6,
-.glass-panel h1, .glass-panel h2, .glass-panel h3, .glass-panel h4, .glass-panel h5, .glass-panel h6 {
-  color: #38523A !important;
+.glass-panel h1, .glass-panel h2, .glass-panel h3,
+.glass-panel h4, .glass-panel h5, .glass-panel h6 {
+  color: var(--accent-forest) !important;
 }
 
 main p, .glass-panel p, .eco-card p {
-  color: #475569 !important; /* slate-600 */
+  color: var(--text-secondary) !important;
 }
 
-/* Force dark color on elements previously hardcoded to white/light grey text */
+/* Override hardcoded white text inside cards & main */
 .glass-panel .text-white, .eco-card .text-white, main .text-white,
 .glass-panel .text-gray-100, .eco-card .text-gray-100, main .text-gray-100,
 .glass-panel .text-gray-200, .eco-card .text-gray-200, main .text-gray-200,
 .glass-panel .text-gray-300, .eco-card .text-gray-300, main .text-gray-300 {
-  color: #0f172a !important; /* dark slate */
+  color: var(--text-primary) !important;
 }
 
 .glass-panel .text-gray-400, .eco-card .text-gray-400, main .text-gray-400,
 .glass-panel .text-gray-500, .eco-card .text-gray-500, main .text-gray-500 {
-  color: #475569 !important; /* slate-600 */
+  color: var(--text-secondary) !important;
 }
 
-/* Enhance text colors for accent labels to ensure accessibility on light background */
-.text-emerald-400 {
-  color: #047857 !important; /* emerald-700 */
-}
-.text-teal-400 {
-  color: #0f766e !important; /* teal-700 */
-}
-.text-cyan-400 {
-  color: #0e7490 !important; /* cyan-700 */
-}
-.text-amber-400 {
-  color: #b45309 !important; /* amber-700 */
-}
-.text-rose-400 {
-  color: #be123c !important; /* rose-700 */
-}
-.text-blue-400 {
-  color: #1d4ed8 !important; /* blue-700 */
-}
+/* ============================================================
+   ACCENT COLOR ACCESSIBILITY
+   ============================================================ */
+.text-emerald-400 { color: #047857 !important; }
+.text-teal-400    { color: #0f766e !important; }
+.text-cyan-400    { color: #0e7490 !important; }
+.text-amber-400   { color: #b45309 !important; }
+.text-rose-400    { color: #be123c !important; }
+.text-blue-400    { color: #1d4ed8 !important; }
 
-/* Dynamic background/border overrides for cards */
+/* Dark mode overrides for accent colors (use brighter shades on dark bg) */
+.dark .text-emerald-400 { color: #34d399 !important; }
+.dark .text-teal-400    { color: #2dd4bf !important; }
+.dark .text-cyan-400    { color: #22d3ee !important; }
+.dark .text-amber-400   { color: #fbbf24 !important; }
+.dark .text-rose-400    { color: #fb7185 !important; }
+.dark .text-blue-400    { color: #60a5fa !important; }
+
+/* ============================================================
+   DARK BG OVERRIDES INSIDE CARDS
+   ============================================================ */
 .glass-panel .bg-black\/20, .eco-card .bg-black\/20, main .bg-black\/20,
 .glass-panel .bg-black\/40, .eco-card .bg-black\/40, main .bg-black\/40,
 .glass-panel .bg-black\/10, .eco-card .bg-black\/10, main .bg-black\/10 {
-  background-color: #f1f5f9 !important; /* slate-100 */
+  background-color: var(--bg-muted) !important;
 }
 
-.glass-panel .border-white\/5, .eco-card .border-white\/5, main .border-white\/5,
+.glass-panel .border-white\/5,  .eco-card .border-white\/5,  main .border-white\/5,
 .glass-panel .border-white\/10, .eco-card .border-white\/10, main .border-white\/10 {
-  border-color: #cbd5e1 !important; /* slate-300 */
+  border-color: var(--border-color) !important;
 }
 
-/* Sidebar Specific Styles (needs to stay dark green for layout contrast) */
+/* ============================================================
+   SIDEBAR (always dark green, slight adjustment for dark mode)
+   ============================================================ */
 aside {
-  background-color: #38523A !important;
-  color: #ffffff !important;
+  background-color: var(--bg-sidebar) !important;
+  color: var(--text-on-sidebar) !important;
+  transition: background-color 0.35s ease;
 }
 
 aside h1, aside h2, aside h3, aside h4, aside h5, aside h6, aside span, aside p {
-  color: #ffffff !important;
+  color: var(--text-on-sidebar) !important;
 }
 
-aside .text-gray-400, aside .text-white\/70 {
-  color: #cbd5e1 !important;
-}
+aside .text-gray-400, aside .text-white\/70 { color: #cbd5e1 !important; }
+.dark aside .text-gray-400, .dark aside .text-white\/70 { color: #9ab89a !important; }
 
-aside button {
-  color: #ffffff !important;
-}
+aside button { color: var(--text-on-sidebar) !important; }
+aside button:hover { background-color: rgba(255, 255, 255, 0.1) !important; }
 
-aside button:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-/* Maintain custom color on active sidebar item */
+/* Active sidebar item — keep yellow pill intact */
 aside button.bg-\[\#D9E335\] {
-  background-color: #D9E335 !important;
+  background-color: var(--accent-yellow) !important;
   color: #38523A !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.15) !important;
 }
+aside button.bg-\[\#D9E335\] * { color: #38523A !important; }
 
-aside button.bg-\[\#D9E335\] * {
-  color: #38523A !important;
-}
-
-/* Map Light Theme Customizer (Fix Leaflet popups and widgets) */
+/* ============================================================
+   LEAFLET MAP OVERRIDES
+   ============================================================ */
 .leaflet-popup-content-wrapper {
-  background: #ffffff !important;
-  color: #1e293b !important;
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
   border-radius: 12px !important;
 }
+.leaflet-popup-tip { background: var(--bg-card) !important; }
 
-.leaflet-popup-tip {
-  background: #ffffff !important;
-}
-
-/* Custom animations */
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
 .animate-fade-in-up {
   animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes bounceSoft {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
 }
+.animate-bounce-soft { animation: bounceSoft 3s ease-in-out infinite; }
 
-.animate-bounce-soft {
-  animation: bounceSoft 3s ease-in-out infinite;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
+.animate-fade-in { animation: fadeIn 0.3s ease forwards; }
