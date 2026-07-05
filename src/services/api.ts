@@ -185,6 +185,34 @@ export const api = {
     return data;
   },
 
+  async sendOtp(phoneOrEmail: string): Promise<{ success: boolean; message: string; dev_otp?: string }> {
+    const res = await fetch(`${API_BASE}/auth/otp/send`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify({ phone_or_email: phoneOrEmail }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || "Failed to send OTP");
+    }
+    return res.json();
+  },
+
+  async verifyOtp(phoneOrEmail: string, otpCode: string, fullName?: string): Promise<any> {
+    const res = await fetch(`${API_BASE}/auth/otp/verify`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify({ phone_or_email: phoneOrEmail, otp_code: otpCode, full_name: fullName }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || "Invalid or expired OTP code");
+    }
+    const data = await res.json();
+    setAuthToken(data.access_token);
+    return data;
+  },
+
   async getMe(): Promise<{ user: User; achievements: Achievement[]; stats: { total_recycled: number; pickups_scheduled: number } }> {
     const token = getAuthToken();
     if (!token) throw new Error("No token found");

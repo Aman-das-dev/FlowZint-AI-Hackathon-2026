@@ -75,10 +75,18 @@ class UserDB(Base):
     password_hash = Column(String, nullable=False)
     plain_password = Column(String, nullable=True)
     full_name = Column(String, nullable=False)
+    phone_number = Column(String, unique=True, index=True, nullable=True)
     avatar_url = Column(String, default="https://api.dicebear.com/7.x/bottts/svg?seed=ecotrack")
     eco_points = Column(Integer, default=100) # Base 100 points
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     recovery_code_hash = Column(String, nullable=True)  # Bcrypt-hashed recovery code for password reset
+
+class OTPCodeDB(Base):
+    __tablename__ = "otp_codes"
+    id = Column(Integer, primary_key=True, index=True)
+    phone_or_email = Column(String, unique=True, index=True, nullable=False)
+    otp_code = Column(String, nullable=False)
+    expires_at = Column(DateTime, nullable=False)
 
 class DeviceSubmissionDB(Base):
     __tablename__ = "device_submissions"
@@ -167,6 +175,14 @@ class RecoverAccount(BaseModel):
     email: EmailStr
     recovery_code: str
     new_password: str
+
+class OTPRequest(BaseModel):
+    phone_or_email: str
+
+class OTPVerify(BaseModel):
+    phone_or_email: str
+    otp_code: str
+    full_name: Optional[str] = None
 
 class Token(BaseModel):
     access_token: str
@@ -401,6 +417,193 @@ def recover_account(body: RecoverAccount, db: Session = Depends(get_db)):
     db.commit()
 
     return {"message": "Password reset successful. You can now log in with your new password."}
+
+import random
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+def send_smtp_email(to_email: str, subject: str, html_content: str):
+    host = os.environ.get("EMAIL_SERVER_HOST")
+    port_str = os.environ.get("EMAIL_SERVER_PORT", "587")
+    user = os.environ.get("EMAIL_SERVER_USER")
+    password = os.environ.get("EMAIL_SERVER_PASSWORD")
+    sender = os.environ.get("EMAIL_FROM", "noreply@ecotrack.ai")
+    
+    if not host or not user or not password:
+        print(f"[SMTP MOCK] SMTP configuration not set. Cannot send to {to_email}.")
+        return False
+        
+    try:
+        port = int(port_str)
+        msg = MIMEMultipart()
+        msg["From"] = sender
+        msg["To"] = to_email
+        msg["Subject"] = subject
+        msg.attach(MIMEText(html_content, "html"))
+        
+        if port == 465:
+            server = smtplib.SMTP_SSL(host, port)
+        else:
+            server = smtplib.SMTP(host, port)
+            server.starttls()
+            
+        server.login(user, password)
+        server.sendmail(sender, to_email, msg.as_string())
+        server.quit()
+        print(f"[SMTP] Email sent to {to_email}.")
+        return True
+    except Exception as e:
+        print(f"[SMTP ERROR] Failed to send email: {e}")
+        return False
+
+def send_otp_to_destination(destination: str, code: str) -> bool:
+    is_email = "@" in destination
+    if is_email:
+        subject = "Your EcoTrack AI Authentication Code"
+        html_content = f"""
+        <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; max-width: 500px; margin: auto;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="font-size: 40px;">🌱</span>
+                <h2 style="color: #38523A; margin: 5px 0;">EcoTrack AI</h2>
+            </div>
+            <p>Hello,</p>
+            <p>You requested a one-time verification code to access your account. Please use the following 6-digit code:</p>
+            <div style="background-color: #f7f9f6; border: 1px dashed #84B056; border-radius: 8px; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #38523A; margin: 20px 0;">
+                {code}
+            </div>
+            <p style="font-size: 12px; color: #888888;">This code is valid for 5 minutes. If you did not request this code, please ignore this email.</p>
+        </div>
+        """
+        return send_smtp_email(destination, subject, html_content)
+    else:
+        body = f"Your EcoTrack AI verification code is: {code}. Valid for 5 minutes."
+        account_sid = os.environ.get("TWILIO_ACCOUNT_SID")
+        auth_token = os.environ.get("TWILIO_AUTH_TOKEN")
+        verify_service_sid = os.environ.get("TWILIO_VERIFY_SERVICE_SID")
+        
+        if account_sid and auth_token:
+            try:
+                if verify_service_sid:
+                    from twilio.rest import Client
+                    client = Client(account_sid, auth_token)
+                    client.verify.v2.services(verify_service_sid).verifications.create(to=destination, channel="sms")
+                    print(f"[TWILIO VERIFY] Verification SMS sent to {destination}")
+                    return True
+                else:
+                    from_num = os.environ.get("TWILIO_PHONE_NUMBER") or os.environ.get("TWILIO_FROM_NUMBER")
+                    if from_num:
+                        from twilio.rest import Client
+                        client = Client(account_sid, auth_token)
+                        client.messages.create(body=body, from_=from_num, to=destination)
+                        print(f"[TWILIO SMS] Verification SMS sent to {destination} from {from_num}")
+                        return True
+            except Exception as e:
+                print(f"[TWILIO ERROR] Failed to send SMS via Twilio: {e}")
+                
+        print(f"[SMS MOCK] Verification code for {destination} is: {code}")
+        return False
+
+@app.post("/api/auth/otp/send")
+def send_otp(body: OTPRequest, db: Session = Depends(get_db)):
+    destination = body.phone_or_email.strip()
+    if not destination:
+        raise HTTPException(status_code=400, detail="Phone or email is required")
+        
+    code = f"{random.randint(100000, 999999)}"
+    expires_at = datetime.datetime.utcnow() + datetime.timedelta(minutes=5)
+    
+    otp_record = db.query(OTPCodeDB).filter(OTPCodeDB.phone_or_email == destination).first()
+    if otp_record:
+        otp_record.otp_code = code
+        otp_record.expires_at = expires_at
+    else:
+        otp_record = OTPCodeDB(phone_or_email=destination, otp_code=code, expires_at=expires_at)
+        db.add(otp_record)
+        
+    db.commit()
+    
+    sent_successfully = send_otp_to_destination(destination, code)
+    
+    return {
+        "success": True,
+        "message": f"OTP verification code sent to {destination}.",
+        "dev_otp": code if not sent_successfully or os.environ.get("NODE_ENV") != "production" else None
+    }
+
+@app.post("/api/auth/otp/verify", response_model=Token)
+def verify_otp(body: OTPVerify, db: Session = Depends(get_db)):
+    destination = body.phone_or_email.strip()
+    code = body.otp_code.strip()
+    
+    if not destination or not code:
+        raise HTTPException(status_code=400, detail="Phone/email and OTP code are required")
+        
+    otp_record = db.query(OTPCodeDB).filter(
+        OTPCodeDB.phone_or_email == destination,
+        OTPCodeDB.otp_code == code
+    ).first()
+    
+    if not otp_record:
+        raise HTTPException(status_code=400, detail="Invalid OTP code. Please try again.")
+        
+    if datetime.datetime.utcnow() > otp_record.expires_at:
+        db.delete(otp_record)
+        db.commit()
+        raise HTTPException(status_code=400, detail="OTP code has expired. Please request a new one.")
+        
+    db.delete(otp_record)
+    db.commit()
+    
+    is_email = "@" in destination
+    user = None
+    if is_email:
+        user = db.query(UserDB).filter(UserDB.email == destination).first()
+    else:
+        user = db.query(UserDB).filter(UserDB.phone_number == destination).first()
+        
+    if not user:
+        full_name = body.full_name or "Eco User"
+        if is_email:
+            email_val = destination
+            phone_val = None
+        else:
+            email_val = f"phone_{destination.replace('+', '')}@ecotrack.ai"
+            phone_val = destination
+            
+        user = UserDB(
+            email=email_val,
+            phone_number=phone_val,
+            password_hash=get_password_hash(str(uuid.uuid4())),
+            plain_password="OTP Authenticated",
+            full_name=full_name,
+            avatar_url=f"https://api.dicebear.com/7.x/bottts/svg?seed={destination}",
+            eco_points=150
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        
+        init_achievement = AchievementDB(
+            user_id=user.id,
+            badge_name="OTP Recycler",
+            description="Signed in using OTP Verification!"
+        )
+        db.add(init_achievement)
+        db.commit()
+        
+    token = create_access_token({"sub": user.email})
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "full_name": user.full_name,
+            "avatar_url": user.avatar_url,
+            "eco_points": user.eco_points
+        }
+    }
 
 @app.get("/api/auth/me")
 def get_me(token: str, db: Session = Depends(get_db)):
