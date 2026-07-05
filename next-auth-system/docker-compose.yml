@@ -10,9 +10,4 @@ services:
       - "3000:3000"
     env_file:
       - .env.local
-    volumes:
-      - auth-db-volume:/app/prisma
     restart: always
-
-volumes:
-  auth-db-volume:
