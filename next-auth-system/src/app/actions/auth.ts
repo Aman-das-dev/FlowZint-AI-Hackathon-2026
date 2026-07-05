@@ -50,13 +50,18 @@ export async function registerUser(values: z.infer<typeof registerSchema>) {
 
     // Email verification flow (Nodemailer config template)
     try {
+      const port = parseInt(process.env.EMAIL_SERVER_PORT || "587");
       const transporter = nodemailer.createTransport({
         host: process.env.EMAIL_SERVER_HOST || "localhost",
-        port: parseInt(process.env.EMAIL_SERVER_PORT || "587"),
+        port: port,
+        secure: port === 465, // true for port 465, false for other ports
         auth: {
           user: process.env.EMAIL_SERVER_USER || "",
           pass: process.env.EMAIL_SERVER_PASSWORD || "",
         },
+        tls: {
+          rejectUnauthorized: false // support self-signed certificates in development
+        }
       });
 
       let verifyLink = "";
@@ -193,13 +198,18 @@ export async function requestPasswordReset(email: string) {
     const appUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
     const resetLink = `${appUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
 
+    const port = parseInt(process.env.EMAIL_SERVER_PORT || "587");
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_SERVER_HOST || "localhost",
-      port: parseInt(process.env.EMAIL_SERVER_PORT || "587"),
+      port: port,
+      secure: port === 465, // true for port 465, false for other ports
       auth: {
         user: process.env.EMAIL_SERVER_USER || "",
         pass: process.env.EMAIL_SERVER_PASSWORD || "",
       },
+      tls: {
+        rejectUnauthorized: false // support self-signed certificates in development
+      }
     });
 
     if (process.env.EMAIL_SERVER_USER) {

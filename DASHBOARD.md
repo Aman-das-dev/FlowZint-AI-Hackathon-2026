@@ -14,6 +14,11 @@
 - [x] Show/hide toggles and strength indicator added to the authentication form modal.
 - [x] Launched FastAPI backend successfully on `http://127.0.0.1:8000`.
 - [x] Launched React/Vite dev server successfully on `http://localhost:5173`.
+- [x] Configured Google OAuth 2.0 Client credentials on the Google Cloud Console and integrated with both Supabase Auth and NextAuth.
+- [x] Overhauled Nodemailer SMTP transporter code to dynamically support SSL (port 465) and TLS (port 587) configurations with self-signed certificate fallback in development.
+- [x] Integrated fully functional Google login account selector on the frontend connected to backend's `/api/auth/google` endpoint.
+- [x] Implemented Email & Phone Number OTP generation, secure delivery (SMTP & Twilio/Mock), and verification backend routes and frontend input views.
+- [x] Created `vercel.json` file in the workspace root to support multi-service deployment (Vite + FastAPI).
 
 ## Core Dependencies
 - **Frontend**: React 19, Vite, Tailwind CSS (v4), Framer Motion, Recharts, Leaflet.
@@ -24,5 +29,6 @@
   - *Recommendation*: Candidate for deletion. This directory contains a standalone Next.js 15 auth template with Auth.js, Prisma, and Docker configurations. It is not loaded, executed, or referenced by the active Vite frontend or FastAPI backend services.
 
 ## Immediate Next Steps
-- [ ] Confirm and proceed with the deletion of `/next-auth-system` directory to clean up workspace.
-- [ ] Perform full automated/manual walkthrough of register-login-recover pipeline.
+- [ ] Add the actual SMTP username/password in `next-auth-system/.env.local` to start sending verification emails.
+- [ ] Perform full walkthrough of the register-login-recover pipeline using Google OAuth and email verification.
+- [ ] Confirm and proceed with the deletion of `/next-auth-system` directory if no longer needed.

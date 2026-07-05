@@ -16,7 +16,7 @@ The workspace is organized into two primary pillars:
 ### 2. Next.js Auth System (`/next-auth-system`)
 * **Framework**: Next.js 15+ App Router.
 * **Auth Provider**: Auth.js (NextAuth v5) supporting Credentials (Email & Password), Google OAuth 2.0, and Phone OTP flows.
-* **Database Manager**: Prisma ORM with an SQLite database adapter (`file:./dev.db`) for immediate local development.
+* **Database Manager**: Prisma ORM with a PostgreSQL database adapter configured to connect seamlessly to Supabase.
 * **Containerization**: Includes a multi-stage production `Dockerfile` and `docker-compose.yml`.
 
 ---
@@ -86,7 +86,7 @@ To build and run the authentication gateway in a containerized environment:
 cd next-auth-system
 docker-compose up --build
 ```
-This automatically maps port `3000:3000`, mounts the SQLite database volume, and loads configurations from `.env.local`.
+This automatically maps port `3000:3000` and loads configurations from `.env.local` to interface with your Supabase database instance.
 
 ---
 

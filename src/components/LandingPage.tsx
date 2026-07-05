@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Leaf, ShieldAlert, Award, Compass, Truck, BarChart3, Users, Mail, Clock, Smartphone, CalendarCheck, Recycle, CheckCircle2, Globe, Gem, Zap } from 'lucide-react';
+import { ArrowRight, Leaf, ShieldAlert, Award, Compass, Truck, BarChart3, Users, Mail, Clock, Smartphone, CalendarCheck, Recycle, CheckCircle2, Zap } from 'lucide-react';
 
 interface LandingPageProps {
   onStartApp: () => void;
