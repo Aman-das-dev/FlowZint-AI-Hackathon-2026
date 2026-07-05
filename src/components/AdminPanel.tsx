@@ -8,7 +8,7 @@ interface AdminPanelProps {
   user: User;
 }
 
-export const AdminPanel: React.FC<AdminPanelProps> = ({ user }) => {
+export const AdminPanel: React.FC<AdminPanelProps> = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
