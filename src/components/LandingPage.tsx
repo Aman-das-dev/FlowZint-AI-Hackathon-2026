@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Leaf, ShieldAlert, Award, Compass, Truck, BarChart3, Users, Mail, Clock } from 'lucide-react';
+import { ArrowRight, Leaf, ShieldAlert, Award, Compass, Truck, BarChart3, Users, Mail, Clock, Smartphone, CalendarCheck, Recycle, CheckCircle2, Globe, Gem, Zap } from 'lucide-react';
 
 interface LandingPageProps {
   onStartApp: () => void;
@@ -63,10 +63,10 @@ const services = [
 ];
 
 const steps = [
-  { num: '01', label: 'You Scan Your Device', icon: '📱' },
-  { num: '02', label: 'You Choose a Pickup Time', icon: '🗓️' },
-  { num: '03', label: 'We Pick & Clean Up', icon: '🚛' },
-  { num: '04', label: 'We Responsibly Dispose', icon: '♻️' },
+  { num: '01', label: 'You Scan Your Device', icon: <Smartphone size={24} /> },
+  { num: '02', label: 'You Choose a Pickup Time', icon: <CalendarCheck size={24} /> },
+  { num: '03', label: 'We Pick & Clean Up', icon: <Truck size={24} /> },
+  { num: '04', label: 'We Responsibly Dispose', icon: <Recycle size={24} /> },
 ];
 
 const stats = [
@@ -141,7 +141,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
             {/* Text */}
             <motion.div className="space-y-6" variants={fadeUp} initial="hidden" animate="visible" custom={0}>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D9E335]/20 border border-[#D9E335]/50 text-[#D9E335] text-xs font-semibold tracking-wide uppercase">
-                🌱 AI-Powered Eco Platform
+                <Zap size={12} className="fill-[#D9E335]" /> AI-Powered Eco Platform
               </div>
               <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight" style={{ fontFamily: "'Amatic SC', cursive", letterSpacing: '2px' }}>
                 Your E-Waste is <br/>
@@ -176,16 +176,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
                 />
                 {/* Floating badges */}
                 <motion.div
-                  className="absolute top-10 -left-8 bg-white rounded-2xl px-4 py-3 shadow-xl border border-gray-100 text-xs font-semibold text-[#38523A]"
+                  className="absolute top-10 -left-8 bg-white rounded-2xl px-4 py-3 shadow-xl border border-gray-100 flex items-center gap-2"
                   animate={{ y: [0, -6, 0] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
                 >
-                  ♻️ 62M Tonnes Recycled
+                  <div className="w-7 h-7 rounded-lg bg-[#84B056]/15 flex items-center justify-center">
+                    <Recycle size={14} className="text-[#38523A]" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">E-Waste</p>
+                    <p className="text-xs font-bold text-[#38523A]">62M Tonnes</p>
+                  </div>
                 </motion.div>
                 <motion.div
-                  className="absolute bottom-16 -right-6 bg-[#D9E335] rounded-2xl px-4 py-3 shadow-xl text-xs font-bold text-[#38523A]"
+                  className="absolute bottom-16 -right-6 bg-[#D9E335] rounded-2xl px-4 py-3 shadow-xl flex items-center gap-2"
                   animate={{ y: [0, -8, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
                 >
-                  🌱 100% Certified
+                  <CheckCircle2 size={15} className="text-[#38523A]" />
+                  <p className="text-xs font-bold text-[#38523A]">100% Certified</p>
                 </motion.div>
               </div>
             </motion.div>
@@ -197,12 +204,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
           <div className="px-8 lg:px-20 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
             {steps.map((step, i) => (
               <motion.div key={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={i}
-                className="flex flex-col items-center gap-2 text-center cursor-default group"
+                className="flex flex-col items-center gap-3 text-center cursor-default group"
               >
-                <div className="w-14 h-14 rounded-full bg-[#84B056]/30 border-2 border-[#84B056] flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
-                  {step.icon}
+                <div className="relative">
+                  <div className="w-14 h-14 rounded-full bg-[#84B056]/20 border-2 border-[#84B056]/60 flex items-center justify-center text-[#84B056] group-hover:bg-[#84B056]/30 group-hover:scale-110 transition-all duration-300">
+                    {step.icon}
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#D9E335] flex items-center justify-center">
+                    <span className="text-[8px] font-black text-[#38523A]">{step.num}</span>
+                  </div>
                 </div>
-                <p className="text-white font-semibold text-sm">{step.label}</p>
+                <p className="text-white font-semibold text-sm leading-snug max-w-[100px]">{step.label}</p>
               </motion.div>
             ))}
           </div>

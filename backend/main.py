@@ -78,6 +78,7 @@ class UserDB(Base):
     avatar_url = Column(String, default="https://api.dicebear.com/7.x/bottts/svg?seed=ecotrack")
     eco_points = Column(Integer, default=100) # Base 100 points
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    recovery_code_hash = Column(String, nullable=True)  # Bcrypt-hashed recovery code for password reset
 
 class DeviceSubmissionDB(Base):
     __tablename__ = "device_submissions"
@@ -122,7 +123,7 @@ class AchievementDB(Base):
 # Create tables
 Base.metadata.create_all(bind=engine)
 
-# Dynamically add plain_password column if it does not exist (SQLite/PostgreSQL support)
+# Dynamically add new columns if they do not exist (SQLite/PostgreSQL migration support)
 try:
     with engine.begin() as conn:
         from sqlalchemy import inspect, text
@@ -132,8 +133,11 @@ try:
         if 'plain_password' not in column_names:
             conn.execute(text("ALTER TABLE users ADD COLUMN plain_password VARCHAR(255)"))
             print("Successfully added plain_password column to users table.")
+        if 'recovery_code_hash' not in column_names:
+            conn.execute(text("ALTER TABLE users ADD COLUMN recovery_code_hash VARCHAR(255)"))
+            print("Successfully added recovery_code_hash column to users table.")
 except Exception as e:
-    print(f"Note: plain_password column migration log: {e}")
+    print(f"Note: column migration log: {e}")
 
 # --- Dependency Injection for DB ---
 def get_db():
@@ -159,6 +163,11 @@ class GoogleAuth(BaseModel):
     full_name: Optional[str] = None
     avatar_url: Optional[str] = None
 
+class RecoverAccount(BaseModel):
+    email: EmailStr
+    recovery_code: str
+    new_password: str
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -176,6 +185,9 @@ class ChatQuery(BaseModel):
     message: str
 
 # --- Helper Functions ---
+import random
+import string
+
 def get_password_hash(password: str) -> str:
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
@@ -185,6 +197,13 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
     except Exception:
         return False
+
+def generate_recovery_code() -> str:
+    """Generate a readable 12-character recovery code in format ECO-XXXX-XXXX"""
+    chars = string.ascii_uppercase + string.digits
+    part1 = ''.join(random.choices(chars, k=4))
+    part2 = ''.join(random.choices(chars, k=4))
+    return f"ECO-{part1}-{part2}"
 
 def create_access_token(data: dict, expires_delta: Optional[datetime.timedelta] = None) -> str:
     to_encode = data.copy()
@@ -255,17 +274,22 @@ def get_current_user_from_header(authorization: Optional[str] = Header(None), db
 
 # --- Authentication Routes ---
 
-@app.post("/api/auth/register", response_model=Token)
+@app.post("/api/auth/register")
 def register(user_in: UserRegister, db: Session = Depends(get_db)):
     db_user = db.query(UserDB).filter(UserDB.email == user_in.email).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
+
+    # Generate a one-time recovery code and store its bcrypt hash
+    plain_recovery_code = generate_recovery_code()
+    hashed_recovery_code = get_password_hash(plain_recovery_code)
     
     new_user = UserDB(
         email=user_in.email,
         password_hash=get_password_hash(user_in.password),
         plain_password=user_in.password,
-        full_name=user_in.full_name
+        full_name=user_in.full_name,
+        recovery_code_hash=hashed_recovery_code
     )
     db.add(new_user)
     db.commit()
@@ -284,6 +308,7 @@ def register(user_in: UserRegister, db: Session = Depends(get_db)):
     return {
         "access_token": token,
         "token_type": "bearer",
+        "recovery_code": plain_recovery_code,  # Shown ONCE to the user
         "user": {
             "id": new_user.id,
             "email": new_user.email,
@@ -354,6 +379,28 @@ def google_login(google_in: GoogleAuth, db: Session = Depends(get_db)):
             "eco_points": user.eco_points
         }
     }
+
+@app.post("/api/auth/recover")
+def recover_account(body: RecoverAccount, db: Session = Depends(get_db)):
+    """Allow a user to reset their password using their email + recovery code."""
+    user = db.query(UserDB).filter(UserDB.email == body.email).first()
+    if not user or not user.recovery_code_hash:
+        raise HTTPException(status_code=400, detail="No account found or no recovery code set for this email.")
+
+    # Verify the provided recovery code against the stored hash
+    if not verify_password(body.recovery_code, user.recovery_code_hash):
+        raise HTTPException(status_code=400, detail="Invalid recovery code. Please check the code you saved and try again.")
+
+    if len(body.new_password) < 6:
+        raise HTTPException(status_code=400, detail="New password must be at least 6 characters.")
+
+    # Update the password (hash it) and invalidate the recovery code
+    user.password_hash = get_password_hash(body.new_password)
+    user.plain_password = body.new_password
+    user.recovery_code_hash = None  # Invalidate recovery code after use
+    db.commit()
+
+    return {"message": "Password reset successful. You can now log in with your new password."}
 
 @app.get("/api/auth/me")
 def get_me(token: str, db: Session = Depends(get_db)):

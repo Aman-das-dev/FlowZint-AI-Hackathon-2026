@@ -7,9 +7,10 @@ import { ImpactDashboard } from './ImpactDashboard';
 import { RewardsLeaderboard } from './RewardsLeaderboard';
 import { AdminPanel } from './AdminPanel';
 import { Chatbot } from './Chatbot';
+import { useTheme } from '../context/ThemeContext';
 import { 
   Home, Sparkles, MapPin, Truck, BarChart3, Trophy, Shield, 
-  LogOut, Leaf, Zap, Calendar, Heart, ShieldAlert, Menu, X 
+  LogOut, Leaf, Zap, Calendar, Heart, ShieldAlert, Menu, X, Moon, Sun
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -25,6 +26,7 @@ const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || "")
   .filter(Boolean);
 
 export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
+  const { isDarkMode, toggleDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [userPoints, setUserPoints] = useState(user.eco_points);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -73,10 +75,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex flex-col md:flex-row text-[#333333] animate-fade-in-up overflow-hidden relative">
+    <div className={`min-h-screen flex flex-col md:flex-row animate-fade-in-up overflow-hidden relative ${isDarkMode ? 'bg-[#090D14]' : 'bg-[#F8F9FA]'}`}>
       
       {/* Mobile Top Header (Visible only on mobile screen) */}
-      <div className="md:hidden w-full bg-[#38523A] text-white px-5 py-3 flex justify-between items-center z-30 shadow-md">
+      <div className={`md:hidden w-full px-5 py-3 flex justify-between items-center z-30 shadow-md ${isDarkMode ? 'bg-[#030712] text-white' : 'bg-[#38523A] text-white'}`}>
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setIsSidebarOpen(true)}
@@ -93,8 +95,17 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
             </span>
           </div>
         </div>
-        <div className="text-xs font-bold bg-[#D9E335]/20 border border-[#D9E335]/30 rounded-lg px-2.5 py-1 flex items-center gap-1">
-          <Zap size={12} className="fill-emerald-400 text-emerald-400" /> {userPoints} pts
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleDarkMode}
+            title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+          >
+            {isDarkMode ? <Sun size={16} className="text-[#D9E335]" /> : <Moon size={16} />}
+          </button>
+          <div className="text-xs font-bold bg-[#D9E335]/20 border border-[#D9E335]/30 rounded-lg px-2.5 py-1 flex items-center gap-1">
+            <Zap size={12} className="fill-emerald-400 text-emerald-400" /> {userPoints} pts
+          </div>
         </div>
       </div>
 
@@ -114,18 +125,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
           </div>
           <div>
             <h4 className="text-xs font-extrabold uppercase tracking-wider text-[#D9E335]">Portal Access Unlocked</h4>
-            <p className="text-xs text-white/90 font-medium">Authentication Verified. Welcome, {user.full_name}!</p>
+            <p className="text-xs opacity-90 font-medium">Authentication Verified. Welcome, {user.full_name}!</p>
           </div>
         </div>
       )}
 
       {/* Sidebar Navigation */}
-      <aside className={`fixed inset-y-0 left-0 w-64 z-40 bg-[#38523A] flex flex-col justify-between flex-shrink-0 border-r border-white/10 transition-transform duration-300 md:relative md:translate-x-0 md:flex ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
+      <aside className={`
+        fixed md:static inset-y-0 left-0 z-40 w-64 
+        transform transition-transform duration-300 ease-in-out flex flex-col
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        ${isDarkMode ? 'bg-[#030712] text-white' : 'bg-[#38523A] text-white'}
+      `}>
         
         {/* Close Button on Mobile */}
         <button 
           onClick={() => setIsSidebarOpen(false)}
-          className="md:hidden absolute top-5 right-5 text-white/70 hover:text-white p-1 rounded-lg hover:bg-white/10"
+          className="md:hidden absolute top-5 right-5 opacity-70 hover:opacity-100 p-1 rounded-lg hover:bg-white/10"
         >
           <X size={20} />
         </button>
@@ -204,7 +220,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         </div>
 
         {/* User profile footer section */}
-        <div className="p-4 border-t border-white/10 bg-black/20 space-y-4">
+        <div className="p-4 border-t border-white/10 bg-black/20 space-y-3">
           <div className="flex items-center gap-3">
             <img 
               src={user.avatar_url} 
@@ -219,6 +235,17 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
             </div>
           </div>
           
+          {/* Dark Mode Toggle */}
+          <button
+            onClick={toggleDarkMode}
+            title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            className="w-full py-2 rounded-xl border border-white/20 text-white/80 hover:bg-white/10 font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+          >
+            {isDarkMode 
+              ? <><Sun size={14} className="text-[#D9E335]" /> Light Mode</> 
+              : <><Moon size={14} /> Dark Mode</>}
+          </button>
+
           <button
             onClick={onLogout}
             className="w-full py-2.5 rounded-xl border border-rose-500/20 text-rose-400 hover:bg-rose-500/10 active:bg-rose-500/20 font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
@@ -237,8 +264,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
           <div className="space-y-8 animate-in fade-in duration-300">
             {/* Greeting */}
             <div className="animate-float-up" style={{ animationDelay: '50ms' }}>
-              <h2 className="text-3xl font-extrabold text-white">Eco Portal Overview</h2>
-              <p className="text-gray-400 mt-1">Welcome back, {user.full_name}! Let's recycle electronics safely and offset carbon footprint.</p>
+              <h2 className="text-3xl font-extrabold" style={{ color: 'var(--accent-forest)' }}>Eco Portal Overview</h2>
+              <p className="mt-1" style={{ color: 'var(--text-secondary)' }}>Welcome back, {user.full_name}! Let's recycle electronics safely and offset carbon footprint.</p>
             </div>
 
             {/* Quick Cards Info */}
