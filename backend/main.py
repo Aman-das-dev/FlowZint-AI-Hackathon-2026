@@ -27,6 +27,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to EcoTrack AI Backend API", "status": "running"}
+
 # Database Setup (Supports SQLite and PostgreSQL)
 DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./ecotrack.db")
 
