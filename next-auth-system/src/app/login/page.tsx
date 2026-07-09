@@ -5,10 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { GoogleButton } from "@/components/google-button";
-import { sendOtp } from "@/app/actions/auth";
-import { Mail, Lock, Phone, Key, ShieldCheck, AlertCircle } from "lucide-react";
-
-type TabType = "email" | "phone";
+import { Mail, Lock, ShieldCheck, AlertCircle } from "lucide-react";
 
 export default function LoginPage() {
   return (
@@ -28,7 +25,6 @@ function LoginContent() {
   const verified = searchParams.get("verified");
   const oauthError = searchParams.get("error");
 
-  const [activeTab, setActiveTab] = useState<TabType>("email");
   const [error, setError] = useState(
     oauthError === "OAuthAccountNotLinked"
       ? "An account with this email already exists using another sign-in method. Please sign in using your existing credentials."
@@ -44,12 +40,6 @@ function LoginContent() {
   // Email form states
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  // Phone/OTP form states
-  const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
-  const [devOtpCode, setDevOtpCode] = useState<string | null>(null);
 
   /**
    * Handle Email + Password sign-in
@@ -75,61 +65,6 @@ function LoginContent() {
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /**
-   * Handle Phone OTP request
-   */
-  const handlePhoneRequest = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-    setLoading(true);
-
-    try {
-      const res = await sendOtp(phone);
-      if (res.error) {
-        setError(res.error);
-      } else {
-        setOtpSent(true);
-        setSuccess(res.success || "OTP sent successfully!");
-        if (res.devOtp) {
-          setDevOtpCode(res.devOtp);
-        }
-      }
-    } catch (err) {
-      setError("Failed to request OTP. Try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /**
-   * Handle Phone OTP code verification
-   */
-  const handlePhoneVerifySubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    try {
-      const res = await signIn("phone-otp", {
-        phone,
-        otp,
-        redirect: false,
-      });
-
-      if (res?.error) {
-        setError("Invalid or expired OTP code");
-      } else {
-        router.push("/dashboard");
-        router.refresh();
-      }
-    } catch (err) {
-      setError("Verification failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -165,174 +100,58 @@ function LoginContent() {
           </div>
         )}
 
-        {/* Auth Tab Switching */}
-        {!otpSent && (
-          <div className="flex p-1 bg-white/5 rounded-xl mb-6">
-            <button
-              onClick={() => {
-                setActiveTab("email");
-                setError("");
-                setSuccess("");
-              }}
-              className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all cursor-pointer ${
-                activeTab === "email"
-                  ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md"
-                  : "text-gray-400 hover:text-white"
-              }`}
-            >
-              Email Sign In
-            </button>
-            <button
-              onClick={() => {
-                setActiveTab("phone");
-                setError("");
-                setSuccess("");
-              }}
-              className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all cursor-pointer ${
-                activeTab === "phone"
-                  ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md"
-                  : "text-gray-400 hover:text-white"
-              }`}
-            >
-              Phone OTP
-            </button>
-          </div>
-        )}
-
         {/* Form Contents */}
-        {activeTab === "email" ? (
-          /* EMAIL LOGIN FORM */
-          <form onSubmit={handleEmailSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-gray-500" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@domain.com"
-                  className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all"
-                />
-              </div>
+        <form onSubmit={handleEmailSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
+              Email Address
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-gray-500" />
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@domain.com"
+                className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all"
+              />
             </div>
-
-            <div className="space-y-1.5">
-              <div className="flex justify-between items-center">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
-                  Password
-                </label>
-                <Link
-                  href="/forgot-password"
-                  className="text-xs text-blue-400 hover:underline hover:text-blue-300"
-                >
-                  Forgot Password?
-                </Link>
-              </div>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-gray-500" />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-xl transition-all shadow-lg active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer text-sm"
-            >
-              {loading ? "Authenticating Session..." : "Sign In to Terminal"}
-            </button>
-          </form>
-        ) : (
-          /* PHONE OTP FLOW */
-          <div className="space-y-4">
-            {!otpSent ? (
-              <form onSubmit={handlePhoneRequest} className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
-                    Phone Number (with Country Code)
-                  </label>
-                  <div className="relative">
-                    <Phone className="absolute left-3.5 top-3.5 h-4 w-4 text-gray-500" />
-                    <input
-                      type="tel"
-                      required
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+15550199"
-                      className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all font-mono"
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-xl transition-all shadow-lg active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer text-sm"
-                >
-                  {loading ? "Dispatching OTP..." : "Request Verification Code"}
-                </button>
-              </form>
-            ) : (
-              <form onSubmit={handlePhoneVerifySubmit} className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
-                    Verification OTP Code
-                  </label>
-                  <div className="relative">
-                    <Key className="absolute left-3.5 top-3.5 h-4 w-4 text-gray-500" />
-                    <input
-                      type="text"
-                      required
-                      maxLength={6}
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
-                      placeholder="######"
-                      className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all font-mono tracking-widest text-center"
-                    />
-                  </div>
-                </div>
-
-                {devOtpCode && (
-                  <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs font-mono rounded-xl text-center">
-                    Dev Mock OTP: <span className="font-extrabold">{devOtpCode}</span>
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-xl transition-all shadow-lg active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer text-sm"
-                >
-                  {loading ? "Verifying..." : "Verify Code & Sign In"}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setOtpSent(false);
-                    setOtp("");
-                    setDevOtpCode(null);
-                    setError("");
-                  }}
-                  className="w-full text-center text-xs text-gray-400 hover:text-white transition-colors"
-                >
-                  Change phone number
-                </button>
-              </form>
-            )}
           </div>
-        )}
+
+          <div className="space-y-1.5">
+            <div className="flex justify-between items-center">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
+                Password
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-xs text-blue-400 hover:underline hover:text-blue-300"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+            <div className="relative">
+              <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-gray-500" />
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••••••"
+                className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-xl transition-all shadow-lg active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer text-sm"
+          >
+            {loading ? "Authenticating Session..." : "Sign In to Terminal"}
+          </button>
+        </form>
 
         {/* Separator / Google Login */}
         <div className="relative my-6 flex items-center justify-center">
