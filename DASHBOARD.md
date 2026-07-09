@@ -19,6 +19,7 @@
 - [x] Integrated fully functional Google login account selector on the frontend connected to backend's `/api/auth/google` endpoint.
 - [x] Implemented Email & Phone Number OTP generation, secure delivery (SMTP & Twilio/Mock), and verification backend routes and frontend input views.
 - [x] Created `vercel.json` file in the workspace root to support multi-service deployment (Vite + FastAPI).
+- [x] Unified all environment variable configurations into a single root `.env` file, and configured the backend to load it automatically using `find_dotenv()`.
 
 ## Core Dependencies
 - **Frontend**: React 19, Vite, Tailwind CSS (v4), Framer Motion, Recharts, Leaflet.
