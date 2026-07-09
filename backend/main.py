@@ -5,7 +5,7 @@ from supabase import create_client, Client
 import uuid
 import datetime
 from typing import List, Optional
-from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, Form, Header
+from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, Form, Header, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import create_engine, Column, Integer, Float, String, DateTime, ForeignKey, Text
@@ -1077,10 +1077,56 @@ RECYCLERS_LIST = [
 def get_recyclers():
     return RECYCLERS_LIST
 
+import time
+
+def advance_pickup_lifecycle(pickup_id: int):
+    db = SessionLocal()
+    try:
+        # Step 1: Wait 5 seconds and advance to 'Accepted'
+        time.sleep(5)
+        p = db.query(PickupScheduleDB).filter(PickupScheduleDB.id == pickup_id).first()
+        if p and p.status == "Pending":
+            p.status = "Accepted"
+            db.commit()
+            print(f"[AUTO-LOGISTICS] Pickup #{pickup_id} advanced to Accepted")
+
+        # Step 2: Wait 6 seconds and advance to 'Driver Assigned'
+        time.sleep(6)
+        p = db.query(PickupScheduleDB).filter(PickupScheduleDB.id == pickup_id).first()
+        if p and p.status == "Accepted":
+            p.status = "Driver Assigned"
+            db.commit()
+            print(f"[AUTO-LOGISTICS] Pickup #{pickup_id} advanced to Driver Assigned")
+
+        # Step 3: Wait 8 seconds and advance to 'Picked Up'
+        time.sleep(8)
+        p = db.query(PickupScheduleDB).filter(PickupScheduleDB.id == pickup_id).first()
+        if p and p.status == "Driver Assigned":
+            p.status = "Picked Up"
+            db.commit()
+            print(f"[AUTO-LOGISTICS] Pickup #{pickup_id} advanced to Picked Up")
+
+        # Step 4: Wait 8 seconds and advance to 'Completed'
+        time.sleep(8)
+        p = db.query(PickupScheduleDB).filter(PickupScheduleDB.id == pickup_id).first()
+        if p and p.status == "Picked Up":
+            p.status = "Completed"
+            # Award points for completion
+            user = db.query(UserDB).filter(UserDB.id == p.user_id).first()
+            if user:
+                user.eco_points += 200
+                db.add(user)
+            db.commit()
+            print(f"[AUTO-LOGISTICS] Pickup #{pickup_id} advanced to Completed")
+    except Exception as e:
+        print(f"[AUTO-LOGISTICS ERROR] Failed to auto-advance pickup #{pickup_id}: {e}")
+    finally:
+        db.close()
+
 # --- Pickup Scheduling ---
 
 @app.post("/api/pickups")
-def schedule_pickup(pickup: PickupCreate, authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
+def schedule_pickup(pickup: PickupCreate, background_tasks: BackgroundTasks, authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
     current_user = get_current_user_from_header(authorization, db)
     
     # Check points reward for scheduling (e.g. 100 EcoPoints)
@@ -1111,6 +1157,10 @@ def schedule_pickup(pickup: PickupCreate, authorization: Optional[str] = Header(
     db.add(new_pickup)
     db.commit()
     db.refresh(new_pickup)
+    
+    # Launch background auto-advancing simulation
+    background_tasks.add_task(advance_pickup_lifecycle, new_pickup.id)
+    
     return new_pickup
 
 @app.get("/api/pickups")

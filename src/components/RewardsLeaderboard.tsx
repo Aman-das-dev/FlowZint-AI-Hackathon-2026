@@ -36,6 +36,14 @@ export const RewardsLeaderboard: React.FC<RewardsLeaderboardProps> = ({ userPoin
     loadLeaderboard();
   }, [userPoints]);
 
+  // Real-time synchronization polling for competitive rankings
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadLeaderboard();
+    }, 4000); // Poll leaderboard every 4 seconds for responsive real-time rankings
+    return () => clearInterval(interval);
+  }, []);
+
   const getTier = (points: number) => {
     if (points >= 1500) return { name: 'Zero-Waste Master', color: 'text-amber-600', border: 'border-amber-200', next: 'Max Level' };
     if (points >= 1000) return { name: 'Gold Safeguard', color: 'text-yellow-600', border: 'border-yellow-200', next: '1,500 pts for Zero-Waste' };

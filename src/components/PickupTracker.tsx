@@ -63,6 +63,34 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
     loadData();
   }, [preselectedRecycler]);
 
+  // Real-time synchronization polling for active/non-completed pickups
+  useEffect(() => {
+    const hasActivePickup = pickups.some(p => p.status !== 'Completed');
+    if (!hasActivePickup) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const pickupData = await api.getPickups();
+        setPickups(pickupData);
+        
+        // Synchronize selected pickup state
+        if (selectedPickup) {
+          const updated = pickupData.find(p => p.id === selectedPickup.id);
+          if (updated && updated.status !== selectedPickup.status) {
+            setSelectedPickup(updated);
+            if (updated.status === 'Completed') {
+              updateUserPoints(200); // 200 points for completion
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Real-time sync polling error:', err);
+      }
+    }, 3000); // Poll every 3 seconds for responsive live demo updates
+
+    return () => clearInterval(interval);
+  }, [pickups, selectedPickup, updateUserPoints]);
+
   // Handle Recycler selection changes in form
   const handleRecyclerChange = (name: string) => {
     setRecyclerName(name);
