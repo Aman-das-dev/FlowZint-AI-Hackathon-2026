@@ -4,6 +4,7 @@ import { LandingPage } from './components/LandingPage';
 import { AuthModal } from './components/AuthModal';
 import { Dashboard } from './components/Dashboard';
 import { Leaf } from 'lucide-react';
+import { supabase } from './utils/supabase';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -28,6 +29,23 @@ function App() {
     };
 
     checkSession();
+
+    // Listen to Supabase auth state changes (e.g. from Google OAuth redirect)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session) {
+        localStorage.setItem('ecotrack_token', session.access_token);
+        try {
+          const profile = await api.getMe();
+          setUser(profile.user);
+        } catch (err) {
+          console.error('Failed to validate session token:', err);
+        }
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleStartApp = async () => {
