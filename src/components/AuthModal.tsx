@@ -36,8 +36,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
   const [otpCode, setOtpCode] = useState('');
   const [devOtpCode, setDevOtpCode] = useState<string | null>(null);
   const [showGoogleMock, setShowGoogleMock] = useState(false);
+  const [signUpSuccess, setSignUpSuccess] = useState(false);
 
   if (!isOpen) return null;
+
+  // Validate email format
+  const isValidEmail = (val: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+  };
 
   // Calculate password strength (0 to 3)
   const getPasswordStrength = (pwd: string) => {
@@ -115,8 +121,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
           });
           if (sbErr) throw sbErr;
           
-          alert("Registration request sent! Please check your email for the confirmation link.");
-          onClose();
+          setSignUpSuccess(true);
+          setLoading(false);
           return;
         } catch (sbErr: any) {
           console.warn("Supabase registration failed, trying local fallback:", sbErr);
@@ -349,6 +355,33 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               </button>
             </div>
           </div>
+        ) : signUpSuccess ? (
+          <div className="space-y-6 text-center">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-[#152e18] flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-inner">
+              <Mail size={32} className="animate-bounce" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-[#38523A] dark:text-[#84B056] mb-2" style={{fontFamily:"'Amatic SC', cursive", fontSize:'34px'}}>
+                Verify Your Email
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-[#9ab89a] leading-relaxed max-w-sm mx-auto">
+                We've sent a magic verification link to <span className="font-semibold text-gray-800 dark:text-white">{email}</span>. Please click the link in your inbox to activate your account.
+              </p>
+            </div>
+            
+            <div className="pt-2">
+              <button
+                onClick={() => {
+                  setSignUpSuccess(false);
+                  setIsLogin(true);
+                  setPassword('');
+                }}
+                className="w-full py-3 bg-[#38523A] dark:bg-[#84B056] hover:bg-[#2b3f2c] dark:hover:bg-[#a5c87a] text-white dark:text-[#0f1a0f] font-semibold rounded-xl transition-all cursor-pointer shadow-md"
+              >
+                Back to Login
+              </button>
+            </div>
+          </div>
         ) : forgotPassword ? (
           /* 2. Password Recovery Flow using Hashed Code */
           <div>
@@ -564,7 +597,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                   </div>
                 )}
 
-                <div>
+                 <div>
                   <label className="block text-xs font-semibold text-gray-500 dark:text-[#9ab89a] uppercase tracking-wider mb-2">
                     Email Address
                   </label>
@@ -576,8 +609,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@example.com"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl eco-input text-[#333333] dark:text-[#dceadc] text-sm"
+                      className="w-full pl-10 pr-10 py-2.5 rounded-xl eco-input text-[#333333] dark:text-[#dceadc] text-sm"
                     />
+                    {isValidEmail(email) && (
+                      <ShieldCheck className="absolute right-3.5 top-3 text-emerald-500 dark:text-emerald-400" size={18} />
+                    )}
                   </div>
                 </div>
 
@@ -681,8 +717,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="name@example.com"
-                          className="w-full pl-10 pr-4 py-2.5 rounded-xl eco-input text-[#333333] dark:text-[#dceadc] text-sm"
+                          className="w-full pl-10 pr-10 py-2.5 rounded-xl eco-input text-[#333333] dark:text-[#dceadc] text-sm"
                         />
+                        {isValidEmail(email) && (
+                          <ShieldCheck className="absolute right-3.5 top-3 text-emerald-500 dark:text-emerald-400" size={18} />
+                        )}
                       </div>
                     </div>
 
