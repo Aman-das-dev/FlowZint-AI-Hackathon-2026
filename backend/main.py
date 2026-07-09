@@ -255,18 +255,48 @@ def create_access_token(data: dict, expires_delta: Optional[datetime.timedelta] 
     return encoded_jwt
 
 def get_current_user(token: str, db: Session = Depends(get_db)) -> UserDB:
+    # 1. Try local JWT
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
-        if email is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token credentials")
-    except jwt.PyJWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
-    
-    user = db.query(UserDB).filter(UserDB.email == email).first()
-    if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
-    return user
+        if email:
+            user = db.query(UserDB).filter(UserDB.email == email).first()
+            if user:
+                return user
+    except Exception:
+        pass
+
+    # 2. Try Supabase JWT
+    if supabase:
+        try:
+            res = supabase.auth.get_user(token)
+            if res and res.user:
+                email = res.user.email
+                user = db.query(UserDB).filter(UserDB.email == email).first()
+                if not user:
+                    user = UserDB(
+                        email=email,
+                        full_name=res.user.user_metadata.get("full_name") or email.split("@")[0].capitalize(),
+                        password_hash=get_password_hash(str(uuid.uuid4())),
+                        plain_password="Supabase Authenticated",
+                        eco_points=100
+                    )
+                    db.add(user)
+                    db.commit()
+                    db.refresh(user)
+                    
+                    init_achievement = AchievementDB(
+                        user_id=user.id,
+                        badge_name="Eco Scout",
+                        description="Joined EcoTrack AI via Supabase Cloud Auth!"
+                    )
+                    db.add(init_achievement)
+                    db.commit()
+                return user
+        except Exception as sb_err:
+            print(f"Supabase auth error: {sb_err}")
+
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
 
 # Helper to verify auth header directly
 def get_current_user_from_header(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)) -> UserDB:
@@ -288,11 +318,46 @@ def get_current_user_from_header(authorization: Optional[str] = Header(None), db
         
     try:
         token = authorization.split(" ")[1] if " " in authorization else authorization
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        user = db.query(UserDB).filter(UserDB.email == email).first()
-        if user:
-            return user
+        
+        # 1. Try local JWT
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            email: str = payload.get("sub")
+            user = db.query(UserDB).filter(UserDB.email == email).first()
+            if user:
+                return user
+        except Exception:
+            pass
+
+        # 2. Try Supabase JWT
+        if supabase:
+            try:
+                res = supabase.auth.get_user(token)
+                if res and res.user:
+                    email = res.user.email
+                    user = db.query(UserDB).filter(UserDB.email == email).first()
+                    if not user:
+                        user = UserDB(
+                            email=email,
+                            full_name=res.user.user_metadata.get("full_name") or email.split("@")[0].capitalize(),
+                            password_hash=get_password_hash(str(uuid.uuid4())),
+                            plain_password="Supabase Authenticated",
+                            eco_points=100
+                        )
+                        db.add(user)
+                        db.commit()
+                        db.refresh(user)
+                        
+                        init_achievement = AchievementDB(
+                            user_id=user.id,
+                            badge_name="Eco Scout",
+                            description="Joined EcoTrack AI via Supabase Cloud Auth!"
+                        )
+                        db.add(init_achievement)
+                        db.commit()
+                    return user
+            except Exception:
+                pass
     except Exception:
         pass
     

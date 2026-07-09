@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { api } from '../services/api';
 import { X, Lock, Mail, User, ShieldCheck, Eye, EyeOff, Copy, Check, Download, AlertTriangle, Key } from 'lucide-react';
+import { supabase } from '../utils/supabase';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -76,23 +77,57 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
           }
           onClose();
         } else {
-          const data = await api.login(email, password);
-          onAuthSuccess(data.user);
-          onClose();
+          // Try Supabase login first
+          try {
+            const { data: sbData, error: sbErr } = await supabase.auth.signInWithPassword({
+              email,
+              password,
+            });
+            if (sbErr) throw sbErr;
+            if (sbData.session) {
+              localStorage.setItem('ecotrack_token', sbData.session.access_token);
+              const userProfile = await api.getMe();
+              onAuthSuccess(userProfile.user);
+              onClose();
+              return;
+            }
+          } catch (sbErr: any) {
+            console.warn("Supabase login failed, trying local fallback:", sbErr);
+            const data = await api.login(email, password);
+            onAuthSuccess(data.user);
+            onClose();
+          }
         }
       } else {
         if (password.length < 6) {
           throw new Error('Password must be at least 6 characters.');
         }
-        const data = await api.register(email, password, fullName);
-        
-        if (data.recovery_code) {
-          // Store user credentials so we can log them in after they dismiss the code screen
-          setRegisteredUserData(data);
-          setGeneratedCode(data.recovery_code);
-        } else {
-          onAuthSuccess(data.user);
+        // Try Supabase signup first
+        try {
+          const { error: sbErr } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                full_name: fullName,
+              }
+            }
+          });
+          if (sbErr) throw sbErr;
+          
+          alert("Registration request sent! Please check your email for the confirmation link.");
           onClose();
+          return;
+        } catch (sbErr: any) {
+          console.warn("Supabase registration failed, trying local fallback:", sbErr);
+          const data = await api.register(email, password, fullName);
+          if (data.recovery_code) {
+            setRegisteredUserData(data);
+            setGeneratedCode(data.recovery_code);
+          } else {
+            onAuthSuccess(data.user);
+            onClose();
+          }
         }
       }
     } catch (err: any) {
@@ -167,10 +202,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
       if (!destination) {
         throw new Error('Email is required');
       }
-      const data = await api.sendOtp(destination);
-      setOtpSent(true);
-      if (data.dev_otp) {
-        setDevOtpCode(data.dev_otp);
+      
+      // Try Supabase OTP sending
+      try {
+        const { error: sbErr } = await supabase.auth.signInWithOtp({
+          email: destination,
+        });
+        if (sbErr) throw sbErr;
+        setOtpSent(true);
+      } catch (sbErr: any) {
+        console.warn("Supabase signInWithOtp failed, trying local fallback:", sbErr);
+        const data = await api.sendOtp(destination);
+        setOtpSent(true);
+        if (data.dev_otp) {
+          setDevOtpCode(data.dev_otp);
+        }
       }
     } catch (err: any) {
       setError(err.message || 'Failed to send verification code.');
@@ -185,9 +231,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
     setLoading(true);
     try {
       const destination = email;
-      const data = await api.verifyOtp(destination, otpCode, fullName || undefined);
-      onAuthSuccess(data.user);
-      onClose();
+      // Try Supabase verifyOtp first
+      try {
+        const { data: sbData, error: sbErr } = await supabase.auth.verifyOtp({
+          email: destination,
+          token: otpCode,
+          type: 'email'
+        });
+        if (sbErr) throw sbErr;
+        if (sbData.session) {
+          localStorage.setItem('ecotrack_token', sbData.session.access_token);
+          const userProfile = await api.getMe();
+          onAuthSuccess(userProfile.user);
+          onClose();
+          return;
+        }
+      } catch (sbErr: any) {
+        console.warn("Supabase verifyOtp failed, trying local fallback:", sbErr);
+        const data = await api.verifyOtp(destination, otpCode, fullName || undefined);
+        onAuthSuccess(data.user);
+        onClose();
+      }
     } catch (err: any) {
       setError(err.message || 'OTP verification failed. Please try again.');
     } finally {
@@ -207,6 +271,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
     } finally {
       setLoading(false);
       setShowGoogleMock(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setError('');
+    try {
+      const { error: sbErr } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (sbErr) throw sbErr;
+    } catch (err: any) {
+      console.warn("Supabase Google auth redirect failed, trying local mock:", err);
+      setShowGoogleMock(true);
     }
   };
 
@@ -703,7 +783,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
                 <button
                   type="button"
-                  onClick={() => setShowGoogleMock(true)}
+                  onClick={handleGoogleLogin}
                   className="w-full py-2.5 px-4 bg-white dark:bg-[#122012] border border-gray-200 dark:border-[#2d4a2d] hover:bg-gray-50 dark:hover:bg-[#1f371f] text-gray-700 dark:text-[#dceadc] font-semibold text-sm rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
                 >
                   <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
