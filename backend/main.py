@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
+from supabase import create_client, Client
 import uuid
 import datetime
 from typing import List, Optional
@@ -53,6 +54,24 @@ except Exception as e:
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+# Configure Supabase client
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+SUPABASE_KEY = os.environ.get("SUPABASE_SECRET_KEY", "")
+supabase: Optional[Client] = None
+
+if SUPABASE_URL and SUPABASE_KEY:
+    try:
+        # Check if key is a placeholder or obfuscated, if so skip initialization or handle gracefully
+        if "••••" in SUPABASE_KEY or not SUPABASE_KEY:
+            print("Supabase key is a placeholder. Supabase integration running in fallback mode.")
+        else:
+            supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+            print("Supabase client initialized successfully.")
+    except Exception as e:
+        print(f"Failed to initialize Supabase client: {e}")
+else:
+    print("Supabase URL or Key not found in environment. Supabase integration disabled.")
 
 # Security & JWT Configurations
 SECRET_KEY = os.environ.get("JWT_SECRET", "ecotrack_secret_key_2026")
