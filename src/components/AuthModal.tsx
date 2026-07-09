@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { api } from '../services/api';
-import { X, Lock, Mail, User, ShieldCheck, Eye, EyeOff, Copy, Check, Download, AlertTriangle, Key, Phone, Smartphone } from 'lucide-react';
+import { X, Lock, Mail, User, ShieldCheck, Eye, EyeOff, Copy, Check, Download, AlertTriangle, Key } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -30,11 +30,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
   const [registeredUserData, setRegisteredUserData] = useState<any>(null);
 
   // OTP Flow States
-  const [loginMethod, setLoginMethod] = useState<'password' | 'email_otp' | 'phone_otp'>('password');
+  const [loginMethod, setLoginMethod] = useState<'password' | 'email_otp'>('password');
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState('');
   const [devOtpCode, setDevOtpCode] = useState<string | null>(null);
-  const [phone, setPhone] = useState('');
   const [showGoogleMock, setShowGoogleMock] = useState(false);
 
   if (!isOpen) return null;
@@ -164,9 +163,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
     setLoading(true);
     setDevOtpCode(null);
     try {
-      const destination = loginMethod === 'email_otp' ? email : phone;
+      const destination = email;
       if (!destination) {
-        throw new Error(loginMethod === 'email_otp' ? 'Email is required' : 'Phone number is required');
+        throw new Error('Email is required');
       }
       const data = await api.sendOtp(destination);
       setOtpSent(true);
@@ -185,7 +184,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
     setError('');
     setLoading(true);
     try {
-      const destination = loginMethod === 'email_otp' ? email : phone;
+      const destination = email;
       const data = await api.verifyOtp(destination, otpCode, fullName || undefined);
       onAuthSuccess(data.user);
       onClose();
@@ -454,17 +453,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                 >
                   <Mail size={12} /> Email OTP
                 </button>
-                <button
-                  type="button"
-                  onClick={() => { setLoginMethod('phone_otp'); setOtpSent(false); setError(''); }}
-                  className={`flex-1 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer ${
-                    loginMethod === 'phone_otp'
-                      ? 'bg-white dark:bg-[#203620] text-[#38523A] dark:text-[#dceadc] shadow-sm'
-                      : 'text-gray-400 dark:text-[#9ab89a] hover:text-[#38523A] dark:hover:text-[#84B056]'
-                  }`}
-                >
-                  <Phone size={12} /> Phone OTP
-                </button>
               </div>
             )}
 
@@ -601,41 +589,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               <div className="space-y-4">
                 {!otpSent ? (
                   <form onSubmit={handleSendOtp} className="space-y-4">
-                    {loginMethod === 'email_otp' ? (
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-500 dark:text-[#9ab89a] uppercase tracking-wider mb-2">
-                          Email Address
-                        </label>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-3 text-gray-400" size={18} />
-                          <input
-                            type="email"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="name@example.com"
-                            className="w-full pl-10 pr-4 py-2.5 rounded-xl eco-input text-[#333333] dark:text-[#dceadc] text-sm"
-                          />
-                        </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-500 dark:text-[#9ab89a] uppercase tracking-wider mb-2">
+                        Email Address
+                      </label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-3 text-gray-400" size={18} />
+                        <input
+                          type="email"
+                          required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="name@example.com"
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl eco-input text-[#333333] dark:text-[#dceadc] text-sm"
+                        />
                       </div>
-                    ) : (
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-500 dark:text-[#9ab89a] uppercase tracking-wider mb-2">
-                          Phone Number
-                        </label>
-                        <div className="relative">
-                          <Smartphone className="absolute left-3 top-3 text-gray-400" size={18} />
-                          <input
-                            type="tel"
-                            required
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            placeholder="+1234567890"
-                            className="w-full pl-10 pr-4 py-2.5 rounded-xl eco-input text-[#333333] dark:text-[#dceadc] text-sm"
-                          />
-                        </div>
-                      </div>
-                    )}
+                    </div>
 
                     <div>
                       <label className="block text-xs font-semibold text-gray-500 dark:text-[#9ab89a] uppercase tracking-wider mb-2">
@@ -668,7 +637,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                         Verification code sent to:
                       </p>
                       <p className="text-sm font-bold text-[#38523A] dark:text-[#84B056]">
-                        {loginMethod === 'email_otp' ? email : phone}
+                        {email}
                       </p>
                     </div>
 
