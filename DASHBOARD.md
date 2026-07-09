@@ -20,16 +20,17 @@
 - [x] Implemented Email & Phone Number OTP generation, secure delivery (SMTP & Twilio/Mock), and verification backend routes and frontend input views.
 - [x] Created `vercel.json` file in the workspace root to support multi-service deployment (Vite + FastAPI).
 - [x] Unified all environment variable configurations into a single root `.env` file, and configured the backend to load it automatically using `find_dotenv()`.
+- [x] Removed all duplicate and unwanted `.env` files from `/next-auth-system` directory.
+- [x] Fixed local database connection warnings by setting default local SQLite fallback `DATABASE_URL=sqlite:///./ecotrack.db` in `.env`.
 
 ## Core Dependencies
 - **Frontend**: React 19, Vite, Tailwind CSS (v4), Framer Motion, Recharts, Leaflet.
-- **Backend**: FastAPI, SQLAlchemy, SQLite (Fallback), PyJWT, Google Generative AI (Gemini), email-validator.
+- **Backend**: FastAPI, SQLAlchemy, SQLite (Default/Fallback), PyJWT, Google Generative AI (Gemini), email-validator.
 
 ## Unused Code Review
 - **Directory**: `/next-auth-system`
-  - *Recommendation*: Candidate for deletion. This directory contains a standalone Next.js 15 auth template with Auth.js, Prisma, and Docker configurations. It is not loaded, executed, or referenced by the active Vite frontend or FastAPI backend services.
+  - *Status*: Cleaned up of environment credentials and files. Ready for complete deletion.
 
 ## Immediate Next Steps
-- [ ] Add the actual SMTP username/password in `next-auth-system/.env.local` to start sending verification emails.
 - [ ] Perform full walkthrough of the register-login-recover pipeline using Google OAuth and email verification.
 - [ ] Confirm and proceed with the deletion of `/next-auth-system` directory if no longer needed.
