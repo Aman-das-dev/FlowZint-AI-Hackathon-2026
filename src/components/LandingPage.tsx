@@ -117,8 +117,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
-          <button onClick={onOpenAuth} className="px-4 py-2 rounded-lg border-2 border-[#38523A] text-[#38523A] text-sm font-semibold hover:bg-[#38523A] hover:text-white transition-all cursor-pointer">
+        <div className="flex flex-wrap items-center gap-3">
+          <button onClick={onOpenAuth} className="button-responsive btn-lg px-4 py-2 rounded-lg border-2 border-[#38523A] text-[#38523A] text-sm sm:text-base font-semibold hover:bg-[#38523A] hover:text-white transition-all cursor-pointer">
             Sign In
           </button>
           <button onClick={onStartApp} className="px-4 py-2 rounded-lg bg-[#D9E335] text-[#38523A] text-sm font-bold hover:bg-[#FFDE59] transition-all cursor-pointer shadow-md">
