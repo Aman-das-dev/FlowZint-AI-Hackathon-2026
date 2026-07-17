@@ -187,7 +187,7 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
         <p className="text-gray-400 mt-1">Book certified driver collections for bulk electronics and monitor logistical tracking states.</p>
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Left Side: Schedule Form (Col-5) */}
         <div className="lg:col-span-5 space-y-6 animate-holo-warp">
@@ -223,7 +223,7 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
               </div>
 
               {/* Date & Time Grid */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
                     Pickup Date
@@ -433,7 +433,7 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
               </div>
             </div>
           ) : (
-            <div className="rounded-2xl border border-white/5 bg-black/20 p-16 text-center text-gray-500 min-h-[350px] flex flex-col items-center justify-center">
+            <div className="rounded-2xl border border-white/5 bg-black/20 p-8 sm:p-10 text-center text-gray-500 min-h-[260px] flex flex-col items-center justify-center">
               <Truck size={48} className="text-gray-600 mb-4 animate-bounce" />
               <p className="font-semibold text-gray-400">No Scheduled Pickups</p>
               <p className="text-xs text-gray-500 max-w-sm mt-1">Book a collection using the scheduler on the left or select a certified recycler on the map locator tab.</p>

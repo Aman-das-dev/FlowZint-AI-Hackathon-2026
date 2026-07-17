@@ -158,7 +158,7 @@ export const AIScan: React.FC<AIScanProps> = ({ onSuccess, updateUserPoints }) =
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Left Hand side: Scanning Frame & Action Buttons */}
         <div className="lg:col-span-5 space-y-6 animate-holo-warp">

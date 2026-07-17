@@ -47,7 +47,7 @@ export const ImpactDashboard: React.FC = () => {
       </div>
 
       {/* Stats Cards Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
         
         <div className="p-5 rounded-2xl glass-panel border-white/5 flex flex-col justify-between hover:border-emerald-500/30 hover:scale-105 transition-all duration-300 shadow-lg animate-holo-warp animate-electro-hover" style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
           <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 animate-magnetic-tilt">
@@ -116,7 +116,7 @@ export const ImpactDashboard: React.FC = () => {
       </div>
 
       {/* Recharts Diagrams Section */}
-      <div className="grid lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* Left Side: Historical Carbon offset (Col-7) */}
         <div className="lg:col-span-8 rounded-2xl glass-panel p-6 border-white/5 space-y-4">

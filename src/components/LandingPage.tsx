@@ -130,24 +130,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
       {/* ─── Hero Section ─── */}
       <section className="relative z-10 w-full overflow-hidden">
         {/* Hero BG Image with overlay */}
-        <div className="relative min-h-[580px] flex items-center" style={{
+        <div className="relative min-h-[420px] md:min-h-[580px] flex items-center" style={{
           backgroundImage: 'url(https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=1600&q=80)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}>
           <div className="absolute inset-0 bg-[#38523A]/75" />
 
-          <div className="relative z-10 w-full px-8 lg:px-20 py-24 grid lg:grid-cols-2 gap-12 items-center">
+          <div className="relative z-10 w-full px-6 sm:px-8 lg:px-20 py-20 sm:py-24 grid gap-12 lg:grid-cols-2 items-center">
             {/* Text */}
-            <motion.div className="space-y-6" variants={fadeUp} initial="hidden" animate="visible" custom={0}>
+            <motion.div className="space-y-6 max-w-xl" variants={fadeUp} initial="hidden" animate="visible" custom={0}>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D9E335]/20 border border-[#D9E335]/50 text-[#D9E335] text-xs font-semibold tracking-wide uppercase">
                 <Zap size={12} className="fill-[#D9E335]" /> AI-Powered Eco Platform
               </div>
-              <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight" style={{ fontFamily: "'Amatic SC', cursive", letterSpacing: '2px' }}>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight" style={{ fontFamily: "'Amatic SC', cursive", letterSpacing: '2px' }}>
                 Your E-Waste is <br/>
                 <span className="text-[#D9E335]">Our Responsibility</span>
               </h1>
-              <p className="text-white/80 text-lg max-w-lg font-light leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+              <p className="text-white/80 text-base sm:text-lg max-w-full sm:max-w-xl font-light leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
                 Scan devices with AI, find certified recyclers, schedule doorstep pickups and track your environmental impact — all in one platform.
               </p>
               <div className="flex flex-wrap gap-4 pt-2">
@@ -163,14 +163,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
 
             {/* Hero Image */}
             <motion.div
-              className="hidden lg:flex justify-center"
+              className="hidden md:flex lg:justify-center justify-center"
               variants={fadeUp} initial="hidden" animate="visible" custom={2}
             >
               <div className="relative">
                 <motion.img
                   src="/assets/images/waste_truck_3d.png"
                   alt="Eco Truck 3D"
-                  className="w-96 h-96 object-contain drop-shadow-2xl"
+                  className="w-64 h-64 md:w-96 md:h-96 object-contain drop-shadow-2xl"
                   animate={{ y: [0, -12, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                 />
