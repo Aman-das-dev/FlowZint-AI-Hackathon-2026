@@ -19,10 +19,11 @@ function App() {
         if (session) {
           localStorage.setItem('ecotrack_token', session.access_token);
           setUser({
-            id: session.user.id,
-            name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+            id: session.user.id as any,
+            full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
             email: session.user.email || '',
-            avatar: session.user.user_metadata?.avatar_url,
+            avatar_url: session.user.user_metadata?.avatar_url || '',
+            eco_points: 0
           });
         }
       } catch (err) {
@@ -48,10 +49,11 @@ function App() {
         try {
           // Bypass failing Vercel Python backend entirely and use Supabase session directly
           setUser({
-            id: session.user.id,
-            name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+            id: session.user.id as any,
+            full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
             email: session.user.email || '',
-            avatar: session.user.user_metadata?.avatar_url,
+            avatar_url: session.user.user_metadata?.avatar_url || '',
+            eco_points: 0
           });
         } catch (err) {
           console.error('Failed to set session user:', err);
@@ -74,10 +76,11 @@ function App() {
       setLoading(true);
       try {
         setUser({
-          id: session.user.id,
-          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+          id: session.user.id as any,
+          full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
           email: session.user.email || '',
-          avatar: session.user.user_metadata?.avatar_url,
+          avatar_url: session.user.user_metadata?.avatar_url || '',
+          eco_points: 0
         });
       } catch (e) {
         setAuthModalOpen(true);
@@ -90,10 +93,11 @@ function App() {
       setLoading(true);
       try {
         setUser({
-          id: 'demo-user-id',
-          name: 'Demo User',
+          id: 1,
+          full_name: 'Demo User',
           email: 'demo@ecotrack.ai',
-          avatar: '',
+          avatar_url: '',
+          eco_points: 500
         });
       } catch (err) {
         // Fallback to opening login popup if even the backend fallback fails
