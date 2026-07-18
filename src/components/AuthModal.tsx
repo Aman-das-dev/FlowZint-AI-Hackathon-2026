@@ -66,7 +66,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
     try {
       if (isLogin) {
-        const defaultAdminEmail = import.meta.env.VITE_DEFAULT_ADMIN_EMAIL || '';
         // Try Supabase login first, but fall back to the backend if the hosted
         // frontend is missing Supabase environment variables or auth setup.
         try {
