@@ -342,6 +342,20 @@ export const api = {
     return res.json();
   },
 
+  async updatePickupStatus(pickupId: number, status: string): Promise<PickupSchedule> {
+    const token = getAuthToken() || "";
+    const res = await fetch(`${API_BASE}/pickups/${pickupId}/update-status?status=${status}`, {
+      method: "POST",
+      headers: {
+        "Authorization": token ? `Bearer ${token}` : "",
+      },
+    });
+    if (!res.ok) {
+      throw new Error("Failed to update pickup status");
+    }
+    return res.json();
+  },
+
   // Dashboard Stats
   async getDashboardStats(): Promise<DashboardStats> {
     const res = await fetch(`${API_BASE}/dashboard/stats`, {

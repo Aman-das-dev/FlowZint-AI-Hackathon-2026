@@ -149,21 +149,15 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
     const nextStatus = STATUS_STEPS[currentIndex + 1];
     
     try {
-      // Endpoint is: /api/pickups/{pickup_id}/update-status?status=...
-      const res = await fetch(`http://localhost:8000/api/pickups/${selectedPickup.id}/update-status?status=${nextStatus}`, {
-        method: 'POST'
-      });
-      if (res.ok) {
-        const updated = await res.json();
-        
-        // Update local arrays
-        const updatedPickups = pickups.map(p => p.id === updated.id ? { ...p, status: updated.status } : p);
-        setPickups(updatedPickups);
-        setSelectedPickup({ ...selectedPickup, status: updated.status });
-        
-        if (updated.status === 'Completed') {
-          updateUserPoints(200); // Extra points for completion
-        }
+      const updated = await api.updatePickupStatus(selectedPickup.id, nextStatus);
+      
+      // Update local arrays
+      const updatedPickups = pickups.map(p => p.id === updated.id ? { ...p, status: updated.status } : p);
+      setPickups(updatedPickups);
+      setSelectedPickup({ ...selectedPickup, status: updated.status });
+      
+      if (updated.status === 'Completed') {
+        updateUserPoints(200); // Extra points for completion
       }
     } catch (err) {
       console.error('Simulation error:', err);
