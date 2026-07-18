@@ -91,8 +91,10 @@ else:
 # Security & JWT Configurations
 SECRET_KEY = os.environ.get("JWT_SECRET", "ecotrack_secret_key_2026")
 ALGORITHM = "HS256"
-
 # Configure Gemini API
+ADMIN_EMAILS_STR = os.environ.get("VITE_ADMIN_EMAILS", "biswajitsahoo1410@gmail.com,amanprasaddas5@gmail.com,ranjanrashmi933@gmail.com")
+ADMIN_EMAILS = [email.strip().lower() for email in ADMIN_EMAILS_STR.split(",") if email.strip()]
+
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 genai_client = None
 if GEMINI_API_KEY:
