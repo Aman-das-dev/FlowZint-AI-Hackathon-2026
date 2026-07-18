@@ -506,6 +506,29 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ user, isAdmin, userPoi
               </span>
             </button>
           </div>
+
+          {/* Clear History */}
+          <div className="p-3 rounded-xl border flex flex-col justify-center" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-muted)' }}>
+            <p className="text-[10px] font-bold uppercase tracking-wider mb-1 flex items-center gap-1 text-rose-400">
+              <Trash2 size={13} /> Data Management
+            </p>
+            <button
+              onClick={async () => {
+                if (window.confirm('Are you sure you want to permanently delete all your device scanning history?')) {
+                  try {
+                    await api.clearHistory();
+                    alert('Your scan history has been cleared successfully.');
+                    // Need to trigger a reload or refresh state if it was stored here, but since it's only fetched in Dashboard, it will be blank next time they visit it.
+                  } catch (err) {
+                    alert('Failed to clear history. Please try again.');
+                  }
+                }
+              }}
+              className="text-sm font-semibold text-rose-500 hover:text-rose-400 text-left transition-colors"
+            >
+              Clear Device Scan History
+            </button>
+          </div>
         </div>
       </div>
 

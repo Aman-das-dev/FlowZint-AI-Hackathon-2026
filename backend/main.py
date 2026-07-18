@@ -1147,6 +1147,13 @@ def get_submission_history(authorization: Optional[str] = Header(None), db: Sess
     submissions = db.query(DeviceSubmissionDB).filter(DeviceSubmissionDB.user_id == current_user.id).order_by(DeviceSubmissionDB.submitted_at.desc()).all()
     return submissions
 
+@app.delete("/api/devices/history")
+def clear_submission_history(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
+    current_user = get_current_user_from_header(authorization, db)
+    db.query(DeviceSubmissionDB).filter(DeviceSubmissionDB.user_id == current_user.id).delete()
+    db.commit()
+    return {"message": "History cleared successfully"}
+
 # --- Certified Recycler Locations ---
 
 RECYCLERS_LIST = [

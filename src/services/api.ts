@@ -265,6 +265,16 @@ export const api = {
     return res.json();
   },
 
+  async clearHistory(): Promise<void> {
+    const res = await fetch(`${API_BASE}/devices/history`, {
+      method: "DELETE",
+      headers: getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error("Failed to clear submission history");
+    }
+  },
+
   // Recyclers
   async getRecyclers(): Promise<Recycler[]> {
     const res = await fetch(`${API_BASE}/recyclers`, {
