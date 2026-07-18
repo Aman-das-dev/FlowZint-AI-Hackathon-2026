@@ -28,7 +28,40 @@ const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || "")
 
 export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   const { isDarkMode, toggleDarkMode } = useTheme();
-  const [activeTab, setActiveTab] = useState<TabType>('overview');
+  const getInitialTab = (): TabType => {
+    const path = window.location.pathname.replace('/', '');
+    const validTabs: TabType[] = ['overview', 'scan', 'map', 'pickup', 'impact', 'rewards', 'admin', 'profile'];
+    if (validTabs.includes(path as TabType)) {
+      return path as TabType;
+    }
+    return 'overview';
+  };
+
+  const [activeTab, setActiveTab] = useState<TabType>(getInitialTab);
+
+  // Sync active tab to browser URL for deep linking
+  useEffect(() => {
+    const currentPath = window.location.pathname.replace('/', '');
+    if (currentPath !== activeTab && !(currentPath === '' && activeTab === 'overview')) {
+      const newUrl = activeTab === 'overview' ? '/' : `/${activeTab}`;
+      window.history.pushState(null, '', newUrl);
+    }
+  }, [activeTab]);
+
+  // Handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname.replace('/', '');
+      const validTabs: TabType[] = ['overview', 'scan', 'map', 'pickup', 'impact', 'rewards', 'admin', 'profile'];
+      if (validTabs.includes(path as TabType)) {
+        setActiveTab(path as TabType);
+      } else {
+        setActiveTab('overview');
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
   const [userPoints, setUserPoints] = useState(user.eco_points);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [history, setHistory] = useState<DeviceSubmission[]>([]);
