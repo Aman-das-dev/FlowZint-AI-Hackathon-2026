@@ -83,7 +83,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
           }
           onClose();
         } else {
-          // Try Supabase login first
+          // Try Supabase login first, but fall back to the backend if the hosted
+          // frontend is missing Supabase environment variables or auth setup.
           try {
             const { data: sbData, error: sbErr } = await supabase.auth.signInWithPassword({
               email,
@@ -103,8 +104,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               return;
             }
           } catch (sbErr: any) {
-            console.warn("Supabase login failed, trying local fallback:", sbErr);
-            throw sbErr; // Don't try local fallback, it will crash
+            console.warn("Supabase login failed, trying backend fallback:", sbErr);
+            try {
+              const data = await api.login(email.trim(), password);
+              onAuthSuccess(data.user);
+              onClose();
+              return;
+            } catch (apiErr: any) {
+              throw apiErr;
+            }
           }
         }
       } else {
@@ -128,8 +136,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
           setLoading(false);
           return;
         } catch (sbErr: any) {
-          console.warn("Supabase registration failed, trying local fallback:", sbErr);
-          throw sbErr; // Don't try local fallback, it will crash
+          console.warn("Supabase registration failed, trying backend fallback:", sbErr);
+          try {
+            const data = await api.register(email.trim(), password, fullName.trim());
+            setRegisteredUserData(data);
+            setGeneratedCode(data.recovery_code || null);
+            setSignUpSuccess(true);
+            return;
+          } catch (apiErr: any) {
+            throw apiErr;
+          }
         }
       }
     } catch (err: any) {
@@ -285,10 +301,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
   const handleGoogleLogin = async () => {
     setError('');
     try {
+      const redirectTo =
+        import.meta.env.VITE_APP_URL?.replace(/\/$/, "") ||
+        window.location.origin;
       const { error: sbErr } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}`,
+          redirectTo,
         },
       });
       if (sbErr) throw sbErr;

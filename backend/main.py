@@ -38,14 +38,29 @@ def read_root():
     return {"message": "Welcome to EcoTrack AI Backend API", "status": "running"}
 
 # Database Setup (Supports SQLite and PostgreSQL)
+def _is_hosted_environment() -> bool:
+    return bool(
+        os.environ.get("VERCEL")
+        or os.environ.get("AWS_EXECUTION_ENV")
+        or os.environ.get("RAILWAY_ENVIRONMENT")
+        or os.environ.get("RENDER")
+        or os.environ.get("FLY_APP_NAME")
+        or os.environ.get("NETLIFY")
+    )
+
+
+def _default_sqlite_url() -> str:
+    # Hosted platforms often mount the app directory as read-only.
+    return "sqlite:////tmp/ecotrack.db" if _is_hosted_environment() else "sqlite:///./ecotrack.db"
+
+
 DATABASE_URL = os.environ.get("DATABASE_URL", "")
 
-if not DATABASE_URL:
-    # On Vercel, the root directory is read-only, so we must use /tmp
-    if os.environ.get("VERCEL") or os.environ.get("AWS_EXECUTION_ENV"):
-        DATABASE_URL = "sqlite:////tmp/ecotrack.db"
-    else:
-        DATABASE_URL = "sqlite:///./ecotrack.db"
+if not DATABASE_URL or DATABASE_URL.startswith("sqlite"):
+    # Prefer a writable SQLite path for local dev and fallback hosting.
+    DATABASE_URL = DATABASE_URL or _default_sqlite_url()
+    if _is_hosted_environment() and DATABASE_URL.startswith("sqlite:///./"):
+        DATABASE_URL = _default_sqlite_url()
 
 # Auto-correct legacy postgres:// schemas to postgresql:// for SQLAlchemy compatibility
 if DATABASE_URL.startswith("postgres://"):
@@ -1604,3 +1619,10 @@ try:
 except OSError:
     pass
 app.mount("/public", StaticFiles(directory="public"), name="public")
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    port = int(os.environ.get("PORT", "8000"))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)

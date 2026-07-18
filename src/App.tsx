@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api, type User } from './services/api';
+import type { User } from './services/api';
 import { LandingPage } from './components/LandingPage';
 import { AuthModal } from './components/AuthModal';
 import { Dashboard } from './components/Dashboard';
@@ -11,13 +11,20 @@ function App() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const clearAuthUrl = () => {
+    if (window.location.hash.includes('access_token=')) {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  };
+
   // Check auth session on startup
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { session } } = await supabase.auth.getSession();
         if (session) {
           localStorage.setItem('ecotrack_token', session.access_token);
+          clearAuthUrl();
           setUser({
             id: session.user.id as any,
             full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
@@ -40,12 +47,7 @@ function App() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session) {
         localStorage.setItem('ecotrack_token', session.access_token);
-        // Clean up the dangling '#' left by Supabase from the URL for a cleaner look
-        setTimeout(() => {
-          if (window.location.hash === '' || window.location.hash === '#') {
-             window.history.replaceState(null, '', window.location.pathname + window.location.search);
-          }
-        }, 100);
+        clearAuthUrl();
         try {
           // Bypass failing Vercel Python backend entirely and use Supabase session directly
           setUser({
