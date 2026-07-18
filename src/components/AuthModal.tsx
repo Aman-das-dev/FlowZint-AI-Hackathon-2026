@@ -66,8 +66,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
     try {
       if (isLogin) {
-        const defaultAdminEmail = 'admin@ecotrack.ai';
-        const defaultAdminPassword = 'adminpassword123';
+        const defaultAdminEmail = import.meta.env.VITE_DEFAULT_ADMIN_EMAIL || 'amanprasaddas5@gmail.com';
+        const defaultAdminPassword = import.meta.env.VITE_DEFAULT_ADMIN_PASSWORD || 'adminpassword123';
         if (email.trim() === defaultAdminEmail && password === defaultAdminPassword) {
           sessionStorage.setItem('is_admin_auth', 'true');
           try {
@@ -510,7 +510,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                   {[
                     { name: "Eco Warrior", email: "eco.warrior.google@gmail.com", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=ecowarrior" },
                     { name: "Green Earth", email: "green.earth.google@gmail.com", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=greenearth" },
-                    { name: "Admin Google", email: "admin@ecotrack.ai", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=admin" }
+                    { name: "Admin Google", email: import.meta.env.VITE_DEFAULT_ADMIN_EMAIL || 'amanprasaddas5@gmail.com', avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=admin" }
                   ].map((acc) => (
                     <button
                       key={acc.email}
@@ -683,8 +683,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                   <button
                     type="button"
                     onClick={() => {
-                      setEmail('admin@ecotrack.ai');
-                      setPassword('adminpassword123');
+                      setEmail(import.meta.env.VITE_DEFAULT_ADMIN_EMAIL || 'amanprasaddas5@gmail.com');
+                      setPassword(import.meta.env.VITE_DEFAULT_ADMIN_PASSWORD || 'adminpassword123');
                     }}
                     className="w-full text-left text-[10px] text-[#84B056] hover:underline flex items-center gap-1 opacity-70 hover:opacity-100"
                   >
