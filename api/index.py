@@ -8,6 +8,17 @@ try:
 except Exception as e:
     import traceback
     error_trace = traceback.format_exc()
-    def app(environ, start_response):
-        start_response('500 Internal Server Error', [('Content-Type', 'text/plain')])
-        return [error_trace.encode('utf-8')]
+    
+    async def app(scope, receive, send):
+        assert scope['type'] == 'http'
+        await send({
+            'type': 'http.response.start',
+            'status': 500,
+            'headers': [
+                (b'content-type', b'text/plain'),
+            ]
+        })
+        await send({
+            'type': 'http.response.body',
+            'body': error_trace.encode('utf-8'),
+        })
