@@ -22,6 +22,7 @@
 - [x] Unified all environment variable configurations into a single root `.env` file, and configured the backend to load it automatically using `find_dotenv()`.
 - [x] Removed all duplicate and unwanted `.env` files from `/next-auth-system` directory.
 - [x] Fixed local database connection warnings by keeping the SQLite fallback in `.env` generic and host-safe.
+- [x] Improved SEO metadata with absolute canonical/Open Graph/Twitter URLs plus `robots.txt` and `sitemap.xml`.
 
 ## Core Dependencies
 - **Frontend**: React 19, Vite, Tailwind CSS (v4), Framer Motion, Recharts, Leaflet.
