@@ -277,10 +277,61 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         {/* Tab Routing Router */}
         {activeTab === 'overview' && (
           <div className="space-y-8 animate-in fade-in duration-300">
-            {/* Greeting */}
-            <div className="animate-float-up" style={{ animationDelay: '50ms' }}>
-              <h2 className="text-3xl font-extrabold" style={{ color: 'var(--accent-forest)' }}>Eco Portal Overview</h2>
-              <p className="mt-1" style={{ color: 'var(--text-secondary)' }}>Welcome back, {user.full_name}! Let's recycle electronics safely and offset carbon footprint.</p>
+            {/* Overview Header: greeting + theme toggle */}
+            <div className="flex items-center justify-between flex-wrap gap-4 animate-float-up" style={{ animationDelay: '50ms' }}>
+              {/* User greeting with avatar */}
+              <div className="flex items-center gap-3">
+                {user.avatar_url && !user.avatar_url.includes('undefined') ? (
+                  <img
+                    src={user.avatar_url}
+                    alt={user.full_name}
+                    className="w-12 h-12 rounded-xl object-cover border-2 shadow-lg flex-shrink-0"
+                    style={{ borderColor: 'var(--accent-green)' }}
+                  />
+                ) : (
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center text-base font-extrabold text-white shadow-lg flex-shrink-0"
+                    style={{ background: 'linear-gradient(135deg, #38523A, #84B056)' }}
+                  >
+                    {(user.full_name || user.email || 'U').split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase()}
+                  </div>
+                )}
+                <div>
+                  <h2 className="text-2xl font-extrabold leading-tight" style={{ color: 'var(--accent-forest)' }}>
+                    Welcome, {user.full_name?.split(' ')[0] || 'User'}! 👋
+                  </h2>
+                  <p className="text-sm mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+                    Eco Portal Overview — let's recycle safely &amp; offset your footprint.
+                  </p>
+                </div>
+              </div>
+
+              {/* Day / Night toggle pill */}
+              <button
+                id="theme-toggle-overview"
+                onClick={toggleDarkMode}
+                title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold border transition-all duration-300 shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
+                style={{
+                  borderColor: isDarkMode ? 'var(--accent-green)' : '#d1d5db',
+                  background: isDarkMode ? 'rgba(132,176,86,0.12)' : '#f3f4f6',
+                  color: isDarkMode ? 'var(--accent-green)' : '#374151',
+                }}
+              >
+                {/* Track */}
+                <span
+                  className="relative w-9 h-5 rounded-full transition-all duration-300 flex-shrink-0"
+                  style={{ background: isDarkMode ? 'var(--accent-green)' : '#d1d5db' }}
+                >
+                  <span
+                    className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow flex items-center justify-center transition-transform duration-300"
+                    style={{ transform: isDarkMode ? 'translateX(16px)' : 'translateX(0)' }}
+                  >
+                    {isDarkMode ? <Moon size={9} className="text-slate-700" /> : <Sun size={9} className="text-amber-500" />}
+                  </span>
+                </span>
+                {isDarkMode ? 'Dark Mode' : 'Light Mode'}
+              </button>
             </div>
 
             {/* Quick Cards Info */}
