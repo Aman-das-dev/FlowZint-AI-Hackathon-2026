@@ -1034,9 +1034,7 @@ async def detect_device(
                 break
                 
         if not detect_key:
-            if any(term in search_str for term in ["phone", "mobile", "cel", "webcam", "capture", "blob", "image", "jpg", "png", "pic", "photo", "img"]):
-                detect_key = "smartphone"
-            elif any(term in search_str for term in ["pc", "computer", "tower", "cpu"]):
+            if any(term in search_str for term in ["pc", "computer", "tower", "cpu"]):
                 detect_key = "desktop"
             elif any(term in search_str for term in ["display", "screen", "lcd", "led"]):
                 detect_key = "monitor"
@@ -1044,8 +1042,18 @@ async def detect_device(
                 detect_key = "tablet"
             elif any(term in search_str for term in ["wire", "cable", "adapter", "plug"]):
                 detect_key = "charger"
+            elif any(term in search_str for term in ["phone", "mobile", "cel"]):
+                detect_key = "smartphone"
                 
+        # If no specific device was matched from the filename/preset
         if not detect_key:
+            # Check if this looks like a generic webcam capture or image upload
+            if not genai_client and any(term in search_str for term in ["capture", "image", "jpg", "png", "pic", "photo", "img", "blob"]):
+                raise HTTPException(
+                    status_code=400, 
+                    detail="Live AI detection requires a GEMINI_API_KEY in your .env file. Please configure the key to analyze webcam images, or select a specific device from the 'Demo Preset Override' dropdown."
+                )
+            
             detect_key = "smartphone"
 
     data = DEVICE_DATASET[detect_key]

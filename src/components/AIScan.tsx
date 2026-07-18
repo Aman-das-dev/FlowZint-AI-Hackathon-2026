@@ -69,7 +69,7 @@ export const AIScan: React.FC<AIScanProps> = ({ onSuccess, updateUserPoints }) =
       ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
       canvas.toBlob((blob) => {
         if (blob) {
-          const deviceLabel = selectedPreset || 'smartphone';
+          const deviceLabel = selectedPreset || 'webcam';
           const capturedFile = new File([blob], `${deviceLabel}_capture.jpg`, { type: 'image/jpeg' });
           setFile(capturedFile);
           
