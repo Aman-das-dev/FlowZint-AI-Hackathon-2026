@@ -1,10 +1,6 @@
 import sys
 import os
-from fastapi import FastAPI
 
-app = FastAPI()
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-@app.get("/api")
-@app.get("/api/{path:path}")
-def dummy():
-    return {"message": "Dummy endpoint works! The issue is with backend imports."}
+from backend.main import app

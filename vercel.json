@@ -9,7 +9,7 @@
       "src": "api/index.py",
       "use": "@vercel/python",
       "config": {
-        "excludeFiles": "node_modules/**|next-auth-system/**|prisma/**|src/**|dist/**|.git/**|.agents/**|public/**"
+        "includeFiles": "backend/**"
       }
     }
   ],
