@@ -1,12 +1,57 @@
 import React, { useState, useEffect } from 'react';
 import { api, type PickupSchedule, type Recycler } from '../services/api';
-import { Calendar, Phone, Truck, User, RefreshCw, Sparkles } from 'lucide-react';
+import { Calendar, Phone, Truck, User, RefreshCw, Sparkles, ChevronDown } from 'lucide-react';
 
 interface PickupTrackerProps {
   preselectedRecycler: Recycler | null;
   onClearPreselection: () => void;
   updateUserPoints: (points: number) => void;
 }
+
+const CustomSelect = ({ 
+  value, 
+  onChange, 
+  options, 
+  placeholder, 
+  disabled = false 
+}: { 
+  value: string; 
+  onChange: (v: string) => void; 
+  options: { label: string; value: string }[]; 
+  placeholder: string; 
+  disabled?: boolean;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedLabel = options.find(o => o.value === value)?.label || placeholder;
+
+  return (
+    <div className="relative w-full">
+      <button 
+        type="button" 
+        disabled={disabled}
+        onClick={() => setIsOpen(!isOpen)}
+        onBlur={() => setTimeout(() => setIsOpen(false), 150)}
+        className="w-full px-3 py-2.5 rounded-xl glass-input text-white text-sm cursor-pointer disabled:opacity-50 text-left flex justify-between items-center"
+      >
+        <span className="truncate">{selectedLabel}</span>
+        <ChevronDown size={16} className={`flex-shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      {isOpen && !disabled && (
+        <div className="absolute z-[100] w-full mt-1 bg-[#0b0f19] border border-emerald-500/30 rounded-xl shadow-2xl max-h-56 overflow-y-auto custom-scrollbar">
+          {options.map(opt => (
+            <div 
+              key={opt.value}
+              onClick={() => { onChange(opt.value); setIsOpen(false); }}
+              className={`px-3 py-2.5 text-sm cursor-pointer transition-colors ${value === opt.value ? 'bg-emerald-500/20 text-emerald-400 font-bold' : 'text-gray-300 hover:bg-emerald-500/10 hover:text-white'}`}
+            >
+              {opt.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const STATUS_STEPS = ['Pending', 'Accepted', 'Driver Assigned', 'Picked Up', 'Completed'];
 
@@ -282,17 +327,15 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
                 <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
                   Select Collection Center
                 </label>
-                <select
+                <CustomSelect
                   value={recyclerName}
-                  onChange={(e) => handleRecyclerChange(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl glass-input text-white text-sm cursor-pointer"
-                >
-                  {recyclers.map(r => (
-                    <option key={r.id} value={r.name} className="bg-[#0b0f19] text-white">
-                      {r.name} {r.pickup_available ? '(Pickup OK)' : '(Drop-off Only)'}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(v) => handleRecyclerChange(v)}
+                  placeholder="Select Center..."
+                  options={recyclers.map(r => ({
+                    value: r.name,
+                    label: `${r.name} ${r.pickup_available ? '(Pickup OK)' : '(Drop-off Only)'}`
+                  }))}
+                />
               </div>
 
               {/* Date & Time Grid */}
@@ -313,17 +356,16 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
                   <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
                     Time Window
                   </label>
-                  <select
-                    required
+                  <CustomSelect
                     value={pickupTime}
-                    onChange={(e) => setPickupTime(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl glass-input text-white text-sm cursor-pointer"
-                  >
-                    <option value="" className="bg-[#0b0f19] text-white">Select time...</option>
-                    <option value="09:00 AM - 12:00 PM" className="bg-[#0b0f19] text-white">09:00 AM - 12:00 PM</option>
-                    <option value="12:00 PM - 03:00 PM" className="bg-[#0b0f19] text-white">12:00 PM - 03:00 PM</option>
-                    <option value="03:00 PM - 06:00 PM" className="bg-[#0b0f19] text-white">03:00 PM - 06:00 PM</option>
-                  </select>
+                    onChange={(v) => setPickupTime(v)}
+                    placeholder="Select time..."
+                    options={[
+                      { value: "09:00 AM - 12:00 PM", label: "09:00 AM - 12:00 PM" },
+                      { value: "12:00 PM - 03:00 PM", label: "12:00 PM - 03:00 PM" },
+                      { value: "03:00 PM - 06:00 PM", label: "03:00 PM - 06:00 PM" }
+                    ]}
+                  />
                 </div>
               </div>
 
@@ -334,33 +376,23 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
                 </label>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <select
-                    required
+                  <CustomSelect
                     value={addressState}
-                    onChange={(e) => {
-                      setAddressState(e.target.value);
-                      setAddressCity(''); // Reset city when state changes
+                    onChange={(v) => {
+                      setAddressState(v);
+                      setAddressCity('');
                     }}
-                    className="w-full px-3 py-2.5 rounded-xl glass-input text-white text-sm cursor-pointer"
-                  >
-                    <option value="" className="bg-[#0b0f19] text-white">Select State...</option>
-                    {Object.keys(STATE_CITY_MAP).map(state => (
-                      <option key={state} value={state} className="bg-[#0b0f19] text-white">{state}</option>
-                    ))}
-                  </select>
+                    placeholder="Select State..."
+                    options={Object.keys(STATE_CITY_MAP).map(state => ({ value: state, label: state }))}
+                  />
 
-                  <select
-                    required
+                  <CustomSelect
                     value={addressCity}
-                    onChange={(e) => setAddressCity(e.target.value)}
+                    onChange={(v) => setAddressCity(v)}
                     disabled={!addressState}
-                    className="w-full px-3 py-2.5 rounded-xl glass-input text-white text-sm cursor-pointer disabled:opacity-50"
-                  >
-                    <option value="" className="bg-[#0b0f19] text-white">Select City...</option>
-                    {addressState && STATE_CITY_MAP[addressState as keyof typeof STATE_CITY_MAP].map(city => (
-                      <option key={city} value={city} className="bg-[#0b0f19] text-white">{city}</option>
-                    ))}
-                  </select>
+                    placeholder="Select City..."
+                    options={addressState ? STATE_CITY_MAP[addressState as keyof typeof STATE_CITY_MAP].map(city => ({ value: city, label: city })) : []}
+                  />
                 </div>
 
                 <input
