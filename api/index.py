@@ -41,9 +41,9 @@ def read_root():
 DATABASE_URL = os.environ.get("DATABASE_URL", "")
 
 if not DATABASE_URL:
-    # On Vercel, the root directory is read-only, so we must use /tmp
+    # On Vercel, the root directory is read-only, and /tmp can sometimes have issues. Let's use memory temporarily to test.
     if os.environ.get("VERCEL") or os.environ.get("AWS_EXECUTION_ENV"):
-        DATABASE_URL = "sqlite:////tmp/ecotrack.db"
+        DATABASE_URL = "sqlite:///:memory:"
     else:
         DATABASE_URL = "sqlite:///./ecotrack.db"
 
