@@ -28,22 +28,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.middleware("http")
-async def normalize_vercel_paths(request: Request, call_next):
-    path = request.scope.get("path", "")
-    
-    # 1. If path starts with /api/index.py, replace it with /api
-    if path.startswith("/api/index.py"):
-        request.scope["path"] = path.replace("/api/index.py", "/api", 1)
-    # 2. If path starts with /index.py, replace it with /api
-    elif path.startswith("/index.py"):
-        request.scope["path"] = path.replace("/index.py", "/api", 1)
-    # 3. If path does not start with /api, prepend /api (unless it's a static check/public path)
-    elif not path.startswith("/api") and path != "/" and not path.startswith("/public"):
-        request.scope["path"] = f"/api{path}"
-        
-    return await call_next(request)
-
 @app.get("/")
 @app.get("/api")
 @app.get("/api/")

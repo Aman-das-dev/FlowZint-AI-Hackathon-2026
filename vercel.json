@@ -1,17 +1,30 @@
 {
-  "rewrites": [
+  "builds": [
     {
-      "source": "/api(.*)",
-      "destination": "/api/index.py"
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
     },
     {
-      "source": "/((?!api|public|assets).*)",
-      "destination": "/index.html"
+      "src": "api/index.py",
+      "use": "@vercel/python",
+      "config": {
+        "excludeFiles": "node_modules/**|next-auth-system/**|prisma/**|src/**|dist/**|.git/**|.agents/**|public/**"
+      }
     }
   ],
-  "functions": {
-    "api/index.py": {
-      "excludeFiles": "node_modules/**|next-auth-system/**|prisma/**|src/**|dist/**|.git/**|.agents/**|public/**"
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map))",
+      "dest": "/dist/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/dist/index.html"
     }
-  }
+  ]
 }
