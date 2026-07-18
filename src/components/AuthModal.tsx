@@ -66,53 +66,36 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
     try {
       if (isLogin) {
-        const defaultAdminEmail = import.meta.env.VITE_DEFAULT_ADMIN_EMAIL || 'amanprasaddas5@gmail.com';
-        const defaultAdminPassword = import.meta.env.VITE_DEFAULT_ADMIN_PASSWORD || 'adminpassword123';
-        if (email.trim() === defaultAdminEmail && password === defaultAdminPassword) {
-          sessionStorage.setItem('is_admin_auth', 'true');
+        const defaultAdminEmail = import.meta.env.VITE_DEFAULT_ADMIN_EMAIL || '';
+        // Try Supabase login first, but fall back to the backend if the hosted
+        // frontend is missing Supabase environment variables or auth setup.
+        try {
+          const { data: sbData, error: sbErr } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          if (sbErr) throw sbErr;
+          if (sbData.session) {
+            localStorage.setItem('ecotrack_token', sbData.session.access_token);
+            onAuthSuccess({
+              id: sbData.session.user.id as any,
+              full_name: sbData.session.user.user_metadata?.full_name || sbData.session.user.email?.split('@')[0] || 'User',
+              email: sbData.session.user.email || '',
+              avatar_url: sbData.session.user.user_metadata?.avatar_url || '',
+              eco_points: 0
+            });
+            onClose();
+            return;
+          }
+        } catch (sbErr: any) {
+          console.warn("Supabase login failed, trying backend fallback:", sbErr);
           try {
             const data = await api.login(email.trim(), password);
             onAuthSuccess(data.user);
-          } catch (err) {
-            onAuthSuccess({
-              id: 9999,
-              email: defaultAdminEmail,
-              full_name: 'EcoTrack Admin',
-              eco_points: 5000
-            });
-          }
-          onClose();
-        } else {
-          // Try Supabase login first, but fall back to the backend if the hosted
-          // frontend is missing Supabase environment variables or auth setup.
-          try {
-            const { data: sbData, error: sbErr } = await supabase.auth.signInWithPassword({
-              email,
-              password,
-            });
-            if (sbErr) throw sbErr;
-            if (sbData.session) {
-              localStorage.setItem('ecotrack_token', sbData.session.access_token);
-              onAuthSuccess({
-                id: sbData.session.user.id as any,
-                full_name: sbData.session.user.user_metadata?.full_name || sbData.session.user.email?.split('@')[0] || 'User',
-                email: sbData.session.user.email || '',
-                avatar_url: sbData.session.user.user_metadata?.avatar_url || '',
-                eco_points: 0
-              });
-              onClose();
-              return;
-            }
-          } catch (sbErr: any) {
-            console.warn("Supabase login failed, trying backend fallback:", sbErr);
-            try {
-              const data = await api.login(email.trim(), password);
-              onAuthSuccess(data.user);
-              onClose();
-              return;
-            } catch (apiErr: any) {
-              throw apiErr;
-            }
+            onClose();
+            return;
+          } catch (apiErr: any) {
+            throw apiErr;
           }
         }
       } else {
@@ -531,7 +514,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                   {[
                     { name: "Eco Warrior", email: "eco.warrior.google@gmail.com", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=ecowarrior" },
                     { name: "Green Earth", email: "green.earth.google@gmail.com", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=greenearth" },
-                    { name: "Admin Google", email: import.meta.env.VITE_DEFAULT_ADMIN_EMAIL || 'amanprasaddas5@gmail.com', avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=admin" }
+                    { name: "Admin Google", email: import.meta.env.VITE_DEFAULT_ADMIN_EMAIL || 'admin@example.com', avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=admin" }
                   ].map((acc) => (
                     <button
                       key={acc.email}

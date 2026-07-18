@@ -107,10 +107,10 @@ else:
     print("Supabase URL or Key not found in environment. Supabase integration disabled.")
 
 # Security & JWT Configurations
-SECRET_KEY = os.environ.get("JWT_SECRET", "ecotrack_secret_key_2026")
+SECRET_KEY = os.environ.get("JWT_SECRET", "change-me-in-production")
 ALGORITHM = "HS256"
 # Configure Gemini API
-ADMIN_EMAILS_STR = os.environ.get("VITE_ADMIN_EMAILS", "biswajitsahoo1410@gmail.com,amanprasaddas5@gmail.com,ranjanrashmi933@gmail.com")
+ADMIN_EMAILS_STR = os.environ.get("VITE_ADMIN_EMAILS", "admin1@example.com,admin2@example.com")
 ADMIN_EMAILS = [email.strip().lower() for email in ADMIN_EMAILS_STR.split(",") if email.strip()]
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")

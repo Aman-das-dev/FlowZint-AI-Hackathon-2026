@@ -18,10 +18,11 @@
 - [x] Overhauled Nodemailer SMTP transporter code to dynamically support SSL (port 465) and TLS (port 587) configurations with self-signed certificate fallback in development.
 - [x] Integrated fully functional Google login account selector on the frontend connected to backend's `/api/auth/google` endpoint.
 - [x] Implemented Email & Phone Number OTP generation, secure delivery (SMTP & Twilio/Mock), and verification backend routes and frontend input views.
-- [x] Created `vercel.json` file in the workspace root to support multi-service deployment (Vite + FastAPI).
+- [x] Removed the Vercel-specific deployment config from the workspace root.
 - [x] Unified all environment variable configurations into a single root `.env` file, and configured the backend to load it automatically using `find_dotenv()`.
 - [x] Removed all duplicate and unwanted `.env` files from `/next-auth-system` directory.
-- [x] Fixed local database connection warnings by setting default local SQLite fallback `DATABASE_URL=sqlite:///./ecotrack.db` in `.env`.
+- [x] Fixed local database connection warnings by keeping the SQLite fallback in `.env` generic and host-safe.
+- [x] Improved SEO metadata with absolute canonical/Open Graph/Twitter URLs plus `robots.txt` and `sitemap.xml`.
 
 ## Core Dependencies
 - **Frontend**: React 19, Vite, Tailwind CSS (v4), Framer Motion, Recharts, Leaflet.

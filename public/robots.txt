@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ecotrack-ai-2026.vercel.app/sitemap.xml

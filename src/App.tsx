@@ -49,7 +49,7 @@ function App() {
         localStorage.setItem('ecotrack_token', session.access_token);
         clearAuthUrl();
         try {
-          // Bypass failing Vercel Python backend entirely and use Supabase session directly
+          // Use the Supabase session directly once the auth redirect completes
           setUser({
             id: session.user.id as any,
             full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
