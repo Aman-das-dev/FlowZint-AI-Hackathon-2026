@@ -117,11 +117,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
-          <button onClick={onOpenAuth} className="px-4 py-2 rounded-lg border-2 border-[#38523A] text-[#38523A] text-sm font-semibold hover:bg-[#38523A] hover:text-white transition-all cursor-pointer">
+        <div className="flex w-full sm:w-auto items-center justify-center sm:justify-start gap-2 sm:gap-3">
+          <button
+            onClick={onOpenAuth}
+            className="flex-1 sm:flex-none px-3 sm:px-4 py-2 text-xs sm:text-sm md:text-base font-semibold rounded-lg border-2 border-[#38523A] text-[#38523A] hover:bg-[#38523A] hover:text-white transition-all duration-300 cursor-pointer whitespace-nowrap"
+          >
             Sign In
           </button>
-          <button onClick={onStartApp} className="px-4 py-2 rounded-lg bg-[#D9E335] text-[#38523A] text-sm font-bold hover:bg-[#FFDE59] transition-all cursor-pointer shadow-md">
+
+          <button
+            onClick={onStartApp}
+            className="
+            flex-1 min-w-0 px-2 py-1.5 text-[11px] sm:px-4 sm:py-2 sm:text-sm md:text-base rounded-lg bg-[#D9E335] text-[#38523A] font-bold hover:bg-[#FFDE59] shadow-md transition"
+          >
             Launch Portal
           </button>
         </div>
@@ -130,32 +138,32 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
       {/* ─── Hero Section ─── */}
       <section className="relative z-10 w-full overflow-hidden">
         {/* Hero BG Image with overlay */}
-        <div className="relative min-h-[580px] flex items-center" style={{
+        <div className="relative min-h-[420px] md:min-h-[580px] flex items-center" style={{
           backgroundImage: 'url(https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=1600&q=80)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}>
           <div className="absolute inset-0 bg-[#38523A]/75" />
 
-          <div className="relative z-10 w-full px-8 lg:px-20 py-24 grid lg:grid-cols-2 gap-12 items-center">
+          <div className="relative z-10 w-full px-6 sm:px-8 lg:px-20 py-20 sm:py-24 grid gap-12 lg:grid-cols-2 items-center">
             {/* Text */}
-            <motion.div className="space-y-6" variants={fadeUp} initial="hidden" animate="visible" custom={0}>
+            <motion.div className="space-y-6 max-w-xl" variants={fadeUp} initial="hidden" animate="visible" custom={0}>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D9E335]/20 border border-[#D9E335]/50 text-[#D9E335] text-xs font-semibold tracking-wide uppercase">
                 <Zap size={12} className="fill-[#D9E335]" /> AI-Powered Eco Platform
               </div>
-              <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight" style={{ fontFamily: "'Amatic SC', cursive", letterSpacing: '2px' }}>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight" style={{ fontFamily: "'Amatic SC', cursive", letterSpacing: '2px' }}>
                 Your E-Waste is <br/>
                 <span className="text-[#D9E335]">Our Responsibility</span>
               </h1>
-              <p className="text-white/80 text-lg max-w-lg font-light leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+              <p className="text-white/80 text-base sm:text-lg max-w-full sm:max-w-xl font-light leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
                 Scan devices with AI, find certified recyclers, schedule doorstep pickups and track your environmental impact — all in one platform.
               </p>
-              <div className="flex flex-wrap gap-4 pt-2">
-                <button onClick={onStartApp} className="flex items-center gap-2 px-7 py-4 rounded-lg bg-[#D9E335] text-[#38523A] font-bold text-sm hover:bg-[#FFDE59] transition-all shadow-lg cursor-pointer group">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-4 pt-2">
+                <button onClick={onStartApp} className="button-responsive btn-lg w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-4 rounded-lg bg-[#D9E335] text-[#38523A] font-bold text-sm sm:text-base hover:bg-[#FFDE59] transition-all shadow-lg cursor-pointer group">
                   Request a Pickup
                   <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </button>
-                <button onClick={onOpenAuth} className="flex items-center gap-2 px-7 py-4 rounded-lg border-2 border-white/40 text-white font-semibold text-sm hover:bg-white/10 transition-all cursor-pointer">
+                <button onClick={onOpenAuth} className="button-responsive btn-lg w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-4 rounded-lg border-2 border-white/40 text-white font-semibold text-sm sm:text-base hover:bg-white/10 transition-all cursor-pointer">
                   Create Account
                 </button>
               </div>
@@ -163,14 +171,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
 
             {/* Hero Image */}
             <motion.div
-              className="hidden lg:flex justify-center"
+              className="hidden md:flex lg:justify-center justify-center"
               variants={fadeUp} initial="hidden" animate="visible" custom={2}
             >
               <div className="relative">
                 <motion.img
                   src="/assets/images/waste_truck_3d.png"
                   alt="Eco Truck 3D"
-                  className="w-96 h-96 object-contain drop-shadow-2xl"
+                  className="w-64 h-64 md:w-96 md:h-96 object-contain drop-shadow-2xl"
                   animate={{ y: [0, -12, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                 />
@@ -262,7 +270,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
               </h3>
               <p className={`text-sm leading-relaxed ${s.active ? 'text-white/75' : 'text-gray-500'}`}>{s.desc}</p>
               {s.active && (
-                <button onClick={onStartApp} className="mt-5 flex items-center gap-1.5 text-sm font-bold text-[#D9E335] hover:text-white transition-colors cursor-pointer">
+                <button onClick={onStartApp} className="mt-5 button-responsive btn-lg inline-flex items-center gap-1.5 text-sm sm:text-base font-bold text-[#D9E335] hover:text-white transition-colors cursor-pointer">
                   Get Started <ArrowRight size={14} />
                 </button>
               )}
@@ -311,7 +319,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
               <span className="text-lg">02</span> Committed to People First
             </div>
           </div>
-          <button onClick={onStartApp} className="mt-4 px-7 py-3 rounded-lg bg-[#D9E335] text-[#38523A] font-bold text-sm hover:bg-[#FFDE59] transition-all shadow-md cursor-pointer">
+          <button onClick={onStartApp} className="mt-4 button-responsive btn-lg px-7 py-3 rounded-lg bg-[#D9E335] text-[#38523A] font-bold text-sm sm:text-base hover:bg-[#FFDE59] transition-all shadow-md cursor-pointer">
             Discover More
           </button>
         </motion.div>
@@ -329,10 +337,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
             Manage Waste Effectively<br/>&amp; Reduce Environmental Impact
           </h2>
           <div className="flex flex-wrap gap-4 justify-center pt-2">
-            <button onClick={onStartApp} className="px-8 py-3.5 rounded-lg bg-[#D9E335] text-[#38523A] font-bold text-sm hover:bg-[#FFDE59] transition-all shadow-lg cursor-pointer">
+            <button onClick={onStartApp} className="button-responsive btn-lg w-full sm:w-auto px-8 py-3.5 rounded-lg bg-[#D9E335] text-[#38523A] font-bold text-sm sm:text-base hover:bg-[#FFDE59] transition-all shadow-lg cursor-pointer">
               Request a Pickup
             </button>
-            <button onClick={onOpenAuth} className="px-8 py-3.5 rounded-lg border-2 border-white text-white font-semibold text-sm hover:bg-white/10 transition-all cursor-pointer">
+            <button onClick={onOpenAuth} className="button-responsive btn-lg w-full sm:w-auto px-8 py-3.5 rounded-lg border-2 border-white text-white font-semibold text-sm sm:text-base hover:bg-white/10 transition-all cursor-pointer">
               Contact With Us
             </button>
           </div>

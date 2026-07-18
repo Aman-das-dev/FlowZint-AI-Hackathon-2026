@@ -60,7 +60,7 @@ export const Chatbot: React.FC = () => {
 
       {/* Chat window panel */}
       {isOpen && (
-        <div className="w-80 sm:w-96 h-[500px] rounded-2xl glass-panel border border-emerald-500/30 flex flex-col justify-between overflow-hidden shadow-2xl animate-holo-warp animate-aurora-glow">
+        <div className="w-[min(95vw,360px)] sm:w-[min(90vw,420px)] h-[calc(100vh-96px)] max-h-[600px] rounded-2xl glass-panel border border-emerald-500/30 flex flex-col justify-between overflow-hidden shadow-2xl animate-holo-warp animate-aurora-glow">
           
           {/* Header */}
           <div className="p-4 bg-gradient-to-r from-emerald-950/40 to-teal-950/40 border-b border-white/10 flex justify-between items-center">
