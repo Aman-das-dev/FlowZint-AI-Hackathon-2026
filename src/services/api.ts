@@ -95,6 +95,14 @@ export interface DashboardStats {
     market_val: number;
     submitted_at: string | null;
   }[];
+  pickups?: {
+    id: number;
+    user_email: string;
+    recycler_name: string;
+    pickup_date: string;
+    status: string;
+    created_at: string | null;
+  }[];
 }
 
 export interface LeaderboardItem {

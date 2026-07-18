@@ -1454,6 +1454,19 @@ def get_dashboard_stats(db: Session = Depends(get_db)):
             "submitted_at": s.submitted_at.isoformat() if s.submitted_at else None
         })
 
+    # Fetch list of pickups
+    pickups_list = []
+    for p in db.query(PickupScheduleDB).order_by(PickupScheduleDB.created_at.desc()).all():
+        u = db.query(UserDB).filter(UserDB.id == p.user_id).first()
+        pickups_list.append({
+            "id": p.id,
+            "user_email": u.email if u else "Unknown",
+            "recycler_name": p.recycler_name,
+            "pickup_date": p.pickup_date,
+            "status": p.status,
+            "created_at": p.created_at.isoformat() if p.created_at else None
+        })
+
     return {
         "metrics": {
             "carbon_saved": round(carbon_saved, 1),
@@ -1470,7 +1483,8 @@ def get_dashboard_stats(db: Session = Depends(get_db)):
         "device_categories": categories_chart,
         "historical_analytics": historical_pickups,
         "users": users_list,
-        "submissions": submissions_list
+        "submissions": submissions_list,
+        "pickups": pickups_list
     }
 
 # --- AI Chatbot Assistant ---

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { api, type DashboardStats, type User } from '../services/api';
-import { Shield, Users, Activity, BarChart2, DollarSign, Leaf, Map } from 'lucide-react';
+import { Shield, Users, Activity, BarChart2, DollarSign, Leaf, Map, Truck } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, LineChart, Line } from 'recharts';
 import L from 'leaflet';
 
@@ -340,6 +340,56 @@ export const AdminPanel: React.FC<AdminPanelProps> = () => {
           </div>
         </div>
 
+      </div>
+
+      {/* Admin Pickups Management */}
+      <div className="rounded-2xl glass-panel p-6 border-white/5 space-y-4 flex flex-col">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <Truck size={18} className="text-amber-400" /> Platform Scheduled Pickups
+          </h3>
+          <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 text-xs font-bold border border-amber-500/20">
+            {stats.pickups?.length ?? 0} total
+          </span>
+        </div>
+        <div className="overflow-x-auto mt-2 max-h-72 overflow-y-auto custom-scrollbar border border-white/5 rounded-xl">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="bg-white/5 border-b border-white/5 text-gray-400 uppercase tracking-wider font-bold">
+                <th className="p-3">Order ID</th>
+                <th className="p-3">User Email</th>
+                <th className="p-3">Center</th>
+                <th className="p-3">Date</th>
+                <th className="p-3">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5 text-gray-300">
+              {stats.pickups && stats.pickups.length > 0 ? (
+                stats.pickups.map((p) => (
+                  <tr key={p.id} className="hover:bg-white/5 transition-colors">
+                    <td className="p-3 font-mono text-gray-500">#{p.id}</td>
+                    <td className="p-3 text-gray-400 font-medium">{p.user_email}</td>
+                    <td className="p-3 font-bold text-white">{p.recycler_name}</td>
+                    <td className="p-3 text-gray-400">{p.pickup_date}</td>
+                    <td className="p-3 font-medium">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                        p.status === 'Completed' ? 'bg-teal-500/15 text-teal-400 border-teal-500/20' : 
+                        p.status === 'Pending' ? 'bg-gray-500/15 text-gray-400 border-gray-500/20' :
+                        'bg-blue-500/15 text-blue-400 border-blue-500/20'
+                      } border`}>
+                        {p.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="p-8 text-center text-gray-500">No scheduled pickups found.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </div>
