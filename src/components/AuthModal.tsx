@@ -106,6 +106,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
             console.warn("Supabase login failed, trying local fallback:", sbErr);
             throw sbErr; // Don't try local fallback, it will crash
           }
+        }
       } else {
         if (password.length < 6) {
           throw new Error('Password must be at least 6 characters.');
@@ -254,6 +255,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
             onClose();
             return;
           }
+        }
       } catch (sbErr: any) {
         console.warn("Supabase verifyOtp failed, trying local fallback:", sbErr);
         throw sbErr; // Don't try local fallback, it will crash
