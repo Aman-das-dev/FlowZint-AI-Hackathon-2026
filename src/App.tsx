@@ -15,10 +15,15 @@ function App() {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const token = localStorage.getItem('ecotrack_token');
-        if (token) {
-          const profile = await api.getMe();
-          setUser(profile.user);
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (session) {
+          localStorage.setItem('ecotrack_token', session.access_token);
+          setUser({
+            id: session.user.id,
+            name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+            email: session.user.email || '',
+            avatar: session.user.user_metadata?.avatar_url,
+          });
         }
       } catch (err) {
         console.error('Failed to validate session token:', err);
@@ -41,11 +46,19 @@ function App() {
           }
         }, 100);
         try {
-          const profile = await api.getMe();
-          setUser(profile.user);
+          // Bypass failing Vercel Python backend entirely and use Supabase session directly
+          setUser({
+            id: session.user.id,
+            name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+            email: session.user.email || '',
+            avatar: session.user.user_metadata?.avatar_url,
+          });
         } catch (err) {
-          console.error('Failed to validate session token:', err);
+          console.error('Failed to set session user:', err);
         }
+      } else {
+        // If there's no session, ensure user is cleared
+        setUser(null);
       }
     });
 
@@ -56,12 +69,16 @@ function App() {
 
   const handleStartApp = async () => {
     // If not logged in, we can either show the AuthModal or directly log them in as a demo user
-    const token = localStorage.getItem('ecotrack_token');
-    if (token) {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
       setLoading(true);
       try {
-        const profile = await api.getMe();
-        setUser(profile.user);
+        setUser({
+          id: session.user.id,
+          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+          email: session.user.email || '',
+          avatar: session.user.user_metadata?.avatar_url,
+        });
       } catch (e) {
         setAuthModalOpen(true);
       } finally {
@@ -72,8 +89,12 @@ function App() {
       // if they click 'Launch' without a custom account.
       setLoading(true);
       try {
-        const profile = await api.getMe(); // Backend defaults to demo user if no token is passed
-        setUser(profile.user);
+        setUser({
+          id: 'demo-user-id',
+          name: 'Demo User',
+          email: 'demo@ecotrack.ai',
+          avatar: '',
+        });
       } catch (err) {
         // Fallback to opening login popup if even the backend fallback fails
         setAuthModalOpen(true);
