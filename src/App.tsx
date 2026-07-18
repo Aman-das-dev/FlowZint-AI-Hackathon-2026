@@ -35,9 +35,11 @@ function App() {
       if (session) {
         localStorage.setItem('ecotrack_token', session.access_token);
         // Clean up the dangling '#' left by Supabase from the URL for a cleaner look
-        if (window.location.hash === '' || window.location.hash === '#') {
-           window.history.replaceState(null, '', window.location.pathname + window.location.search);
-        }
+        setTimeout(() => {
+          if (window.location.hash === '' || window.location.hash === '#') {
+             window.history.replaceState(null, '', window.location.pathname + window.location.search);
+          }
+        }, 100);
         try {
           const profile = await api.getMe();
           setUser(profile.user);
