@@ -66,8 +66,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
     try {
       if (isLogin) {
-        const defaultAdminEmail = import.meta.env.VITE_DEFAULT_ADMIN_EMAIL || 'amanprasaddas5@gmail.com';
-        const defaultAdminPassword = import.meta.env.VITE_DEFAULT_ADMIN_PASSWORD || 'adminpassword123';
+        const defaultAdminEmail = import.meta.env.VITE_DEFAULT_ADMIN_EMAIL || '';
+        const defaultAdminPassword = import.meta.env.VITE_DEFAULT_ADMIN_PASSWORD || '';
         if (email.trim() === defaultAdminEmail && password === defaultAdminPassword) {
           sessionStorage.setItem('is_admin_auth', 'true');
           try {
@@ -531,7 +531,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                   {[
                     { name: "Eco Warrior", email: "eco.warrior.google@gmail.com", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=ecowarrior" },
                     { name: "Green Earth", email: "green.earth.google@gmail.com", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=greenearth" },
-                    { name: "Admin Google", email: import.meta.env.VITE_DEFAULT_ADMIN_EMAIL || 'amanprasaddas5@gmail.com', avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=admin" }
+                    { name: "Admin Google", email: import.meta.env.VITE_DEFAULT_ADMIN_EMAIL || 'admin@example.com', avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=admin" }
                   ].map((acc) => (
                     <button
                       key={acc.email}

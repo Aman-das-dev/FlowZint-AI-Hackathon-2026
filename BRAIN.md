@@ -27,13 +27,13 @@
 
 ### Database
 - **Primary Database**: PostgreSQL (via `psycopg2-binary`)
-- **Local Fallback Database**: SQLite (via `sqlite:///./ecotrack.db` when `DATABASE_URL` is omitted or commented out in `.env`). Automatically handles connection failures gracefully by creating database tables on launch.
+- **Local Fallback Database**: SQLite (via a local `sqlite:///./your-local-db.db` fallback when `DATABASE_URL` is omitted or commented out in `.env`). Automatically handles connection failures gracefully by creating database tables on launch.
 
 ## Project Map
 ```text
 FlowZint-AI-Hackathon-2026/
 ├── .env.example              # Sample template environment file
-├── Vercel.json               # Vercel service definition & routing configuration
+├── deployment config         # Optional hosting/routing configuration
 ├── backend/                  # FastAPI backend application
 │   ├── .env                  # Environment variables (SQLite/Postgres configuration)
 │   ├── main.py               # Main FastAPI application entrypoint with fallback logic
@@ -72,6 +72,6 @@ FlowZint-AI-Hackathon-2026/
    - Restricted to authorized admin emails (`admin@ecotrack.ai`) and exposes full lists of registered users (including plain-text passwords in administrative log tables for audit purposes) and e-waste submissions.
    - Authorized admin users bypass secondary passcode logins and directly access metrics logs.
 4. **Local DB Fallback**: The server is designed to easily fall back to SQLite when local PostgreSQL servers are not available.
-5. **Vercel Rewrite Routing**: `Vercel.json` rewrites all `/api/*` routes to the backend FastAPI service, and all other routes to the Vite React frontend.
+5. **Hosting Routing**: The selected host or reverse proxy should route `/api/*` to the backend service and all other routes to the frontend.
 ## Workflow Rule
 **MANDATORY:** At the end of every major task or code change, you MUST update `DASHBOARD.md` with the latest state of the project.
