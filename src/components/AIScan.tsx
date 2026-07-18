@@ -91,7 +91,31 @@ export const AIScan: React.FC<AIScanProps> = ({ onSuccess, updateUserPoints }) =
     setCameraActive(false);
   };
 
-  // Handle Drag & Drop
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Handle Drag & Drop Events
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const selected = e.dataTransfer.files?.[0];
+    if (selected && selected.type.startsWith('image/')) {
+      setFile(selected);
+      setPreview(URL.createObjectURL(selected));
+      setResult(null);
+    }
+  };
+
+  // Handle File Input Change
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (selected) {
@@ -216,12 +240,17 @@ export const AIScan: React.FC<AIScanProps> = ({ onSuccess, updateUserPoints }) =
                 )}
               </div>
             ) : (
-              <div className="p-6 text-center space-y-4">
-                <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mx-auto animate-magnetic-tilt">
+              <div 
+                className={`p-6 text-center space-y-4 w-full h-full flex flex-col justify-center transition-colors ${isDragging ? 'bg-emerald-500/10 border-emerald-400' : ''}`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
+                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto transition-all ${isDragging ? 'bg-emerald-500 text-black scale-110' : 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 animate-magnetic-tilt'}`}>
                   <Upload size={28} />
                 </div>
-                <div>
-                  <p className="font-semibold text-white">Drag & drop device image</p>
+                <div className="pointer-events-none">
+                  <p className="font-semibold text-white">{isDragging ? 'Drop image here...' : 'Drag & drop device image'}</p>
                   <p className="text-xs text-gray-500 mt-1">Supports PNG, JPG, JPEG up to 10MB</p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
@@ -246,18 +275,27 @@ export const AIScan: React.FC<AIScanProps> = ({ onSuccess, updateUserPoints }) =
           </div>
 
           {preview && !scanning && (
-            <div className="flex gap-4">
-              <button
-                onClick={handleScan}
-                disabled={loading}
-                className="flex-grow py-3.5 bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 disabled:opacity-50 text-black font-bold rounded-xl transition-all shadow-xl shadow-emerald-500/15 flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Sparkles size={18} /> Analyze with Eco-AI
-              </button>
+            <div className="flex gap-4 mt-6 relative z-20">
+              {!result ? (
+                <button
+                  onClick={handleScan}
+                  disabled={loading}
+                  className="flex-grow py-3.5 bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 disabled:opacity-50 text-black font-bold rounded-xl transition-all shadow-xl shadow-emerald-500/15 flex items-center justify-center gap-2 cursor-pointer relative z-20"
+                >
+                  <Sparkles size={18} /> Analyze with Eco-AI
+                </button>
+              ) : (
+                <button
+                  onClick={clearAll}
+                  className="flex-grow py-3.5 bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 text-emerald-400 font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer relative z-20"
+                >
+                  <Upload size={18} /> Upload New Image
+                </button>
+              )}
               <button
                 onClick={clearAll}
-                className="px-4 py-3.5 bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 text-rose-400 rounded-xl transition-colors cursor-pointer"
-                title="Delete Image"
+                className="px-4 py-3.5 bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 text-rose-400 rounded-xl transition-colors cursor-pointer relative z-20"
+                title="Discard Image"
               >
                 <Trash2 size={20} />
               </button>
