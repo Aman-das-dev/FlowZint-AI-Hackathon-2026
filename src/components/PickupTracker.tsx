@@ -31,6 +31,19 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
   const [fetching, setFetching] = useState(true);
   const [scheduledSuccess, setScheduledSuccess] = useState(false);
 
+  // Calculate distance between two coordinates (Haversine formula)
+  const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371; // Radius of the earth in km
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a = 
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * 
+      Math.sin(dLon / 2) * Math.sin(dLon / 2); 
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); 
+    return R * c; // Distance in km
+  };
+
   // Load Pickups & Recyclers
   const loadData = async () => {
     setFetching(true);
@@ -49,8 +62,30 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
         setRecyclerName(preselectedRecycler.name);
         setRecyclerAddress(preselectedRecycler.address);
       } else if (recyclerData.length > 0) {
-        setRecyclerName(recyclerData[0].name);
-        setRecyclerAddress(recyclerData[0].address);
+        // Use real-time location to find the nearest store
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              const sorted = [...recyclerData].sort((a, b) => 
+                getDistance(latitude, longitude, a.latitude, a.longitude) - 
+                getDistance(latitude, longitude, b.latitude, b.longitude)
+              );
+              setRecyclers(sorted); // Order dropdown nearest to farthest
+              setRecyclerName(sorted[0].name);
+              setRecyclerAddress(sorted[0].address);
+            },
+            (error) => {
+              console.warn('Geolocation failed or denied, using default first recycler', error);
+              setRecyclerName(recyclerData[0].name);
+              setRecyclerAddress(recyclerData[0].address);
+            },
+            { timeout: 5000 }
+          );
+        } else {
+          setRecyclerName(recyclerData[0].name);
+          setRecyclerAddress(recyclerData[0].address);
+        }
       }
     } catch (err) {
       console.error('Error fetching pickup data:', err);
