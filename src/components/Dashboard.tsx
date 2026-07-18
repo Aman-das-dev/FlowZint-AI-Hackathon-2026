@@ -132,7 +132,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
 
       {/* Sidebar Navigation */}
       <aside className={`
-        fixed md:static inset-y-0 left-0 z-40 w-64 
+        fixed md:static inset-y-0 left-0 z-40 w-[min(80vw,280px)] md:w-64 
         transform transition-transform duration-300 ease-in-out flex flex-col
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         ${isDarkMode ? 'bg-[#030712] text-white' : 'bg-[#38523A] text-white'}
@@ -257,7 +257,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
       </aside>
 
       {/* Main View Area */}
-      <main className="flex-grow p-6 md:p-10 w-full overflow-y-auto">
+      <main className="flex-grow p-6 md:p-10 w-full overflow-y-auto min-h-screen">
         
         {/* Tab Routing Router */}
         {activeTab === 'overview' && (

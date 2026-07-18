@@ -100,7 +100,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = () => {
       </div>
 
       {/* Admin metrics counters grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         
         <div className="p-5 rounded-2xl glass-panel border-white/5 flex items-center gap-4 hover:border-blue-500/30 hover:scale-105 transition-all duration-300 shadow-lg animate-holo-warp animate-electro-hover" style={{ animationDelay: '100ms', animationFillMode: 'both' }}>
           <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 flex-shrink-0 animate-magnetic-tilt">
