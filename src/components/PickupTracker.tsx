@@ -10,6 +10,20 @@ interface PickupTrackerProps {
 
 const STATUS_STEPS = ['Pending', 'Accepted', 'Driver Assigned', 'Picked Up', 'Completed'];
 
+const STATE_CITY_MAP = {
+  "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore"],
+  "Delhi": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi"],
+  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot"],
+  "Karnataka": ["Bengaluru", "Mysuru", "Mangaluru", "Hubballi"],
+  "Madhya Pradesh": ["Bhopal", "Indore", "Jabalpur", "Gwalior"],
+  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Nashik"],
+  "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur", "Kota"],
+  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli"],
+  "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Khammam"],
+  "Uttar Pradesh": ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Varanasi"],
+  "West Bengal": ["Kolkata", "Howrah", "Asansol", "Siliguri"]
+};
+
 export const PickupTracker: React.FC<PickupTrackerProps> = ({ 
   preselectedRecycler, 
   onClearPreselection,
@@ -24,7 +38,9 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
   const [recyclerAddress, setRecyclerAddress] = useState('');
   const [pickupDate, setPickupDate] = useState('');
   const [pickupTime, setPickupTime] = useState('');
-  const [address, setAddress] = useState('');
+  const [addressState, setAddressState] = useState('');
+  const [addressCity, setAddressCity] = useState('');
+  const [addressLine, setAddressLine] = useState('');
   const [phone, setPhone] = useState('');
   
   const [loading, setLoading] = useState(false);
@@ -141,12 +157,13 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
     setLoading(true);
 
     try {
+      const fullAddress = `${addressLine}, ${addressCity}, ${addressState}`;
       await api.schedulePickup({
         recycler_name: recyclerName,
         recycler_address: recyclerAddress,
         pickup_date: pickupDate,
         pickup_time: pickupTime,
-        address,
+        address: fullAddress,
         contact_phone: phone
       });
       
@@ -156,7 +173,9 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
       // Clear form
       setPickupDate('');
       setPickupTime('');
-      setAddress('');
+      setAddressLine('');
+      setAddressCity('');
+      setAddressState('');
       setPhone('');
       onClearPreselection();
       
@@ -284,17 +303,48 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
               </div>
 
               {/* Pickup Address */}
-              <div>
+              <div className="space-y-4">
                 <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
                   Doorstep Collection Address
                 </label>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <select
+                    required
+                    value={addressState}
+                    onChange={(e) => {
+                      setAddressState(e.target.value);
+                      setAddressCity(''); // Reset city when state changes
+                    }}
+                    className="w-full px-3 py-2.5 rounded-xl glass-input text-white text-sm cursor-pointer"
+                  >
+                    <option value="" className="bg-[#0b0f19] text-white">Select State...</option>
+                    {Object.keys(STATE_CITY_MAP).map(state => (
+                      <option key={state} value={state} className="bg-[#0b0f19] text-white">{state}</option>
+                    ))}
+                  </select>
+
+                  <select
+                    required
+                    value={addressCity}
+                    onChange={(e) => setAddressCity(e.target.value)}
+                    disabled={!addressState}
+                    className="w-full px-3 py-2.5 rounded-xl glass-input text-white text-sm cursor-pointer disabled:opacity-50"
+                  >
+                    <option value="" className="bg-[#0b0f19] text-white">Select City...</option>
+                    {addressState && STATE_CITY_MAP[addressState as keyof typeof STATE_CITY_MAP].map(city => (
+                      <option key={city} value={city} className="bg-[#0b0f19] text-white">{city}</option>
+                    ))}
+                  </select>
+                </div>
+
                 <input
                   type="text"
                   required
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Street name, apt number, city"
-                  className="w-full px-3 py-2.5 rounded-xl glass-input text-white text-sm"
+                  value={addressLine}
+                  onChange={(e) => setAddressLine(e.target.value)}
+                  placeholder="Street Address, Area, Landmark"
+                  className="w-full px-3 py-2.5 rounded-xl glass-input text-white text-sm placeholder-gray-500"
                 />
               </div>
 
