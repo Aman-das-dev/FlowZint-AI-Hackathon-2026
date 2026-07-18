@@ -79,8 +79,8 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 # Configure Supabase client
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
-SUPABASE_KEY = os.environ.get("SUPABASE_SECRET_KEY", "")
+SUPABASE_URL = os.environ.get("SUPABASE_URL") or os.environ.get("VITE_SUPABASE_URL") or ""
+SUPABASE_KEY = os.environ.get("SUPABASE_SECRET_KEY") or os.environ.get("SUPABASE_SERVICE_ROLE_KEY") or ""
 supabase: Optional[Client] = None
 
 if SUPABASE_URL and SUPABASE_KEY:
@@ -281,9 +281,15 @@ def verify_supabase_token(token: str) -> Optional[dict]:
     # 1. Try real validation via Supabase API
     if SUPABASE_URL:
         url = f"{SUPABASE_URL.rstrip('/')}/auth/v1/user"
+        publishable_key = (
+            os.environ.get("SUPABASE_PUBLISHABLE_KEY") or 
+            os.environ.get("SUPABASE_ANON_KEY") or 
+            os.environ.get("VITE_SUPABASE_ANON_KEY") or 
+            ""
+        )
         headers = {
             "Authorization": f"Bearer {token}",
-            "apikey": os.environ.get("SUPABASE_PUBLISHABLE_KEY", "")
+            "apikey": publishable_key
         }
         try:
             res = requests.get(url, headers=headers, timeout=5)
