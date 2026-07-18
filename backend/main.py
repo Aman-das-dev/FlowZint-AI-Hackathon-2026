@@ -13,7 +13,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 import bcrypt
 import jwt
-import google.generativeai as genai
+from google import genai
 import requests
 
 # Setup FastAPI App
@@ -84,9 +84,13 @@ ALGORITHM = "HS256"
 
 # Configure Gemini API
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+genai_client = None
 if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-    print("Gemini API configured successfully.")
+    try:
+        genai_client = genai.Client(api_key=GEMINI_API_KEY)
+        print("Gemini GenAI client initialized successfully.")
+    except Exception as e:
+        print(f"Failed to initialize Gemini GenAI client: {e}")
 else:
     print("Gemini API key not found. Using local simulated AI engine.")
 
@@ -1004,9 +1008,8 @@ async def detect_device(
     
     # If Gemini is configured, let's call it to get a dynamic and realistic evaluation explanation
     ai_explanation = data["explanation"]
-    if GEMINI_API_KEY:
+    if genai_client:
         try:
-            model = genai.GenerativeModel('gemini-2.5-flash')
             prompt = (
                 f"You are EcoTrack AI. A user uploaded an image of a {detect_key}. "
                 f"Provide a 3-4 sentence environmental explanation of: "
@@ -1014,7 +1017,10 @@ async def detect_device(
                 f"2. How it should be recycled properly. "
                 f"3. Why it shouldn't go to normal landfills. Keep it professional, educational, and sustainable."
             )
-            response = model.generate_content(prompt)
+            response = genai_client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=prompt,
+            )
             if response.text:
                 ai_explanation = response.text.strip()
         except Exception as e:
@@ -1419,16 +1425,18 @@ def chatbot_chat(query: ChatQuery):
     msg = query.message.lower()
     
     # If Gemini is configured, query Gemini for a complete, smart, eco-centric response
-    if GEMINI_API_KEY:
+    if genai_client:
         try:
-            model = genai.GenerativeModel('gemini-2.5-flash')
             prompt = (
                 f"You are EcoTrack AI, an intelligent sustainability and e-waste recycling chatbot assistant. "
                 f"A user asks: '{query.message}'. "
                 f"Provide a helpful, detailed, educational, and encouraging response focused on responsible electronics disposal, recycling standards, and energy conservation. "
                 f"Be concise but thorough (2-4 sentences)."
             )
-            response = model.generate_content(prompt)
+            response = genai_client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=prompt,
+            )
             if response.text:
                 return {"reply": response.text.strip()}
         except Exception as e:
