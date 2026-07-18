@@ -113,6 +113,9 @@ export const RecyclerMap: React.FC<RecyclerMapProps> = ({ onSelectRecyclerForPic
       markersLayerRef.current = L.layerGroup().addTo(mapRef.current);
     } else {
       mapRef.current.setView(userCoords, 13);
+      setTimeout(() => {
+        mapRef.current?.invalidateSize();
+      }, 100);
     }
 
     const markersLayer = markersLayerRef.current;
@@ -213,7 +216,7 @@ export const RecyclerMap: React.FC<RecyclerMapProps> = ({ onSelectRecyclerForPic
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         
         {/* Left Columns: Interactive Map */}
-        <div className="lg:col-span-8 rounded-2xl overflow-hidden border border-emerald-500/20 hover:border-emerald-500/40 relative h-[320px] md:h-[460px] lg:h-full transition-all shadow-xl animate-holo-warp">
+        <div className="lg:col-span-8 rounded-2xl overflow-hidden border border-emerald-500/20 hover:border-emerald-500/40 relative h-[320px] md:h-[460px] lg:min-h-[500px] transition-all shadow-xl animate-holo-warp">
           {loading ? (
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
               <span className="text-emerald-400 font-semibold animate-pulse">Loading maps engine...</span>

@@ -975,16 +975,17 @@ async def detect_device(
 ):
     current_user = get_current_user_from_header(authorization, db)
     
-    # Save the file locally for mock reference
+    # Save the file locally for reference (works in dev; in prod we use the data URI fallback from frontend)
     filename = f"{uuid.uuid4()}_{file.filename}"
     file_path = f"public/{filename}"
     os.makedirs("public", exist_ok=True)
+    file_bytes = await file.read()
     with open(file_path, "wb") as buffer:
-        buffer.write(await file.read())
+        buffer.write(file_bytes)
     
-    # Dynamically determine the host to build the image URL
-    base_url = str(request.base_url).rstrip("/")
-    image_url = f"{base_url}/public/{filename}"
+    # Build image URL — prefer a relative API path so it works on Vercel too
+    # The frontend will use this URL; we expose /api/images/{filename} below
+    image_url = f"/api/images/{filename}"
     
     # Decide which device we are detecting
     # Look at the filename, or standard label sent, or custom label
@@ -1088,6 +1089,16 @@ async def detect_device(
         "image_url": submission.image_url,
         "submitted_at": submission.submitted_at
     }
+
+from fastapi.responses import FileResponse
+
+@app.get("/api/images/{filename}")
+def serve_image(filename: str):
+    """Serve uploaded device images via a dedicated endpoint."""
+    file_path = os.path.join("public", filename)
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Image not found")
+    return FileResponse(file_path)
 
 @app.get("/api/devices/history")
 @app.post("/api/devices/history")
