@@ -35,7 +35,14 @@ def read_root():
     return {"message": "Welcome to EcoTrack AI Backend API", "status": "running"}
 
 # Database Setup (Supports SQLite and PostgreSQL)
-DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./ecotrack.db")
+DATABASE_URL = os.environ.get("DATABASE_URL", "")
+
+if not DATABASE_URL:
+    # On Vercel, the root directory is read-only, so we must use /tmp
+    if os.environ.get("VERCEL") or os.environ.get("AWS_EXECUTION_ENV"):
+        DATABASE_URL = "sqlite:////tmp/ecotrack.db"
+    else:
+        DATABASE_URL = "sqlite:///./ecotrack.db"
 
 # Auto-correct legacy postgres:// schemas to postgresql:// for SQLAlchemy compatibility
 if DATABASE_URL.startswith("postgres://"):
@@ -54,9 +61,10 @@ except Exception as e:
     print("\n" + "="*80)
     print(f"WARNING: Failed to connect to database at: {DATABASE_URL}")
     print(f"DATABASE ERROR: {e}")
-    print("EcoTrack AI will automatically fall back to SQLite: sqlite:///./ecotrack.db")
+    # Fallback to /tmp if it fails
+    DATABASE_URL = "sqlite:////tmp/ecotrack.db"
+    print(f"EcoTrack AI will automatically fall back to SQLite: {DATABASE_URL}")
     print("="*80 + "\n")
-    DATABASE_URL = "sqlite:///./ecotrack.db"
     engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
