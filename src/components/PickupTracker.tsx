@@ -345,7 +345,12 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
                     value={addressState}
                     onChange={(v) => {
                       setAddressState(v);
-                      setAddressCity('');
+                      const citiesForState = City.getCitiesOfState('IN', v);
+                      if (citiesForState.length > 0) {
+                        setAddressCity(citiesForState[0].name);
+                      } else {
+                        setAddressCity('');
+                      }
                     }}
                     placeholder="Select State..."
                     options={indianStates.map(state => ({ value: state.isoCode, label: state.name }))}
