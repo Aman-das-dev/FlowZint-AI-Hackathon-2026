@@ -244,7 +244,12 @@ export const api = {
       body: formData,
     });
     if (!res.ok) {
-      throw new Error("Device detection failed");
+      let errorDetail = "Device detection failed";
+      try {
+        const errJson = await res.json();
+        if (errJson.detail) errorDetail = errJson.detail;
+      } catch (e) {}
+      throw new Error(errorDetail);
     }
     return res.json();
   },

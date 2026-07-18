@@ -987,34 +987,66 @@ async def detect_device(
     # The frontend will use this URL; we expose /api/images/{filename} below
     image_url = f"/api/images/{filename}"
     
-    # Decide which device we are detecting
-    # Look at the filename, or standard label sent, or custom label
-    search_str = (custom_label or file.filename or "").lower()
-    
     detect_key = None
-    
-    # Try exact match or substring match first
-    for key in DEVICE_DATASET.keys():
-        if key in search_str:
-            detect_key = key
-            break
+
+    # First, try to use Gemini Vision to actually classify the image content
+    if genai_client and file_bytes:
+        try:
+            prompt = (
+                f"You are EcoTrack AI, an electronic device identifier. Analyze this image. "
+                f"Identify if this is an electronic device from this list: {list(DEVICE_DATASET.keys())}. "
+                f"If it matches, output ONLY the exact key name from the list. "
+                f"If it's an electronic device but not on the list, output 'smartphone'. "
+                f"If it is NOT an electronic device (e.g., food, animals, random objects, people, nature), output 'NOT_ELECTRONIC'. "
+                f"Output exactly ONE word."
+            )
+            mime_type = getattr(file, "content_type", "image/jpeg") or "image/jpeg"
+            response = genai_client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=[
+                    prompt,
+                    {"mime_type": mime_type, "data": file_bytes}
+                ]
+            )
             
-    # Synonym matching if no match was found
+            if response.text:
+                result = response.text.strip().lower()
+                # Clean up any markdown or punctuation Gemini might have added
+                result = "".join(c for c in result if c.isalnum() or c == '_')
+                
+                if result == 'not_electronic' or 'notelectronic' in result:
+                    raise HTTPException(status_code=400, detail="The uploaded image does not appear to be an electronic device. Please upload a valid e-waste item.")
+                if result in DEVICE_DATASET:
+                    detect_key = result
+        except HTTPException:
+            raise
+        except Exception as e:
+            print(f"Gemini image classification error: {e}")
+            pass
+
+    # If Gemini failed or was unavailable, fall back to the filename matching logic
     if not detect_key:
-        if any(term in search_str for term in ["phone", "mobile", "cel", "webcam", "capture", "blob", "image", "jpg", "png", "pic", "photo", "img"]):
+        search_str = (custom_label or file.filename or "").lower()
+        
+        for key in DEVICE_DATASET.keys():
+            if key in search_str:
+                detect_key = key
+                break
+                
+        if not detect_key:
+            if any(term in search_str for term in ["phone", "mobile", "cel", "webcam", "capture", "blob", "image", "jpg", "png", "pic", "photo", "img"]):
+                detect_key = "smartphone"
+            elif any(term in search_str for term in ["pc", "computer", "tower", "cpu"]):
+                detect_key = "desktop"
+            elif any(term in search_str for term in ["display", "screen", "lcd", "led"]):
+                detect_key = "monitor"
+            elif any(term in search_str for term in ["pad", "ipod", "note"]):
+                detect_key = "tablet"
+            elif any(term in search_str for term in ["wire", "cable", "adapter", "plug"]):
+                detect_key = "charger"
+                
+        if not detect_key:
             detect_key = "smartphone"
-        elif any(term in search_str for term in ["pc", "computer", "tower", "cpu"]):
-            detect_key = "desktop"
-        elif any(term in search_str for term in ["display", "screen", "lcd", "led"]):
-            detect_key = "monitor"
-        elif any(term in search_str for term in ["pad", "ipod", "note"]):
-            detect_key = "tablet"
-        elif any(term in search_str for term in ["wire", "cable", "adapter", "plug"]):
-            detect_key = "charger"
-            
-    # Default fallback to "smartphone" (Mobile Devices) for any other image
-    if not detect_key:
-        detect_key = "smartphone"
 
     data = DEVICE_DATASET[detect_key]
     

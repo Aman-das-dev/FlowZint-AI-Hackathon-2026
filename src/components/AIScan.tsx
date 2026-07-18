@@ -114,9 +114,9 @@ export const AIScan: React.FC<AIScanProps> = ({ onSuccess, updateUserPoints }) =
       setResult(data);
       onSuccess(data);
       updateUserPoints(50); // Scans add 50 points
-    } catch (err) {
+    } catch (err: any) {
       console.error('AI Scan error:', err);
-      alert('Failed to analyze the image. Please check your backend connection.');
+      alert(err.message || 'Failed to analyze the image. Please check your backend connection.');
     } finally {
       setLoading(false);
       setScanning(false);
