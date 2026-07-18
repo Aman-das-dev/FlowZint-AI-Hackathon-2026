@@ -5,7 +5,7 @@ from supabase import create_client, Client
 import uuid
 import datetime
 from typing import List, Optional
-from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, Form, Header, BackgroundTasks
+from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, Form, Header, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import create_engine, Column, Integer, Float, String, DateTime, ForeignKey, Text
@@ -959,6 +959,7 @@ DEVICE_DATASET = {
 
 @app.post("/api/devices/detect")
 async def detect_device(
+    request: Request,
     file: UploadFile = File(...),
     custom_label: Optional[str] = Form(None),
     authorization: Optional[str] = Header(None),
@@ -973,7 +974,9 @@ async def detect_device(
     with open(file_path, "wb") as buffer:
         buffer.write(await file.read())
     
-    image_url = f"http://localhost:8000/public/{filename}"
+    # Dynamically determine the host to build the image URL
+    base_url = str(request.base_url).rstrip("/")
+    image_url = f"{base_url}/public/{filename}"
     
     # Decide which device we are detecting
     # Look at the filename, or standard label sent, or custom label
