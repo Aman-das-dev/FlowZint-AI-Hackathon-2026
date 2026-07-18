@@ -1599,5 +1599,8 @@ def get_leaderboard(authorization: Optional[str] = Header(None), db: Session = D
 
 # Serve public files for uploaded mock images
 from fastapi.staticfiles import StaticFiles
-os.makedirs("public", exist_ok=True)
+try:
+    os.makedirs("public", exist_ok=True)
+except OSError:
+    pass
 app.mount("/public", StaticFiles(directory="public"), name="public")
