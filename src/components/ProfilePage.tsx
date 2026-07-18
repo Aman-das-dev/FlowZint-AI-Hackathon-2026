@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import { api, type User, type DashboardStats } from '../services/api';
 import {
   User as UserIcon, Mail, Zap, Shield, Edit3, X,
   Star, Leaf, Trophy, Users, Package, Truck,
   Camera, Clock, BadgeCheck, ShieldCheck, Settings,
-  Phone, MapPin, Link, FileText, Upload, Trash2, Save
+  Phone, MapPin, Link, FileText, Upload, Trash2, Save,
+  Sun, Moon
 } from 'lucide-react';
 
 interface ProfilePageProps {
@@ -53,6 +55,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ user, isAdmin, userPoi
   const [draft, setDraft] = useState<LocalProfile>(profile);
   const [saveMsg, setSaveMsg] = useState('');
   const [avatarHover, setAvatarHover] = useState(false);
+  const { isDarkMode, toggleDarkMode } = useTheme();
 
   const [adminStats, setAdminStats] = useState<DashboardStats | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
@@ -474,6 +477,35 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ user, isAdmin, userPoi
               <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{field.value}</p>
             </div>
           ))}
+
+          {/* Day / Night toggle */}
+          <div className="p-3 rounded-xl border flex items-center justify-between" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-muted)' }}>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider mb-0.5 flex items-center gap-1" style={{ color: 'var(--text-muted)' }}>
+                {isDarkMode ? <Moon size={10} /> : <Sun size={10} />} Appearance
+              </p>
+              <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                {isDarkMode ? 'Dark Mode' : 'Light Mode'}
+              </p>
+            </div>
+            {/* Toggle pill */}
+            <button
+              id="theme-toggle-profile"
+              onClick={toggleDarkMode}
+              title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              className="relative w-12 h-6 rounded-full transition-all duration-300 focus:outline-none flex-shrink-0"
+              style={{ background: isDarkMode ? 'var(--accent-green)' : '#d1d5db' }}
+            >
+              <span
+                className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-md flex items-center justify-center transition-transform duration-300"
+                style={{ transform: isDarkMode ? 'translateX(24px)' : 'translateX(0)' }}
+              >
+                {isDarkMode
+                  ? <Moon size={11} className="text-slate-700" />
+                  : <Sun size={11} className="text-amber-500" />}
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 
