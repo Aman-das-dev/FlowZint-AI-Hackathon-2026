@@ -68,6 +68,11 @@
    BASE GLOBAL STYLES
    ============================================================ */
 @layer base {
+  html {
+    font-size: clamp(14px, 1.1vw, 18px);
+    line-height: 1.5;
+  }
+
   body {
     font-family: 'Inter', sans-serif;
     background-color: var(--bg-primary);
@@ -75,6 +80,10 @@
     min-height: 100vh;
     overflow-x: hidden;
     transition: background-color 0.35s ease, color 0.35s ease;
+  }
+
+  button, input, textarea, select {
+    font: inherit;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -285,6 +294,25 @@ img, svg, picture, video {
 /* Enable native momentum scrolling on iOS for scrollable areas */
 .scroll-touch {
   -webkit-overflow-scrolling: touch;
+}
+
+@layer utilities {
+  .button-responsive {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl transition-all duration-200;
+  }
+  .btn-lg {
+    @apply px-5 py-3 text-sm sm:text-base;
+  }
+  .btn-wide {
+    @apply min-w-[10rem];
+  }
+  .text-responsive {
+    font-size: clamp(0.95rem, 1vw, 1.05rem);
+  }
+  .modal-responsive {
+    max-width: min(92vw, 40rem);
+    width: 100%;
+  }
 }
 
 /* Respect user preference for reduced motion */

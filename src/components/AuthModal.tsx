@@ -298,7 +298,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#38523A]/70 dark:bg-black/80 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white dark:bg-[#1a2e1a] p-8 shadow-2xl border border-gray-100 dark:border-[#2d4a2d] animate-fade-in-up">
+      <div className="relative w-full modal-responsive overflow-hidden rounded-2xl bg-white dark:bg-[#1a2e1a] p-6 sm:p-8 shadow-2xl border border-gray-100 dark:border-[#2d4a2d] animate-fade-in-up">
         {/* Top Green Accent Bar */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#38523A] via-[#84B056] to-[#D9E335] dark:from-[#1a2e1a] dark:to-[#84B056]" />
         
@@ -319,10 +319,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               <ShieldCheck size={28} />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-[#38523A] dark:text-[#84B056] mb-1" style={{fontFamily:"'Amatic SC', cursive", fontSize:'34px'}}>
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#38523A] dark:text-[#84B056] mb-1" style={{fontFamily:"'Amatic SC', cursive"}}>
                 Save Your Recovery Code
               </h2>
-              <p className="text-xs text-gray-400 dark:text-[#9ab89a] leading-relaxed">
+              <p className="text-sm sm:text-base text-gray-400 dark:text-[#9ab89a] leading-relaxed">
                 This is a one-time setup code. If you forget your password, you can use this code to recover your account without an email confirmation.
               </p>
             </div>
@@ -465,7 +465,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 bg-[#38523A] dark:bg-[#84B056] hover:bg-[#2b3f2c] dark:hover:bg-[#a5c87a] disabled:opacity-50 text-white dark:text-[#0f1a0f] font-semibold rounded-xl transition-all cursor-pointer"
+                  className="w-full button-responsive btn-lg bg-[#38523A] dark:bg-[#84B056] hover:bg-[#2b3f2c] dark:hover:bg-[#a5c87a] disabled:opacity-50 text-white dark:text-[#0f1a0f] font-semibold rounded-xl"
                 >
                   {loading ? 'Recovering Account...' : 'Reset Password'}
                 </button>
@@ -516,7 +516,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                       key={acc.email}
                       type="button"
                       onClick={() => handleGoogleLoginSubmit(acc.email, acc.name, acc.avatar)}
-                      className="w-full p-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/20 transition-all flex items-center gap-2 cursor-pointer text-left"
+                      className="w-full button-responsive btn-lg rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/20 transition-all flex items-center gap-2 cursor-pointer text-left"
                     >
                       <img src={acc.avatar} alt={acc.name} className="w-6 h-6 rounded-full bg-white/20" />
                       <div className="overflow-hidden">
@@ -534,10 +534,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                 <span className="text-2xl">🌱</span>
               </div>
             </div>
-            <h2 className="text-center font-bold text-[#38523A] dark:text-[#84B056] mb-1" style={{fontFamily:"'Amatic SC', cursive", fontSize:'36px'}}>
+            <h2 className="text-center text-2xl sm:text-3xl font-bold text-[#38523A] dark:text-[#84B056] mb-1" style={{fontFamily:"'Amatic SC', cursive"}}>
               {isLogin ? 'Welcome Back' : 'Join EcoTrack AI'}
             </h2>
-            <p className="text-center text-gray-400 dark:text-[#9ab89a] text-xs mb-5">
+            <p className="text-center text-sm sm:text-base text-gray-400 dark:text-[#9ab89a] mb-5">
               {isLogin ? 'Sign in to your account' : 'Create a free account today'}
             </p>
 
@@ -695,7 +695,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full mt-2 py-3 bg-[#D9E335] hover:bg-[#FFDE59] dark:bg-[#84B056] dark:hover:bg-[#a5c87a] disabled:opacity-50 text-[#38523A] dark:text-[#0f1a0f] font-bold rounded-xl transition-all cursor-pointer shadow-md"
+                  className="w-full mt-2 button-responsive btn-lg bg-[#D9E335] hover:bg-[#FFDE59] dark:bg-[#84B056] dark:hover:bg-[#a5c87a] disabled:opacity-50 text-[#38523A] dark:text-[#0f1a0f] font-bold rounded-xl shadow-md"
                 >
                   {loading ? 'Processing...' : isLogin ? 'Login to Portal' : 'Create Account'}
                 </button>
@@ -744,7 +744,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full py-3 bg-[#D9E335] hover:bg-[#FFDE59] dark:bg-[#84B056] dark:hover:bg-[#a5c87a] disabled:opacity-50 text-[#38523A] dark:text-[#0f1a0f] font-bold rounded-xl transition-all cursor-pointer shadow-md"
+                      className="w-full button-responsive btn-lg bg-[#D9E335] hover:bg-[#FFDE59] dark:bg-[#84B056] dark:hover:bg-[#a5c87a] disabled:opacity-50 text-[#38523A] dark:text-[#0f1a0f] font-bold rounded-xl shadow-md"
                     >
                       {loading ? 'Sending Code...' : 'Request Verification Code'}
                     </button>
@@ -789,7 +789,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full py-3 bg-[#84B056] hover:bg-[#a5c87a] disabled:opacity-50 text-white dark:text-[#0f1a0f] font-bold rounded-xl transition-all cursor-pointer shadow-md"
+                      className="w-full button-responsive btn-lg bg-[#84B056] hover:bg-[#a5c87a] disabled:opacity-50 text-white dark:text-[#0f1a0f] font-bold rounded-xl shadow-md"
                     >
                       {loading ? 'Verifying...' : 'Verify & Sign In'}
                     </button>
@@ -823,7 +823,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                 <button
                   type="button"
                   onClick={handleGoogleLogin}
-                  className="w-full py-2.5 px-4 bg-white dark:bg-[#122012] border border-gray-200 dark:border-[#2d4a2d] hover:bg-gray-50 dark:hover:bg-[#1f371f] text-gray-700 dark:text-[#dceadc] font-semibold text-sm rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+                  className="w-full button-responsive btn-lg bg-white dark:bg-[#122012] border border-gray-200 dark:border-[#2d4a2d] hover:bg-gray-50 dark:hover:bg-[#1f371f] text-gray-700 dark:text-[#dceadc] font-semibold rounded-xl flex items-center justify-center gap-2 shadow-sm"
                 >
                   <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M21.35,11.1H12v2.7h5.38C16.88,16.29,14.67,17.9,12,17.9c-3.26,0-6-2.22-6.98-5.22c-0.26-0.78-0.4-1.6-0.4-2.48 s0.15-1.7,0.4-2.48C6,4.72,8.74,2.5,12,2.5c1.78,0,3.38,0.62,4.64,1.82l2.02-2.02C17.3,1.04,14.83,0,12,0 C7.33,0,3.31,2.69,1.38,6.61C1.04,7.31,0.76,8.06,0.55,8.85C0.19,10.05,0,11.32,0,12.63c0,1.31,0.19,2.58,0.55,3.78 c0.21,0.78,0.49,1.54,0.83,2.23c1.94,3.92,5.96,6.61,10.62,6.61c5.96,0,10.96-3.95,12.06-9.61c0.16-0.81,0.24-1.65,0.24-2.52 C24,12.41,23.83,11.73,21.35,11.1z" fill="#4285F4" />
