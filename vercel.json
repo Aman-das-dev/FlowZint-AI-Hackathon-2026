@@ -8,5 +8,10 @@
       "source": "/(.*)",
       "destination": "/$1"
     }
-  ]
+  ],
+  "functions": {
+    "api/index.py": {
+      "excludeFiles": "node_modules/**|next-auth-system/**|prisma/**|src/**|dist/**|.git/**|.agents/**|public/**"
+    }
+  }
 }
