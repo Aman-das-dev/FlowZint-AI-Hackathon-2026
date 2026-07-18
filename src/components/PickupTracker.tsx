@@ -9,6 +9,7 @@ interface PickupTrackerProps {
   preselectedRecycler: Recycler | null;
   onClearPreselection: () => void;
   updateUserPoints: (points: number) => void;
+  isAdmin?: boolean;
 }
 
 const CustomSelect = ({ 
@@ -61,7 +62,8 @@ const STATUS_STEPS = ['Pending', 'Accepted', 'Driver Assigned', 'Picked Up', 'Co
 export const PickupTracker: React.FC<PickupTrackerProps> = ({ 
   preselectedRecycler, 
   onClearPreselection,
-  updateUserPoints
+  updateUserPoints,
+  isAdmin = false
 }) => {
   const [pickups, setPickups] = useState<PickupSchedule[]>([]);
   const [selectedPickup, setSelectedPickup] = useState<PickupSchedule | null>(null);
@@ -518,7 +520,7 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
                   )}
 
                   {/* Simulation controller */}
-                  {selectedPickup.status !== 'Completed' && (
+                  {isAdmin && selectedPickup.status !== 'Completed' && (
                     <div className="p-4 bg-teal-500/5 border border-teal-500/10 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-4 text-xs">
                       <div className="space-y-0.5 text-center sm:text-left">
                         <span className="font-bold text-teal-400 flex items-center gap-1 justify-center sm:justify-start">

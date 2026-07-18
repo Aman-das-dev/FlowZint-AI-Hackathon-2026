@@ -450,6 +450,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
               preselectedRecycler={selectedRecyclerForPickup} 
               onClearPreselection={handleClearPreselectedRecycler}
               updateUserPoints={handleUpdatePoints}
+              isAdmin={ADMIN_EMAILS.includes(user.email)}
             />
           </div>
         )}
