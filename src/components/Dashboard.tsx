@@ -29,7 +29,7 @@ const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || "")
 export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   const { isDarkMode, toggleDarkMode } = useTheme();
   const getInitialTab = (): TabType => {
-    const path = window.location.pathname.replace('/', '');
+    const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
     const validTabs: TabType[] = ['overview', 'scan', 'map', 'pickup', 'impact', 'rewards', 'admin', 'profile'];
     if (validTabs.includes(path as TabType)) {
       return path as TabType;
@@ -41,7 +41,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
 
   // Sync active tab to browser URL for deep linking
   useEffect(() => {
-    const currentPath = window.location.pathname.replace('/', '');
+    const currentPath = window.location.pathname.replace(/^\/+|\/+$/g, '');
     if (currentPath !== activeTab && !(currentPath === '' && activeTab === 'overview')) {
       const newUrl = activeTab === 'overview' ? '/' : `/${activeTab}`;
       window.history.pushState(null, '', newUrl);
@@ -51,7 +51,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   // Handle browser back/forward buttons
   useEffect(() => {
     const handlePopState = () => {
-      const path = window.location.pathname.replace('/', '');
+      const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
       const validTabs: TabType[] = ['overview', 'scan', 'map', 'pickup', 'impact', 'rewards', 'admin', 'profile'];
       if (validTabs.includes(path as TabType)) {
         setActiveTab(path as TabType);
