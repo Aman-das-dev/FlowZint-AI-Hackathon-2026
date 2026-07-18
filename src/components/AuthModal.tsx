@@ -678,19 +678,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                   )}
                 </div>
 
-                {/* Quick Admin Helper Autofill in Development */}
-                {isLogin && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEmail(import.meta.env.VITE_DEFAULT_ADMIN_EMAIL || 'amanprasaddas5@gmail.com');
-                      setPassword(import.meta.env.VITE_DEFAULT_ADMIN_PASSWORD || 'adminpassword123');
-                    }}
-                    className="w-full text-left text-[10px] text-[#84B056] hover:underline flex items-center gap-1 opacity-70 hover:opacity-100"
-                  >
-                    ⚡ Autofill Administrator Credentials
-                  </button>
-                )}
+
 
                 <button
                   type="submit"
