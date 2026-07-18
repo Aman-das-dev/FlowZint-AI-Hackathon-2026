@@ -13,7 +13,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 import bcrypt
 import jwt
-from google import genai
+try:
+    from google import genai
+except ImportError:
+    genai = None
 import requests
 
 # Setup FastAPI App
@@ -97,7 +100,7 @@ ADMIN_EMAILS = [email.strip().lower() for email in ADMIN_EMAILS_STR.split(",") i
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 genai_client = None
-if GEMINI_API_KEY:
+if GEMINI_API_KEY and genai is not None:
     try:
         genai_client = genai.Client(api_key=GEMINI_API_KEY)
         print("Gemini GenAI client initialized successfully.")
