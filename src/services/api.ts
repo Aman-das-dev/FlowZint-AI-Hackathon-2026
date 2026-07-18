@@ -391,6 +391,17 @@ export const api = {
     return res.json();
   },
 
+  async deleteUser(userId: number): Promise<{ success: boolean }> {
+    const res = await fetch(`${API_BASE}/admin/users/${userId}`, {
+      method: "DELETE",
+      headers: getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error("Failed to delete user");
+    }
+    return res.json();
+  },
+
   // Chatbot
   async sendMessage(message: string): Promise<string> {
     const res = await fetch(`${API_BASE}/chatbot/chat`, {

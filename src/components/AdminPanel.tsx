@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { api, type DashboardStats, type User } from '../services/api';
-import { Shield, Users, Activity, BarChart2, DollarSign, Leaf, Map, Truck } from 'lucide-react';
+import { Shield, Users, Activity, BarChart2, DollarSign, Leaf, Map, Truck, Trash2 } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, LineChart, Line } from 'recharts';
 import L from 'leaflet';
 
@@ -11,6 +11,7 @@ interface AdminPanelProps {
 export const AdminPanel: React.FC<AdminPanelProps> = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [deletingUser, setDeletingUser] = useState<number | null>(null);
 
   const miniMapContainerRef = useRef<HTMLDivElement>(null);
   const miniMapRef = useRef<L.Map | null>(null);
@@ -24,20 +25,34 @@ export const AdminPanel: React.FC<AdminPanelProps> = () => {
     { coords: [37.7599, -122.4368], radius: 400, density: 'Medium' }, // Castro
   ];
 
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
   const fetchStats = async () => {
     try {
       const data = await api.getDashboardStats();
       setStats(data);
-    } catch (err) {
-      console.error('Error fetching admin stats:', err);
+    } catch (error) {
+      console.error('Failed to load admin stats:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
+  const handleDeleteUser = async (userId: number) => {
+    if (!window.confirm("Are you sure you want to completely remove this user from the system?")) return;
+    
+    setDeletingUser(userId);
+    try {
+      await api.deleteUser(userId);
+      await fetchStats(); // Refresh the list
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete user.');
+    } finally {
+      setDeletingUser(null);
+    }
+  };
 
   // Initialize Mini Heatmap
   useEffect(() => {
@@ -263,6 +278,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = () => {
                   <th className="p-3">Email</th>
                   <th className="p-3">Password</th>
                   <th className="p-3 text-right">Points</th>
+                  <th className="p-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5 text-gray-300">
@@ -274,11 +290,21 @@ export const AdminPanel: React.FC<AdminPanelProps> = () => {
                       <td className="p-3 text-gray-400">{u.email}</td>
                       <td className="p-3 font-mono text-pink-400">{u.password || 'demopassword'}</td>
                       <td className="p-3 text-right font-extrabold text-emerald-400">{u.eco_points}</td>
+                      <td className="p-3 text-right">
+                        <button 
+                          onClick={() => handleDeleteUser(u.id)}
+                          disabled={deletingUser === u.id}
+                          className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition-colors disabled:opacity-50"
+                          title="Delete User"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="p-8 text-center text-gray-500">No registered users found.</td>
+                    <td colSpan={6} className="p-8 text-center text-gray-500">No registered users found.</td>
                   </tr>
                 )}
               </tbody>

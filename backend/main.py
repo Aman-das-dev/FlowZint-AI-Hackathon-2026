@@ -1495,6 +1495,23 @@ def get_dashboard_stats(db: Session = Depends(get_db)):
         "pickups": pickups_list
     }
 
+@app.delete("/api/admin/users/{user_id}")
+def delete_user(user_id: int, current_user: UserDB = Depends(get_current_user_from_header), db: Session = Depends(get_db)):
+    if current_user.email not in ADMIN_EMAILS:
+        raise HTTPException(status_code=403, detail="Not authorized to perform this action.")
+    
+    user_to_delete = db.query(UserDB).filter(UserDB.id == user_id).first()
+    if not user_to_delete:
+        raise HTTPException(status_code=404, detail="User not found.")
+    
+    if user_to_delete.email in ADMIN_EMAILS:
+        raise HTTPException(status_code=403, detail="Cannot delete an administrator.")
+    
+    db.delete(user_to_delete)
+    db.commit()
+    
+    return {"success": True}
+
 # --- AI Chatbot Assistant ---
 
 CHATBOT_QA = {
