@@ -92,18 +92,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
             if (sbErr) throw sbErr;
             if (sbData.session) {
               localStorage.setItem('ecotrack_token', sbData.session.access_token);
-              const userProfile = await api.getMe();
-              onAuthSuccess(userProfile.user);
+              onAuthSuccess({
+                id: sbData.session.user.id as any,
+                full_name: sbData.session.user.user_metadata?.full_name || sbData.session.user.email?.split('@')[0] || 'User',
+                email: sbData.session.user.email || '',
+                avatar_url: sbData.session.user.user_metadata?.avatar_url || '',
+                eco_points: 0
+              });
               onClose();
               return;
             }
           } catch (sbErr: any) {
             console.warn("Supabase login failed, trying local fallback:", sbErr);
-            const data = await api.login(email, password);
-            onAuthSuccess(data.user);
-            onClose();
+            throw sbErr; // Don't try local fallback, it will crash
           }
-        }
       } else {
         if (password.length < 6) {
           throw new Error('Password must be at least 6 characters.');
@@ -126,14 +128,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
           return;
         } catch (sbErr: any) {
           console.warn("Supabase registration failed, trying local fallback:", sbErr);
-          const data = await api.register(email, password, fullName);
-          if (data.recovery_code) {
-            setRegisteredUserData(data);
-            setGeneratedCode(data.recovery_code);
-          } else {
-            onAuthSuccess(data.user);
-            onClose();
-          }
+          throw sbErr; // Don't try local fallback, it will crash
         }
       }
     } catch (err: any) {
@@ -247,16 +242,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
         if (sbErr) throw sbErr;
         if (sbData.session) {
           localStorage.setItem('ecotrack_token', sbData.session.access_token);
-          const userProfile = await api.getMe();
-          onAuthSuccess(userProfile.user);
-          onClose();
-          return;
-        }
+          const session = sbData.session;
+          if (session) {
+            onAuthSuccess({
+              id: session.user.id as any,
+              full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+              email: session.user.email || '',
+              avatar_url: session.user.user_metadata?.avatar_url || '',
+              eco_points: 0
+            });
+            onClose();
+            return;
+          }
       } catch (sbErr: any) {
         console.warn("Supabase verifyOtp failed, trying local fallback:", sbErr);
-        const data = await api.verifyOtp(destination, otpCode, fullName || undefined);
-        onAuthSuccess(data.user);
-        onClose();
+        throw sbErr; // Don't try local fallback, it will crash
       }
     } catch (err: any) {
       setError(err.message || 'OTP verification failed. Please try again.');
