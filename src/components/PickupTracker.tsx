@@ -5,7 +5,60 @@ import { State, City } from 'country-state-city';
 
 const indianStates = State.getStatesOfCountry('IN');
 
-interface PickupTrackerProps { 
+interface PickupTrackerProps {
+  preselectedRecycler: Recycler | null;
+  onClearPreselection: () => void;
+  updateUserPoints: (points: number) => void;
+}
+
+const CustomSelect = ({ 
+  value, 
+  onChange, 
+  options, 
+  placeholder, 
+  disabled = false 
+}: { 
+  value: string; 
+  onChange: (v: string) => void; 
+  options: { label: string; value: string }[]; 
+  placeholder: string; 
+  disabled?: boolean;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedLabel = options.find(o => o.value === value)?.label || placeholder;
+
+  return (
+    <div className="relative w-full">
+      <button 
+        type="button" 
+        disabled={disabled}
+        onClick={() => setIsOpen(!isOpen)}
+        onBlur={() => setTimeout(() => setIsOpen(false), 150)}
+        className="w-full px-3 py-2.5 rounded-xl glass-input text-white text-sm cursor-pointer disabled:opacity-50 text-left flex justify-between items-center"
+      >
+        <span className="truncate">{selectedLabel}</span>
+        <ChevronDown size={16} className={`flex-shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      {isOpen && !disabled && (
+        <div className="absolute z-[100] w-full mt-1 bg-[#0b0f19] border border-emerald-500/30 rounded-xl shadow-2xl max-h-56 overflow-y-auto custom-scrollbar">
+          {options.map(opt => (
+            <div 
+              key={opt.value}
+              onClick={() => { onChange(opt.value); setIsOpen(false); }}
+              className={`px-3 py-2.5 text-sm cursor-pointer transition-colors ${value === opt.value ? 'bg-emerald-500/20 text-emerald-400 font-bold' : 'text-gray-300 hover:bg-emerald-500/10 hover:text-white'}`}
+            >
+              {opt.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const STATUS_STEPS = ['Pending', 'Accepted', 'Driver Assigned', 'Picked Up', 'Completed'];
+
+export const PickupTracker: React.FC<PickupTrackerProps> = ({ 
   preselectedRecycler, 
   onClearPreselection,
   updateUserPoints
