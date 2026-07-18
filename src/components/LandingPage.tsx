@@ -86,7 +86,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
         <div className="flex items-center gap-6">
           <span className="flex items-center gap-1.5"><Mail size={12}/> support@ecotrack.ai</span>
           <span className="flex items-center gap-1.5"><Clock size={12}/> Mon–Sat 9:00 – 6:00, Sunday – Off</span>
-          <button onClick={onOpenAuth} className="px-3 py-1 bg-[#D9E335] text-[#38523A] font-semibold rounded cursor-pointer hover:bg-[#FFDE59] transition-colors">
+          <button id="top-nav-request-pickup" onClick={onOpenAuth} className="px-3 py-1 bg-[#D9E335] text-[#38523A] font-semibold rounded cursor-pointer hover:bg-[#FFDE59] transition-colors">
             Request a Pickup
           </button>
         </div>
@@ -119,6 +119,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
 
         <div className="flex w-full sm:w-auto items-center justify-center sm:justify-start gap-2 sm:gap-3">
           <button
+            id="nav-sign-in"
             onClick={onOpenAuth}
             className="flex-1 sm:flex-none px-3 sm:px-4 py-2 text-xs sm:text-sm md:text-base font-semibold rounded-lg border-2 border-[#38523A] text-[#38523A] hover:bg-[#38523A] hover:text-white transition-all duration-300 cursor-pointer whitespace-nowrap"
           >
@@ -126,6 +127,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
           </button>
 
           <button
+            id="nav-launch-portal"
             onClick={onStartApp}
             className="
             flex-1 min-w-0 px-2 py-1.5 text-[11px] sm:px-4 sm:py-2 sm:text-sm md:text-base rounded-lg bg-[#D9E335] text-[#38523A] font-bold hover:bg-[#FFDE59] shadow-md transition"
@@ -159,11 +161,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
                 Scan devices with AI, find certified recyclers, schedule doorstep pickups and track your environmental impact — all in one platform.
               </p>
               <div className="flex flex-col sm:flex-row flex-wrap gap-4 pt-2">
-                <button onClick={onStartApp} className="button-responsive btn-lg w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-4 rounded-lg bg-[#D9E335] text-[#38523A] font-bold text-sm sm:text-base hover:bg-[#FFDE59] transition-all shadow-lg cursor-pointer group">
+                <button id="hero-request-pickup" onClick={onStartApp} className="button-responsive btn-lg w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-4 rounded-lg bg-[#D9E335] text-[#38523A] font-bold text-sm sm:text-base hover:bg-[#FFDE59] transition-all shadow-lg cursor-pointer group">
                   Request a Pickup
                   <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </button>
-                <button onClick={onOpenAuth} className="button-responsive btn-lg w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-4 rounded-lg border-2 border-white/40 text-white font-semibold text-sm sm:text-base hover:bg-white/10 transition-all cursor-pointer">
+                <button id="hero-create-account" onClick={onOpenAuth} className="button-responsive btn-lg w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-4 rounded-lg border-2 border-white/40 text-white font-semibold text-sm sm:text-base hover:bg-white/10 transition-all cursor-pointer">
                   Create Account
                 </button>
               </div>
@@ -319,7 +321,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
               <span className="text-lg">02</span> Committed to People First
             </div>
           </div>
-          <button onClick={onStartApp} className="mt-4 button-responsive btn-lg px-7 py-3 rounded-lg bg-[#D9E335] text-[#38523A] font-bold text-sm sm:text-base hover:bg-[#FFDE59] transition-all shadow-md cursor-pointer">
+          <button id="about-discover-more" onClick={onStartApp} className="mt-4 button-responsive btn-lg px-7 py-3 rounded-lg bg-[#D9E335] text-[#38523A] font-bold text-sm sm:text-base hover:bg-[#FFDE59] transition-all shadow-md cursor-pointer">
             Discover More
           </button>
         </motion.div>
@@ -337,10 +339,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
             Manage Waste Effectively<br/>&amp; Reduce Environmental Impact
           </h2>
           <div className="flex flex-wrap gap-4 justify-center pt-2">
-            <button onClick={onStartApp} className="button-responsive btn-lg w-full sm:w-auto px-8 py-3.5 rounded-lg bg-[#D9E335] text-[#38523A] font-bold text-sm sm:text-base hover:bg-[#FFDE59] transition-all shadow-lg cursor-pointer">
+            <button id="cta-request-pickup" onClick={onStartApp} className="button-responsive btn-lg w-full sm:w-auto px-8 py-3.5 rounded-lg bg-[#D9E335] text-[#38523A] font-bold text-sm sm:text-base hover:bg-[#FFDE59] transition-all shadow-lg cursor-pointer">
               Request a Pickup
             </button>
-            <button onClick={onOpenAuth} className="button-responsive btn-lg w-full sm:w-auto px-8 py-3.5 rounded-lg border-2 border-white text-white font-semibold text-sm sm:text-base hover:bg-white/10 transition-all cursor-pointer">
+            <button id="cta-contact-us" onClick={onOpenAuth} className="button-responsive btn-lg w-full sm:w-auto px-8 py-3.5 rounded-lg border-2 border-white text-white font-semibold text-sm sm:text-base hover:bg-white/10 transition-all cursor-pointer">
               Contact With Us
             </button>
           </div>
