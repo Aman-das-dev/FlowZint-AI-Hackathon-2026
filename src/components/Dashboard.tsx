@@ -6,11 +6,12 @@ import { PickupTracker } from './PickupTracker';
 import { ImpactDashboard } from './ImpactDashboard';
 import { RewardsLeaderboard } from './RewardsLeaderboard';
 import { AdminPanel } from './AdminPanel';
+import { ProfilePage } from './ProfilePage';
 import { Chatbot } from './Chatbot';
 import { useTheme } from '../context/ThemeContext';
 import { 
   Home, Sparkles, MapPin, Truck, BarChart3, Trophy, Shield, 
-  LogOut, Leaf, Zap, Calendar, Heart, ShieldAlert, Menu, X, Moon, Sun
+  LogOut, Leaf, Zap, Calendar, Heart, ShieldAlert, Menu, X, Moon, Sun, UserCircle
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -18,7 +19,7 @@ interface DashboardProps {
   onLogout: () => void;
 }
 
-type TabType = 'overview' | 'scan' | 'map' | 'pickup' | 'impact' | 'rewards' | 'admin';
+type TabType = 'overview' | 'scan' | 'map' | 'pickup' | 'impact' | 'rewards' | 'admin' | 'profile';
 
 const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || "")
   .split(",")
@@ -205,6 +206,20 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 ${activeTab === 'rewards' ? 'bg-[#D9E335] text-[#38523A] shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10 hover:translate-x-1'}`}
             >
               <Trophy size={18} /> Rewards Hub
+            </button>
+
+
+
+            {/* Profile - always visible */}
+            <button
+              onClick={() => { setActiveTab('profile'); setIsSidebarOpen(false); }}
+              className={`w-full px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all cursor-pointer
+                ${activeTab === 'profile' ? 'bg-[#D9E335] text-[#38523A] shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10 hover:translate-x-1'}`}
+            >
+              <UserCircle size={18} /> My Profile
+              {ADMIN_EMAILS.includes(user.email) && (
+                <span className="ml-auto text-[9px] font-bold bg-indigo-500/30 text-indigo-300 px-1.5 py-0.5 rounded-full">ADMIN</span>
+              )}
             </button>
 
             {ADMIN_EMAILS.includes(user.email) && (
@@ -403,6 +418,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         {activeTab === 'admin' && ADMIN_EMAILS.includes(user.email) && (
           <div className="animate-magnetic-tilt">
             <AdminPanel user={user} />
+          </div>
+        )}
+
+        {activeTab === 'profile' && (
+          <div className="animate-fade-in-up">
+            <ProfilePage
+              user={user}
+              isAdmin={ADMIN_EMAILS.includes(user.email)}
+              userPoints={userPoints}
+            />
           </div>
         )}
 
