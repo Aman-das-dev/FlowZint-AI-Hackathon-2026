@@ -1,0 +1,9 @@
+node_modules
+.git
+src
+public
+dist
+.vscode
+*.db
+__pycache__
+.env
