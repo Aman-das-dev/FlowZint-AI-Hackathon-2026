@@ -1,100 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { api, type PickupSchedule, type Recycler } from '../services/api';
 import { Calendar, Phone, Truck, User, RefreshCw, Sparkles, ChevronDown } from 'lucide-react';
+import { State, City } from 'country-state-city';
 
-interface PickupTrackerProps {
-  preselectedRecycler: Recycler | null;
-  onClearPreselection: () => void;
-  updateUserPoints: (points: number) => void;
-}
+const indianStates = State.getStatesOfCountry('IN');
 
-const CustomSelect = ({ 
-  value, 
-  onChange, 
-  options, 
-  placeholder, 
-  disabled = false 
-}: { 
-  value: string; 
-  onChange: (v: string) => void; 
-  options: { label: string; value: string }[]; 
-  placeholder: string; 
-  disabled?: boolean;
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const selectedLabel = options.find(o => o.value === value)?.label || placeholder;
-
-  return (
-    <div className="relative w-full">
-      <button 
-        type="button" 
-        disabled={disabled}
-        onClick={() => setIsOpen(!isOpen)}
-        onBlur={() => setTimeout(() => setIsOpen(false), 150)}
-        className="w-full px-3 py-2.5 rounded-xl glass-input text-white text-sm cursor-pointer disabled:opacity-50 text-left flex justify-between items-center"
-      >
-        <span className="truncate">{selectedLabel}</span>
-        <ChevronDown size={16} className={`flex-shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
-      {isOpen && !disabled && (
-        <div className="absolute z-[100] w-full mt-1 bg-[#0b0f19] border border-emerald-500/30 rounded-xl shadow-2xl max-h-56 overflow-y-auto custom-scrollbar">
-          {options.map(opt => (
-            <div 
-              key={opt.value}
-              onClick={() => { onChange(opt.value); setIsOpen(false); }}
-              className={`px-3 py-2.5 text-sm cursor-pointer transition-colors ${value === opt.value ? 'bg-emerald-500/20 text-emerald-400 font-bold' : 'text-gray-300 hover:bg-emerald-500/10 hover:text-white'}`}
-            >
-              {opt.label}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const STATUS_STEPS = ['Pending', 'Accepted', 'Driver Assigned', 'Picked Up', 'Completed'];
-
-const STATE_CITY_MAP = {
-  "Andaman and Nicobar Islands": ["Port Blair"],
-  "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Tirupati", "Kurnool", "Rajahmundry", "Kakinada"],
-  "Arunachal Pradesh": ["Itanagar", "Naharlagun", "Pasighat"],
-  "Assam": ["Guwahati", "Silchar", "Dibrugarh", "Jorhat", "Nagaon", "Tinsukia"],
-  "Bihar": ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia", "Darbhanga"],
-  "Chandigarh": ["Chandigarh"],
-  "Chhattisgarh": ["Raipur", "Bhilai", "Bilaspur", "Korba", "Durg"],
-  "Dadra and Nagar Haveli and Daman and Diu": ["Daman", "Diu", "Silvassa"],
-  "Delhi": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi", "Central Delhi"],
-  "Goa": ["Panaji", "Vasco da Gama", "Margao", "Mapusa", "Ponda"],
-  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Gandhinagar", "Junagadh"],
-  "Haryana": ["Faridabad", "Gurugram", "Panipat", "Ambala", "Rohtak", "Hisar", "Karnal"],
-  "Himachal Pradesh": ["Shimla", "Dharamshala", "Mandi", "Solan", "Kullu", "Manali"],
-  "Jammu and Kashmir": ["Srinagar", "Jammu", "Anantnag", "Baramulla", "Kathua"],
-  "Jharkhand": ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro", "Deoghar", "Hazaribagh"],
-  "Karnataka": ["Bengaluru", "Mysuru", "Mangaluru", "Hubballi", "Belagavi", "Kalaburagi", "Ballari", "Vijayapura"],
-  "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Kollam", "Thrissur", "Alappuzha", "Palakkad"],
-  "Ladakh": ["Leh", "Kargil"],
-  "Lakshadweep": ["Kavaratti", "Agatti"],
-  "Madhya Pradesh": ["Bhopal", "Indore", "Jabalpur", "Gwalior", "Ujjain", "Sagar", "Rewa"],
-  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Nashik", "Kalyan", "Vasai-Virar", "Aurangabad", "Navi Mumbai"],
-  "Manipur": ["Imphal", "Thoubal", "Bishnupur"],
-  "Meghalaya": ["Shillong", "Tura", "Jowai"],
-  "Mizoram": ["Aizawl", "Lunglei"],
-  "Nagaland": ["Kohima", "Dimapur", "Mokokchung"],
-  "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Brahmapur", "Sambalpur", "Puri"],
-  "Puducherry": ["Puducherry", "Ozhukarai", "Karaikal", "Mahe", "Yanam"],
-  "Punjab": ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda", "Mohali"],
-  "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur", "Kota", "Bikaner", "Ajmer", "Bhilwara", "Alwar"],
-  "Sikkim": ["Gangtok", "Namchi", "Geyzing", "Mangan"],
-  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli", "Tiruppur", "Vellore"],
-  "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Khammam", "Karimnagar", "Ramagundam"],
-  "Tripura": ["Agartala", "Dharmanagar", "Udaipur"],
-  "Uttar Pradesh": ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Varanasi", "Meerut", "Prayagraj", "Bareilly", "Aligarh", "Noida"],
-  "Uttarakhand": ["Dehradun", "Haridwar", "Roorkee", "Haldwani", "Rudrapur", "Rishikesh"],
-  "West Bengal": ["Kolkata", "Howrah", "Asansol", "Siliguri", "Durgapur", "Bardhaman", "Malda", "Kharagpur"]
-};
-
-export const PickupTracker: React.FC<PickupTrackerProps> = ({ 
+interface PickupTrackerProps { 
   preselectedRecycler, 
   onClearPreselection,
   updateUserPoints
@@ -227,7 +138,8 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
     setLoading(true);
 
     try {
-      const fullAddress = `${addressLine}, ${addressCity}, ${addressState}`;
+      const stateName = indianStates.find(s => s.isoCode === addressState)?.name || addressState;
+      const fullAddress = `${addressLine}, ${addressCity}, ${stateName}`;
       await api.schedulePickup({
         recycler_name: recyclerName,
         recycler_address: recyclerAddress,
@@ -383,7 +295,7 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
                       setAddressCity('');
                     }}
                     placeholder="Select State..."
-                    options={Object.keys(STATE_CITY_MAP).map(state => ({ value: state, label: state }))}
+                    options={indianStates.map(state => ({ value: state.isoCode, label: state.name }))}
                   />
 
                   <CustomSelect
@@ -391,7 +303,7 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
                     onChange={(v) => setAddressCity(v)}
                     disabled={!addressState}
                     placeholder="Select City..."
-                    options={addressState ? STATE_CITY_MAP[addressState as keyof typeof STATE_CITY_MAP].map(city => ({ value: city, label: city })) : []}
+                    options={addressState ? City.getCitiesOfState('IN', addressState).map(city => ({ value: city.name, label: city.name })) : []}
                   />
                 </div>
 
