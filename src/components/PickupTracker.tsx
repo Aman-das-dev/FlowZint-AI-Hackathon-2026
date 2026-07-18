@@ -522,9 +522,9 @@ export const PickupTracker: React.FC<PickupTrackerProps> = ({
                     <div className="p-4 bg-teal-500/5 border border-teal-500/10 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-4 text-xs">
                       <div className="space-y-0.5 text-center sm:text-left">
                         <span className="font-bold text-teal-400 flex items-center gap-1 justify-center sm:justify-start">
-                          <RefreshCw size={14} className="animate-spin" /> Hackathon Presenter Mode
+                          <RefreshCw size={14} className="animate-spin" /> Logistics Simulation Mode
                         </span>
-                        <p className="text-gray-400 mt-0.5">Click step progress to simulate the driver logistical lifecycle.</p>
+                        <p className="text-gray-400 mt-0.5">Manually advance the driver pickup lifecycle for testing.</p>
                       </div>
                       <button
                         onClick={simulateStatusStep}
