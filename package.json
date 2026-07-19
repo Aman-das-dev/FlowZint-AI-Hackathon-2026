@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "backend": "node api/index.js",
+    "backend": "node api/index.cjs",
     "dev:fullstack": "concurrently \"npm run dev\" \"npm run backend\"",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
