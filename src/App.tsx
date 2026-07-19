@@ -10,6 +10,10 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetError, setResetError] = useState('');
 
   const clearAuthUrl = () => {
     if (window.location.hash.includes('access_token=')) {
@@ -44,7 +48,11 @@ function App() {
     checkSession();
 
     // Listen to Supabase auth state changes (e.g. from Google OAuth redirect)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setShowPasswordReset(true);
+      }
+
       if (session) {
         localStorage.setItem('ecotrack_token', session.access_token);
         clearAuthUrl();
@@ -119,6 +127,24 @@ function App() {
     setUser(null);
   };
 
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetError('');
+    setResetLoading(true);
+    try {
+      if (newPassword.length < 6) throw new Error('Password must be at least 6 characters');
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      setShowPasswordReset(false);
+      setNewPassword('');
+      alert('Password updated successfully!');
+    } catch (err: any) {
+      setResetError(err.message || 'Failed to update password');
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#070b13] flex flex-col items-center justify-center gap-4">
@@ -146,6 +172,32 @@ function App() {
         onClose={() => setAuthModalOpen(false)} 
         onAuthSuccess={handleAuthSuccess} 
       />
+
+      {showPasswordReset && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#1a2e1a] border border-[#2d4a2d] rounded-2xl p-6 sm:p-8 shadow-2xl w-full max-w-md animate-fade-in-up text-white">
+            <h2 className="text-2xl font-bold text-[#84B056] mb-2 flex items-center gap-2">Reset Password</h2>
+            <p className="text-[#9ab89a] text-sm mb-6">Please enter your new password below.</p>
+            <form onSubmit={handlePasswordReset} className="space-y-4">
+              {resetError && <div className="text-rose-400 bg-rose-950/20 border border-rose-900 p-3 rounded-lg text-sm">{resetError}</div>}
+              <div>
+                <label className="block text-xs font-semibold text-[#9ab89a] uppercase tracking-wider mb-2">New Password</label>
+                <input 
+                  type="password" 
+                  value={newPassword} 
+                  onChange={e => setNewPassword(e.target.value)} 
+                  required 
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/20 border border-[#2d4a2d] text-white focus:outline-none focus:border-[#84B056]" 
+                  placeholder="••••••••"
+                />
+              </div>
+              <button disabled={resetLoading} type="submit" className="w-full py-3 bg-[#84B056] hover:bg-[#a5c87a] text-[#0f1a0f] font-bold rounded-xl transition-all">
+                {resetLoading ? 'Updating...' : 'Update Password'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 }
