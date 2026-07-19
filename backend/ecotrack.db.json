@@ -70,7 +70,7 @@
       "pickup_time": "10:30 AM",
       "address": "123 Green Street, Bengaluru",
       "contact_phone": "+91 99999 88888",
-      "status": "Driver Assigned",
+      "status": "Completed",
       "driver_name": "Ramesh Kumar",
       "driver_phone": "+91 98123 45678",
       "created_at": "2026-07-19T13:40:57.169Z"
@@ -84,7 +84,7 @@
       "pickup_time": "09:00 AM - 12:00 PM",
       "address": "123 Green Street, Sector 5, Addanki, Andhra Pradesh",
       "contact_phone": "9876543210",
-      "status": "Completed",
+      "status": "Picked Up",
       "driver_name": "Vikram Patel",
       "driver_phone": "+91 97456 78901",
       "created_at": "2026-07-19T13:48:02.191Z"

@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "node -e \"require('fs').copyFileSync('../.env', '.env.local')\" && next dev",
+    "build": "node -e \"require('fs').copyFileSync('../.env', '.env.local')\" && next build",
+    "start": "node -e \"require('fs').copyFileSync('../.env', '.env.local')\" && next start",
     "lint": "eslint"
   },
   "dependencies": {

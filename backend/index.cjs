@@ -777,7 +777,7 @@ app.post('/api/pickups', authenticate, async (req, res) => {
     });
 
     // Start background auto-logistics simulation
-    advancePickupLifecycle(newPickup.id);
+    // advancePickupLifecycle(newPickup.id);
 
     res.json(newPickup);
   } catch (err) {

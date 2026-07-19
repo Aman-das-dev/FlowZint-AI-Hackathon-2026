@@ -54,6 +54,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = () => {
     }
   };
 
+  const handleUpdateStatus = async (pickupId: number, nextStatus: string) => {
+    try {
+      await api.updatePickupStatus(pickupId, nextStatus);
+      await fetchStats(); // Refresh the list
+    } catch (err: any) {
+      alert(err.message || 'Failed to update pickup status.');
+    }
+  };
+
   // Initialize Mini Heatmap
   useEffect(() => {
     if (loading || !miniMapContainerRef.current) return;
@@ -398,13 +407,23 @@ export const AdminPanel: React.FC<AdminPanelProps> = () => {
                     <td className="p-3 font-bold text-white">{p.recycler_name}</td>
                     <td className="p-3 text-gray-400">{p.pickup_date}</td>
                     <td className="p-3 font-medium">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        p.status === 'Completed' ? 'bg-teal-500/15 text-teal-400 border-teal-500/20' : 
-                        p.status === 'Pending' ? 'bg-gray-500/15 text-gray-400 border-gray-500/20' :
-                        'bg-blue-500/15 text-blue-400 border-blue-500/20'
-                      } border`}>
-                        {p.status}
-                      </span>
+                      <select
+                        value={p.status}
+                        onChange={(e) => handleUpdateStatus(p.id, e.target.value)}
+                        className={`px-2 py-1 rounded text-[10px] font-bold bg-[#0b0f19] border ${
+                          p.status === 'Completed' ? 'text-teal-400 border-teal-500/30' : 
+                          p.status === 'Pending' ? 'text-gray-400 border-white/10' :
+                          p.status === 'Accepted' ? 'text-blue-400 border-blue-500/30' :
+                          p.status === 'Driver Assigned' ? 'text-indigo-400 border-indigo-500/30' :
+                          'text-amber-400 border-amber-500/30'
+                        } cursor-pointer focus:outline-none`}
+                      >
+                        <option value="Pending" className="bg-[#0b0f19] text-gray-400">Pending</option>
+                        <option value="Accepted" className="bg-[#0b0f19] text-blue-400">Accepted</option>
+                        <option value="Driver Assigned" className="bg-[#0b0f19] text-indigo-400">Driver Assigned</option>
+                        <option value="Picked Up" className="bg-[#0b0f19] text-amber-400">Picked Up</option>
+                        <option value="Completed" className="bg-[#0b0f19] text-teal-400">Completed</option>
+                      </select>
                     </td>
                   </tr>
                 ))
