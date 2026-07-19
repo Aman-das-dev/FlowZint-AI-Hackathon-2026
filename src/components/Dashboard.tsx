@@ -76,6 +76,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Prefetch dashboard statistics for instant loading on Impact/Admin tabs
+  useEffect(() => {
+    const prefetchStats = async () => {
+      try {
+        const data = await api.getDashboardStats();
+        localStorage.setItem('ecotrack_dashboard_stats', JSON.stringify(data));
+      } catch (err) {
+        console.error('Failed to prefetch dashboard stats:', err);
+      }
+    };
+    prefetchStats();
+  }, []);
+
   // Load User submission history
   const loadHistory = async () => {
     setFetchingHistory(true);

@@ -9,8 +9,15 @@ interface AdminPanelProps {
 }
 
 export const AdminPanel: React.FC<AdminPanelProps> = () => {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<DashboardStats | null>(() => {
+    try {
+      const cached = localStorage.getItem('ecotrack_dashboard_stats');
+      return cached ? JSON.parse(cached) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+  const [loading, setLoading] = useState(!stats);
   const [deletingUser, setDeletingUser] = useState<number | null>(null);
 
   const miniMapContainerRef = useRef<HTMLDivElement>(null);
@@ -33,6 +40,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = () => {
     try {
       const data = await api.getDashboardStats();
       setStats(data);
+      localStorage.setItem('ecotrack_dashboard_stats', JSON.stringify(data));
     } catch (error) {
       console.error('Failed to load admin stats:', error);
     } finally {
@@ -100,7 +108,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = () => {
     };
   }, [loading]);
 
-  if (loading || !stats) {
+  if (!stats) {
     return (
       <div className="rounded-2xl border border-white/5 bg-black/20 p-24 text-center text-gray-500">
         <span className="text-emerald-400 font-semibold animate-pulse">Loading logistics admin console...</span>

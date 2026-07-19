@@ -7,17 +7,21 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, PieChart, 
 const COLORS = ['#10b981', '#06b6d4', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#6366f1'];
 
 export const ImpactDashboard: React.FC = () => {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
-
+  const [stats, setStats] = useState<DashboardStats | null>(() => {
+    try {
+      const cached = localStorage.getItem('ecotrack_dashboard_stats');
+      return cached ? JSON.parse(cached) : null;
+    } catch (e) {
+      return null;
+    }
+  });
   const fetchStats = async () => {
     try {
       const data = await api.getDashboardStats();
       setStats(data);
+      localStorage.setItem('ecotrack_dashboard_stats', JSON.stringify(data));
     } catch (err) {
       console.error('Error fetching dashboard stats:', err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -25,7 +29,7 @@ export const ImpactDashboard: React.FC = () => {
     fetchStats();
   }, []);
 
-  if (loading || !stats) {
+  if (!stats) {
     return (
       <div className="rounded-2xl border border-white/5 bg-black/20 p-24 text-center text-gray-500">
         <span className="text-emerald-400 font-semibold animate-pulse">Loading environmental analytics...</span>
@@ -159,7 +163,7 @@ export const ImpactDashboard: React.FC = () => {
                   paddingAngle={4}
                   dataKey="value"
                 >
-                  {device_categories.map((_, index) => (
+                  {device_categories.map((_: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -172,7 +176,7 @@ export const ImpactDashboard: React.FC = () => {
 
           {/* Custom Labels List */}
           <div className="grid grid-cols-2 gap-2 text-xs">
-            {device_categories.slice(0, 6).map((cat, idx) => (
+            {device_categories.slice(0, 6).map((cat: any, idx: number) => (
               <div key={cat.name} className="flex items-center gap-1.5 text-gray-400">
                 <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></span>
                 <span className="truncate">{cat.name}: <b>{cat.value}</b></span>

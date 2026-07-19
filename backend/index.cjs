@@ -12,7 +12,7 @@ const fs = require('fs');
 // Load database helper
 const db = require('./db.cjs');
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 const app = express();
 app.use(cors());
@@ -518,7 +518,9 @@ app.post('/api/devices/detect', upload.single('file'), authenticate, async (req,
       return res.status(400).json({ detail: "No file uploaded." });
     }
 
-    const imageUrl = `/api/images/${file.filename}`;
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+    const host = req.get('host');
+    const imageUrl = `${protocol}://${host}/api/images/${file.filename}`;
 
     const DEVICE_DATASET = {
       smartphone: {
@@ -630,7 +632,7 @@ app.post('/api/devices/detect', upload.single('file'), authenticate, async (req,
       try {
         const fileBuffer = fs.readFileSync(file.path);
         const mimeType = file.mimetype || "image/jpeg";
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
         const prompt = `You are EcoTrack AI, an electronic device identifier. Analyze this image. Identify if this is an electronic device from this list: ${Object.keys(DEVICE_DATASET).join(', ')}. If it matches, output ONLY the exact key name from the list. If it's an electronic device but not on the list, output 'smartphone'. If it is NOT an electronic device (e.g., food, animals, random objects, people, nature), output 'NOT_ELECTRONIC'. Output exactly ONE word.`;
 
         const result = await model.generateContent([
@@ -676,13 +678,6 @@ app.post('/api/devices/detect', upload.single('file'), authenticate, async (req,
       }
 
       if (!detectKey) {
-        // Safe check for hackathon: block blank webcam requests if Gemini is not working
-        if (!process.env.GEMINI_API_KEY && /(capture|image|jpg|png|pic|photo|img|blob)/i.test(searchStr)) {
-          fs.unlinkSync(file.path);
-          return res.status(400).json({
-            detail: "Live AI detection requires a GEMINI_API_KEY in your .env file. Please configure the key to analyze webcam images, or select a specific device from the 'Demo Preset Override' dropdown."
-          });
-        }
         detectKey = "smartphone";
       }
     }
@@ -693,13 +688,15 @@ app.post('/api/devices/detect', upload.single('file'), authenticate, async (req,
     // Customize explanation via Gemini if available
     if (process.env.GEMINI_API_KEY) {
       try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
         const prompt = `You are EcoTrack AI. A user uploaded an image of a ${detectKey}. Provide a 3-4 sentence environmental explanation of: 1. What hazardous components this ${detectKey} contains. 2. How it should be recycled properly. 3. Why it shouldn't go to normal landfills. Keep it professional, educational, and sustainable.`;
         const result = await model.generateContent(prompt);
         aiExplanation = result.response.text().trim();
       } catch (err) {
         console.warn("Gemini explanation generation failed:", err.message);
       }
+    } else {
+      aiExplanation = `[SIMULATION MODE: Add GEMINI_API_KEY in your .env file to enable live Google Gemini AI recognition.]\n\n${aiExplanation}`;
     }
 
     // Save to database
@@ -1039,7 +1036,7 @@ app.post('/api/chatbot/chat', async (req, res) => {
 
     if (!reply && process.env.GEMINI_API_KEY) {
       try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
         const prompt = `You are EcoTrack AI, an intelligent sustainability and e-waste recycling chatbot assistant. A user asks: '${message}'. Provide a helpful, detailed, educational, and encouraging response focused on responsible electronics disposal, recycling standards, and energy conservation. Be concise but thorough (2-4 sentences).`;
         const result = await model.generateContent(prompt);
         reply = result.response.text().trim();
@@ -1049,12 +1046,12 @@ app.post('/api/chatbot/chat', async (req, res) => {
     }
 
     if (!reply) {
-      reply = "I'm currently unable to connect to my AI core, but I can help you schedule a pickup or scan a device from the dashboard!";
+      reply = "I'm currently running in Demo Mode. To connect my advanced Gemini AI assistant features, please add a GEMINI_API_KEY to your .env file! \n\nIn the meantime, feel free to ask about recycling 'lithium' batteries, how to 'erase' your laptop, 'repair' options, or 'what happens' to e-waste after collection.";
     }
 
     res.json({ reply });
   } catch (err) {
-    res.json({ reply: "I'm currently unable to connect to my AI core, but I can help you schedule a pickup or scan a device from the dashboard!" });
+    res.json({ reply: "I'm currently running in Demo Mode. To connect my advanced Gemini AI assistant features, please add a GEMINI_API_KEY to your .env file! \n\nIn the meantime, feel free to ask about recycling 'lithium' batteries, how to 'erase' your laptop, 'repair' options, or 'what happens' to e-waste after collection." });
   }
 });
 
