@@ -144,10 +144,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
     setLoading(true);
 
     try {
-      if (newPassword.length < 6) {
-        throw new Error('New password must be at least 6 characters.');
-      }
-      await api.recoverAccount(email, recoveryCode.trim(), newPassword);
+      // Send reset password email via Supabase
+      const { error: sbErr } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/#reset-password`,
+      });
+      if (sbErr) throw sbErr;
+      
       setRecoverySuccess(true);
       setTimeout(() => {
         setForgotPassword(false);
@@ -156,9 +158,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
         setPassword('');
         setRecoveryCode('');
         setNewPassword('');
-      }, 3000);
+      }, 5000);
     } catch (err: any) {
-      setError(err.message || 'Recovery failed. Please check your details and try again.');
+      setError(err.message || 'Failed to send recovery email. Please check your details and try again.');
     } finally {
       setLoading(false);
     }
@@ -393,12 +395,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               <Key size={24} /> Account Recovery
             </h2>
             <p className="text-gray-500 dark:text-[#9ab89a] text-sm mb-6">
-              Enter your email and the 12-digit recovery code you saved at registration to set a new password.
+              Enter your email and we'll send you a password reset link securely via Supabase.
             </p>
 
             {recoverySuccess ? (
               <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900 rounded-xl p-4 text-emerald-700 dark:text-emerald-400 text-sm mb-6">
-                Password reset successful! Redirecting you to login...
+                Recovery email sent! Check your inbox for the secure link. Redirecting...
               </div>
             ) : (
               <form onSubmit={handleRecoverySubmit} className="space-y-4">
@@ -425,46 +427,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-gray-500 dark:text-[#9ab89a] uppercase tracking-wider mb-2">
-                    12-Digit Recovery Code
-                  </label>
-                  <div className="relative">
-                    <ShieldCheck className="absolute left-3 top-3 text-gray-400" size={18} />
-                    <input
-                      type="text"
-                      required
-                      value={recoveryCode}
-                      onChange={(e) => setRecoveryCode(e.target.value.toUpperCase())}
-                      placeholder="ECO-XXXX-XXXX"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl eco-input text-[#333333] dark:text-[#dceadc] text-sm font-mono tracking-wider"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-gray-500 dark:text-[#9ab89a] uppercase tracking-wider mb-2">
-                    New Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 text-gray-400" size={18} />
-                    <input
-                      type={showNewPassword ? "text" : "password"}
-                      required
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full pl-10 pr-10 py-2.5 rounded-xl eco-input text-[#333333] dark:text-[#dceadc] text-sm"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowNewPassword(!showNewPassword)}
-                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                    >
-                      {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                </div>
 
                 <button
                   type="submit"
