@@ -80,7 +80,7 @@ function App() {
   }, []);
 
   const handleStartApp = async () => {
-    // If not logged in, we can either show the AuthModal or directly log them in as a demo user
+    // Check if there is already a valid Supabase session (e.g. from Google OAuth redirect)
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
       setLoading(true);
@@ -98,23 +98,8 @@ function App() {
         setLoading(false);
       }
     } else {
-      // For a seamless hackathon user experience, let's auto-auth as the Demo user
-      // if they click 'Launch' without a custom account.
-      setLoading(true);
-      try {
-        setUser({
-          id: 1,
-          full_name: 'Demo User',
-          email: 'demo@ecotrack.ai',
-          avatar_url: '',
-          eco_points: 500
-        });
-      } catch (err) {
-        // Fallback to opening login popup if even the backend fallback fails
-        setAuthModalOpen(true);
-      } finally {
-        setLoading(false);
-      }
+      // No session — require login. Never auto-login.
+      setAuthModalOpen(true);
     }
   };
 

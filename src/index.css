@@ -161,16 +161,16 @@ main p, .glass-panel p, .eco-card p {
   color: var(--text-secondary) !important;
 }
 
-/* Override hardcoded white text inside cards & main */
-.glass-panel .text-white, .eco-card .text-white, main .text-white,
-.glass-panel .text-gray-100, .eco-card .text-gray-100, main .text-gray-100,
-.glass-panel .text-gray-200, .eco-card .text-gray-200, main .text-gray-200,
-.glass-panel .text-gray-300, .eco-card .text-gray-300, main .text-gray-300 {
+/* Override hardcoded white/light text ONLY inside glass-panel/eco-card, not the whole main */
+.glass-panel .text-white, .eco-card .text-white,
+.glass-panel .text-gray-100, .eco-card .text-gray-100,
+.glass-panel .text-gray-200, .eco-card .text-gray-200,
+.glass-panel .text-gray-300, .eco-card .text-gray-300 {
   color: var(--text-primary) !important;
 }
 
-.glass-panel .text-gray-400, .eco-card .text-gray-400, main .text-gray-400,
-.glass-panel .text-gray-500, .eco-card .text-gray-500, main .text-gray-500 {
+.glass-panel .text-gray-400, .eco-card .text-gray-400,
+.glass-panel .text-gray-500, .eco-card .text-gray-500 {
   color: var(--text-secondary) !important;
 }
 
@@ -193,16 +193,32 @@ main p, .glass-panel p, .eco-card p {
 .dark .text-blue-400    { color: #60a5fa !important; }
 
 /* ============================================================
-   DARK BG OVERRIDES INSIDE CARDS
+   SCAN DROPZONE — Always readable dark background regardless of theme
    ============================================================ */
-.glass-panel .bg-black\/20, .eco-card .bg-black\/20, main .bg-black\/20,
-.glass-panel .bg-black\/40, .eco-card .bg-black\/40, main .bg-black\/40,
-.glass-panel .bg-black\/10, .eco-card .bg-black\/10, main .bg-black\/10 {
+.scan-dropzone {
+  background-color: #132213 !important;
+  border-color: rgba(52, 211, 153, 0.35) !important;
+}
+.scan-dropzone p, .scan-dropzone span, .scan-dropzone label {
+  color: #d1fae5 !important;
+}
+.scan-dropzone .text-gray-500 { color: #6ee7b7 !important; }
+.scan-dropzone label {
+  border-color: rgba(255,255,255,0.15) !important;
+  color: #d1fae5 !important;
+}
+
+/* ============================================================
+   DARK BG OVERRIDES INSIDE CARDS ONLY (not scan zone, not main)
+   ============================================================ */
+.glass-panel .bg-black\/20, .eco-card .bg-black\/20,
+.glass-panel .bg-black\/40, .eco-card .bg-black\/40,
+.glass-panel .bg-black\/10, .eco-card .bg-black\/10 {
   background-color: var(--bg-muted) !important;
 }
 
-.glass-panel .border-white\/5,  .eco-card .border-white\/5,  main .border-white\/5,
-.glass-panel .border-white\/10, .eco-card .border-white\/10, main .border-white\/10 {
+.glass-panel .border-white\/5,  .eco-card .border-white\/5,
+.glass-panel .border-white\/10, .eco-card .border-white\/10 {
   border-color: var(--border-color) !important;
 }
 
