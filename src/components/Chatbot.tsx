@@ -93,7 +93,9 @@ export const Chatbot: React.FC = () => {
               >
                 <div 
                   className={`max-w-[80%] p-3 rounded-2xl text-xs leading-relaxed
-                    ${m.isBot ? 'bg-[#0f172a] border border-white/5 text-gray-300 rounded-tl-sm' : 'bg-emerald-500 text-black font-semibold rounded-tr-sm'}`}
+                    ${m.isBot 
+                      ? 'bot-message-bubble rounded-tl-sm' 
+                      : 'bg-emerald-500 text-black font-semibold rounded-tr-sm'}`}
                 >
                   {m.text}
                 </div>
@@ -103,7 +105,7 @@ export const Chatbot: React.FC = () => {
             {/* Loading typing bubble */}
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-[#0f172a] border border-white/5 p-3 rounded-2xl rounded-tl-sm flex items-center gap-1">
+                <div className="bot-message-bubble p-3 rounded-2xl rounded-tl-sm flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" style={{ animationDelay: '0ms' }}></span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" style={{ animationDelay: '150ms' }}></span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" style={{ animationDelay: '300ms' }}></span>

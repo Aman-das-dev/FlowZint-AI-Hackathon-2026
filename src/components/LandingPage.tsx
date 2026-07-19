@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Leaf, ShieldAlert, Award, Compass, Truck, BarChart3, Users, Mail, Clock, Smartphone, CalendarCheck, Recycle, CheckCircle2, Zap } from 'lucide-react';
+import { ArrowRight, Leaf, ShieldAlert, Award, Compass, Truck, BarChart3, Users, Mail, Clock, Smartphone, CalendarCheck, Recycle, CheckCircle2, Zap, Moon, Sun } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 interface LandingPageProps {
   onStartApp: () => void;
@@ -77,11 +78,13 @@ const stats = [
 ];
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth }) => {
+  const { isDarkMode, toggleDarkMode } = useTheme();
+
   return (
-    <div className="relative min-h-screen bg-[#F8F9FA] overflow-hidden text-[#333333]">
+    <div className={`relative min-h-screen transition-colors duration-300 overflow-hidden ${isDarkMode ? 'bg-[#090D14] text-gray-150' : 'bg-[#F8F9FA] text-[#333333]'}`}>
 
       {/* ─── Top Utility Bar ─── */}
-      <div className="hidden lg:flex bg-[#38523A] text-white text-xs justify-between items-center px-20 py-2">
+      <div className={`hidden lg:flex justify-between items-center px-20 py-2 text-xs border-b transition-colors duration-300 ${isDarkMode ? 'bg-[#030712] border-white/5 text-gray-400' : 'bg-[#38523A] border-transparent text-white'}`}>
         <span>Welcome To EcoTrack AI – Intelligent E-Waste Management Platform</span>
         <div className="flex items-center gap-6">
           <span className="flex items-center gap-1.5"><Mail size={12}/> support@ecotrack.ai</span>
@@ -97,31 +100,41 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative z-20 w-full bg-white shadow-sm px-8 lg:px-20 py-4 flex justify-between items-center"
+        className={`relative z-20 w-full shadow-sm px-8 lg:px-20 py-4 flex justify-between items-center border-b transition-colors duration-300 ${isDarkMode ? 'bg-[#030712] border-white/5' : 'bg-white border-transparent'}`}
       >
         <div className="flex items-center gap-2.5">
           <div className="w-10 h-10 rounded-xl bg-[#38523A] flex items-center justify-center shadow-md">
             <Leaf size={20} className="text-[#D9E335]" />
           </div>
           <div>
-            <span className="text-xl font-bold tracking-tight text-[#38523A] font-mono">
+            <span className="text-xl font-bold tracking-tight text-[#38523A] dark:text-emerald-400 font-mono">
               ECOTRACK<span className="text-[#84B056]">.AI</span>
             </span>
-            <p className="text-[9px] text-gray-400 uppercase tracking-widest -mt-0.5">E-Waste Management</p>
+            <p className="text-[9px] text-gray-400 dark:text-gray-500 uppercase tracking-widest -mt-0.5">E-Waste Management</p>
           </div>
         </div>
 
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
+        <nav className={`hidden md:flex items-center gap-8 text-sm font-medium transition-colors duration-300 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
           {['Home', 'About', 'Services', 'How It Works'].map(n => (
             <a key={n} href="#" className="hover:text-[#84B056] transition-colors">{n}</a>
           ))}
         </nav>
 
         <div className="flex w-full sm:w-auto items-center justify-center sm:justify-start gap-2 sm:gap-3">
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleDarkMode}
+            title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            className="px-2.5 py-2 text-xs font-bold rounded-lg border-2 border-[#38523A] dark:border-emerald-500/50 text-[#38523A] dark:text-emerald-400 hover:bg-[#38523A] dark:hover:bg-emerald-500/10 hover:text-white dark:hover:text-emerald-300 transition-all cursor-pointer bg-white dark:bg-[#030712] shadow-sm flex items-center gap-1.5 whitespace-nowrap"
+          >
+            {isDarkMode ? <Sun size={14} className="text-[#D9E335] fill-[#D9E335]" /> : <Moon size={14} />}
+            <span>{isDarkMode ? 'Light' : 'Dark'}</span>
+          </button>
+
           <button
             id="nav-sign-in"
             onClick={onOpenAuth}
-            className="flex-1 sm:flex-none px-3 sm:px-4 py-2 text-xs sm:text-sm md:text-base font-semibold rounded-lg border-2 border-[#38523A] text-[#38523A] hover:bg-[#38523A] hover:text-white transition-all duration-300 cursor-pointer whitespace-nowrap"
+            className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 text-xs sm:text-sm md:text-base font-semibold rounded-lg border-2 transition-all duration-300 cursor-pointer whitespace-nowrap ${isDarkMode ? 'border-emerald-500 text-emerald-400 hover:bg-emerald-500 hover:text-black' : 'border-[#38523A] text-[#38523A] hover:bg-[#38523A] hover:text-white'}`}
           >
             Sign In
           </button>
@@ -129,8 +142,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
           <button
             id="nav-launch-portal"
             onClick={onStartApp}
-            className="
-            flex-1 min-w-0 px-2 py-1.5 text-[11px] sm:px-4 sm:py-2 sm:text-sm md:text-base rounded-lg bg-[#D9E335] text-[#38523A] font-bold hover:bg-[#FFDE59] shadow-md transition"
+            className="flex-1 min-w-0 px-2 py-1.5 text-[11px] sm:px-4 sm:py-2 sm:text-sm md:text-base rounded-lg bg-[#D9E335] text-[#38523A] font-bold hover:bg-[#FFDE59] shadow-md transition"
           >
             Launch Portal
           </button>
@@ -145,7 +157,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}>
-          <div className="absolute inset-0 bg-[#38523A]/75" />
+          <div className={`absolute inset-0 transition-colors duration-300 ${isDarkMode ? 'bg-[#030712]/85' : 'bg-[#38523A]/75'}`} />
 
           <div className="relative z-10 w-full px-6 sm:px-8 lg:px-20 py-20 sm:py-24 grid gap-12 lg:grid-cols-2 items-center">
             {/* Text */}
@@ -186,15 +198,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
                 />
                 {/* Floating badges */}
                 <motion.div
-                  className="absolute top-10 -left-8 bg-white rounded-2xl px-4 py-3 shadow-xl border border-gray-100 flex items-center gap-2"
+                  className={`absolute top-10 -left-8 rounded-2xl px-4 py-3 shadow-xl border flex items-center gap-2 transition-colors duration-300 ${isDarkMode ? 'bg-[#111827] border-white/5' : 'bg-white border-gray-100'}`}
                   animate={{ y: [0, -6, 0] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
                 >
                   <div className="w-7 h-7 rounded-lg bg-[#84B056]/15 flex items-center justify-center">
-                    <Recycle size={14} className="text-[#38523A]" />
+                    <Recycle size={14} className="text-[#38523A] dark:text-[#84B056]" />
                   </div>
                   <div>
                     <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">E-Waste</p>
-                    <p className="text-xs font-bold text-[#38523A]">62M Tonnes</p>
+                    <p className="text-xs font-bold text-[#38523A] dark:text-emerald-400">62M Tonnes</p>
                   </div>
                 </motion.div>
                 <motion.div
@@ -210,7 +222,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
         </div>
 
         {/* How It Works Steps Bar */}
-        <div className="bg-[#38523A] w-full">
+        <div className={`w-full transition-colors duration-300 ${isDarkMode ? 'bg-[#030712]' : 'bg-[#38523A]'}`}>
           <div className="px-8 lg:px-20 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
             {steps.map((step, i) => (
               <motion.div key={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={i}
@@ -232,25 +244,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
       </section>
 
       {/* ─── Stats Section ─── */}
-      <section className="w-full bg-white py-16 px-8 lg:px-20">
+      <section className={`w-full py-16 px-8 lg:px-20 transition-colors duration-300 ${isDarkMode ? 'bg-[#090D14]' : 'bg-white'}`}>
         <div className="grid md:grid-cols-4 gap-6">
           {stats.map((s, i) => (
             <motion.div key={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={i}
-              className="text-center p-6 rounded-2xl border-2 border-gray-100 hover:border-[#84B056] hover:shadow-lg transition-all eco-card group"
+              className={`text-center p-6 rounded-2xl border-2 transition-all eco-card group ${isDarkMode ? 'border-white/5 bg-[#111827]/40 hover:border-emerald-500 hover:shadow-emerald-500/5 hover:shadow-xl' : 'border-gray-100 hover:border-[#84B056] hover:shadow-lg'}`}
             >
-              <h3 className="text-4xl font-extrabold text-[#38523A] group-hover:text-[#84B056] transition-colors" style={{ fontFamily: 'Inter, sans-serif' }}>{s.val}</h3>
-              <p className="text-sm font-semibold text-gray-600 mt-1">{s.label}</p>
-              <p className="text-xs text-gray-400 mt-1">{s.sub}</p>
+              <h3 className={`text-4xl font-extrabold transition-colors ${isDarkMode ? 'text-emerald-400 group-hover:text-emerald-300' : 'text-[#38523A] group-hover:text-[#84B056]'}`} style={{ fontFamily: 'Inter, sans-serif' }}>{s.val}</h3>
+              <p className={`text-sm font-semibold mt-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{s.label}</p>
+              <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{s.sub}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
       {/* ─── Services Section ─── */}
-      <section className="w-full bg-[#F8F9FA] py-20 px-8 lg:px-20">
+      <section className={`w-full py-20 px-8 lg:px-20 transition-colors duration-300 ${isDarkMode ? 'bg-[#030712]' : 'bg-[#F8F9FA]'}`}>
         <motion.div className="text-center max-w-2xl mx-auto mb-14" variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
           <p className="text-xs uppercase tracking-widest text-[#84B056] font-semibold mb-2">What We're Offering</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-[#38523A]" style={{ fontFamily: "'Amatic SC', cursive", letterSpacing: '2px' }}>
+          <h2 className={`text-4xl md:text-5xl font-bold ${isDarkMode ? 'text-emerald-400' : 'text-[#38523A]'}`} style={{ fontFamily: "'Amatic SC', cursive", letterSpacing: '2px' }}>
             The Services We're Providing
           </h2>
         </motion.div>
@@ -258,19 +270,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
         <div className="grid md:grid-cols-3 gap-6">
           {services.map((s, i) => (
             <motion.div key={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={i}
-              className={`eco-card eco-card-hover p-8 rounded-2xl cursor-default group ${s.active ? 'bg-[#38523A] text-white' : 'bg-white'}`}
+              className={`eco-card eco-card-hover p-8 rounded-2xl cursor-default group border transition-all duration-300 ${s.active ? 'bg-[#38523A] dark:bg-emerald-950/40 text-white border-transparent' : isDarkMode ? 'bg-[#111827]/60 border-white/5 text-gray-200' : 'bg-white border-transparent'}`}
             >
               <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform"
                 style={{ background: s.active ? 'rgba(217,227,53,0.2)' : s.bg, color: s.active ? '#D9E335' : s.color }}
               >
                 {s.icon}
               </div>
-              <h3 className={`text-xl font-bold mb-3 ${s.active ? 'text-white' : 'text-[#38523A]'}`}
+              <h3 className={`text-xl font-bold mb-3 ${s.active ? 'text-white' : isDarkMode ? 'text-emerald-400' : 'text-[#38523A]'}`}
                 style={{ fontFamily: "'Amatic SC', cursive", letterSpacing: '1px', fontSize: '22px' }}
               >
                 {s.title}
               </h3>
-              <p className={`text-sm leading-relaxed ${s.active ? 'text-white/75' : 'text-gray-500'}`}>{s.desc}</p>
+              <p className={`text-sm leading-relaxed ${s.active ? 'text-white/75' : isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{s.desc}</p>
               {s.active && (
                 <button onClick={onStartApp} className="mt-5 button-responsive btn-lg inline-flex items-center gap-1.5 text-sm sm:text-base font-bold text-[#D9E335] hover:text-white transition-colors cursor-pointer">
                   Get Started <ArrowRight size={14} />
@@ -282,7 +294,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
       </section>
 
       {/* ─── About / Mission Section ─── */}
-      <section className="w-full bg-white py-20 px-8 lg:px-20 grid lg:grid-cols-2 gap-16 items-center">
+      <section className={`w-full py-20 px-8 lg:px-20 grid lg:grid-cols-2 gap-16 items-center transition-colors duration-300 ${isDarkMode ? 'bg-[#090D14]' : 'bg-white'}`}>
         <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="relative">
           <img
             src="https://images.unsplash.com/photo-1604187351574-c75ca79f5807?w=800&q=80"
@@ -299,25 +311,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
 
         <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="space-y-5">
           <p className="text-xs uppercase tracking-widest text-[#84B056] font-semibold">Get to Know About Us →</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-[#38523A]" style={{ fontFamily: "'Amatic SC', cursive", letterSpacing: '2px' }}>
+          <h2 className={`text-4xl md:text-5xl font-bold ${isDarkMode ? 'text-emerald-400' : 'text-[#38523A]'}`} style={{ fontFamily: "'Amatic SC', cursive", letterSpacing: '2px' }}>
             Leading in E-Waste<br/>Management Services
           </h2>
-          <p className="text-gray-500 text-base leading-relaxed">
+          <p className={`text-base leading-relaxed ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
             EcoTrack AI combines artificial intelligence with certified logistics to make responsible e-waste disposal effortless for individuals and businesses.
           </p>
           <ul className="space-y-3">
             {['AI-powered device identification & hazard detection', 'Certified recycling center partner network', 'Real-time driver tracking & scheduling'].map((pt, i) => (
-              <li key={i} className="flex items-start gap-3 text-sm text-gray-600">
+              <li key={i} className={`flex items-start gap-3 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                 <span className="mt-1 w-4 h-4 rounded-full bg-[#84B056] flex-shrink-0 flex items-center justify-center text-white text-[10px] font-bold">✓</span>
                 {pt}
               </li>
             ))}
           </ul>
           <div className="flex gap-4 pt-2">
-            <div className="flex items-center gap-2 bg-[#f0f7e8] rounded-xl px-4 py-3 text-sm font-semibold text-[#38523A]">
+            <div className={`flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold ${isDarkMode ? 'bg-[#111827] text-emerald-400 border border-white/5' : 'bg-[#f0f7e8] text-[#38523A]'}`}>
               <span className="text-lg">01</span> Going Above & Beyond
             </div>
-            <div className="flex items-center gap-2 bg-[#f0f7e8] rounded-xl px-4 py-3 text-sm font-semibold text-[#38523A]">
+            <div className={`flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold ${isDarkMode ? 'bg-[#111827] text-emerald-400 border border-white/5' : 'bg-[#f0f7e8] text-[#38523A]'}`}>
               <span className="text-lg">02</span> Committed to People First
             </div>
           </div>
@@ -333,7 +345,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}>
-        <div className="absolute inset-0 bg-[#38523A]/80" />
+        <div className="absolute inset-0 bg-[#38523A]/80 dark:bg-[#030712]/90" />
         <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="relative z-10 space-y-6 px-8">
           <h2 className="text-5xl md:text-6xl font-bold text-white" style={{ fontFamily: "'Amatic SC', cursive", letterSpacing: '3px' }}>
             Manage Waste Effectively<br/>&amp; Reduce Environmental Impact
@@ -350,9 +362,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
       </section>
 
       {/* ─── Testimonials ─── */}
-      <section className="w-full bg-[#F8F9FA] py-20 px-8 lg:px-20">
+      <section className={`w-full py-20 px-8 lg:px-20 transition-colors duration-300 ${isDarkMode ? 'bg-[#030712]' : 'bg-[#F8F9FA]'}`}>
         <motion.div className="text-center mb-12" variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-          <h2 className="text-4xl md:text-5xl font-bold text-[#38523A]" style={{ fontFamily: "'Amatic SC', cursive", letterSpacing: '2px' }}>
+          <h2 className={`text-4xl md:text-5xl font-bold ${isDarkMode ? 'text-emerald-400' : 'text-[#38523A]'}`} style={{ fontFamily: "'Amatic SC', cursive", letterSpacing: '2px' }}>
             What Our Users Say
           </h2>
         </motion.div>
@@ -368,17 +380,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
             }
           ].map((t, i) => (
             <motion.div key={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={i}
-              className="eco-card eco-card-hover bg-white p-8 rounded-2xl space-y-5"
+              className={`eco-card eco-card-hover p-8 rounded-2xl space-y-5 border ${isDarkMode ? 'bg-[#111827]/60 border-white/5 text-gray-200' : 'bg-white border-transparent'}`}
             >
               <div className="text-[#D9E335] text-5xl leading-none font-serif">"</div>
-              <p className="text-gray-600 italic text-sm leading-relaxed">{t.quote}</p>
+              <p className={`italic text-sm leading-relaxed ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t.quote}</p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-sm shadow-md" style={{ background: t.color }}>
                   {t.initials}
                 </div>
                 <div>
-                  <p className="font-semibold text-[#38523A] text-sm">{t.name}</p>
-                  <p className="text-xs text-gray-400">{t.role}</p>
+                  <p className={`font-semibold text-sm ${isDarkMode ? 'text-emerald-400' : 'text-[#38523A]'}`}>{t.name}</p>
+                  <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{t.role}</p>
                 </div>
               </div>
             </motion.div>
@@ -387,14 +399,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartApp, onOpenAuth
       </section>
 
       {/* ─── Footer ─── */}
-      <footer className="w-full bg-[#38523A] text-white px-8 lg:px-20 py-10">
+      <footer className={`w-full px-8 lg:px-20 py-10 transition-colors duration-300 ${isDarkMode ? 'bg-[#030712] text-gray-400 border-t border-white/5' : 'bg-[#38523A] text-white'}`}>
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-[#D9E335] flex items-center justify-center">
               <Leaf size={18} className="text-[#38523A]" />
             </div>
             <div>
-              <span className="text-base font-bold tracking-tight font-mono">ECOTRACK<span className="text-[#D9E335]">.AI</span></span>
+              <span className={`text-base font-bold tracking-tight font-mono ${isDarkMode ? 'text-white' : 'text-white'}`}>ECOTRACK<span className="text-[#D9E335]">.AI</span></span>
               <p className="text-[9px] text-white/50 uppercase tracking-widest -mt-0.5">E-Waste Management</p>
             </div>
           </div>

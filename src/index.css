@@ -125,6 +125,12 @@ select option {
   transform: translateY(-2px);
 }
 
+.bot-message-bubble {
+  background-color: var(--bg-muted) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
 /* ============================================================
    INPUT FIELDS
    ============================================================ */
