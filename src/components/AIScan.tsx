@@ -186,7 +186,7 @@ export const AIScan: React.FC<AIScanProps> = ({ onSuccess, updateUserPoints }) =
         
         {/* Left Hand side: Scanning Frame & Action Buttons */}
         <div className="lg:col-span-5 space-y-6 animate-holo-warp">
-          <div className="relative aspect-video lg:aspect-square w-full rounded-2xl border-2 border-dashed border-emerald-500/30 overflow-hidden bg-black/40 flex flex-col items-center justify-center transition-all animate-aurora-glow shadow-xl">
+          <div className="scan-dropzone relative aspect-video lg:aspect-square w-full rounded-2xl border-2 border-dashed overflow-hidden flex flex-col items-center justify-center transition-all animate-aurora-glow shadow-xl">
             
             {cameraActive ? (
               <div className="absolute inset-0 flex flex-col justify-between">

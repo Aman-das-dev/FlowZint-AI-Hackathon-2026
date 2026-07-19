@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { api } from '../services/api';
 import { X, Lock, Mail, User, ShieldCheck, Eye, EyeOff, Copy, Check, Download, AlertTriangle, Key } from 'lucide-react';
 import { supabase } from '../utils/supabase';
 
@@ -23,16 +22,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
   const [recoverySuccess, setRecoverySuccess] = useState(false);
 
   // Recovery Code Display Flow (Shown once after registration)
-  const [generatedCode, setGeneratedCode] = useState<string | null>(null);
+  const [generatedCode] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [registeredUserData, setRegisteredUserData] = useState<any>(null);
 
   // OTP Flow States
   const [loginMethod, setLoginMethod] = useState<'password' | 'email_otp'>('password');
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState('');
   const [devOtpCode, setDevOtpCode] = useState<string | null>(null);
-  const [showGoogleMock, setShowGoogleMock] = useState(false);
+  const [showGoogleMock] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
 
   if (!isOpen) return null;
@@ -63,69 +61,43 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
     try {
       if (isLogin) {
-        // Try Supabase login first, but fall back to the backend if the hosted
-        // frontend is missing Supabase environment variables or auth setup.
-        try {
-          const { data: sbData, error: sbErr } = await supabase.auth.signInWithPassword({
-            email,
-            password,
+        // Real Supabase email + password login
+        const { data, error: sbErr } = await supabase.auth.signInWithPassword({ email, password });
+        if (sbErr) {
+          if (sbErr.message.toLowerCase().includes('invalid')) {
+            throw new Error('Incorrect email or password. Please try again.');
+          }
+          if (sbErr.message.toLowerCase().includes('email not confirmed')) {
+            throw new Error('Please verify your email first. Check your inbox for the confirmation link.');
+          }
+          throw new Error(sbErr.message);
+        }
+        if (data.session) {
+          localStorage.setItem('ecotrack_token', data.session.access_token);
+          onAuthSuccess({
+            id: data.session.user.id as any,
+            full_name: data.session.user.user_metadata?.full_name || data.session.user.email?.split('@')[0] || 'User',
+            email: data.session.user.email || '',
+            avatar_url: data.session.user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${data.session.user.email}`,
+            eco_points: 0
           });
-          if (sbErr) throw sbErr;
-          if (sbData.session) {
-            localStorage.setItem('ecotrack_token', sbData.session.access_token);
-            onAuthSuccess({
-              id: sbData.session.user.id as any,
-              full_name: sbData.session.user.user_metadata?.full_name || sbData.session.user.email?.split('@')[0] || 'User',
-              email: sbData.session.user.email || '',
-              avatar_url: sbData.session.user.user_metadata?.avatar_url || '',
-              eco_points: 0
-            });
-            onClose();
-            return;
-          }
-        } catch (sbErr: any) {
-          console.warn("Supabase login failed, trying backend fallback:", sbErr);
-          try {
-            const data = await api.login(email.trim(), password);
-            onAuthSuccess(data.user);
-            onClose();
-            return;
-          } catch (apiErr: any) {
-            throw apiErr;
-          }
+          onClose();
         }
       } else {
-        if (password.length < 6) {
-          throw new Error('Password must be at least 6 characters.');
-        }
-        // Try Supabase signup first
-        try {
-          const { error: sbErr } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-              data: {
-                full_name: fullName,
-              }
-            }
-          });
-          if (sbErr) throw sbErr;
-          
-          setSignUpSuccess(true);
-          setLoading(false);
-          return;
-        } catch (sbErr: any) {
-          console.warn("Supabase registration failed, trying backend fallback:", sbErr);
-          try {
-            const data = await api.register(email.trim(), password, fullName.trim());
-            setRegisteredUserData(data);
-            setGeneratedCode(data.recovery_code || null);
-            setSignUpSuccess(true);
-            return;
-          } catch (apiErr: any) {
-            throw apiErr;
+        // Real Supabase signup
+        if (password.length < 6) throw new Error('Password must be at least 6 characters.');
+        const { error: sbErr } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name: fullName } }
+        });
+        if (sbErr) {
+          if (sbErr.message.toLowerCase().includes('already registered')) {
+            throw new Error('This email is already registered. Please log in instead.');
           }
+          throw new Error(sbErr.message);
         }
+        setSignUpSuccess(true);
       }
     } catch (err: any) {
       setError(err.message || 'Authentication failed. Please try again.');
@@ -183,9 +155,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
   };
 
   const handleDismissCodeScreen = () => {
-    if (registeredUserData) {
-      onAuthSuccess(registeredUserData.user);
-    }
     onClose();
   };
 
@@ -200,21 +169,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
         throw new Error('Email is required');
       }
       
-      // Try Supabase OTP sending
-      try {
-        const { error: sbErr } = await supabase.auth.signInWithOtp({
-          email: destination,
-        });
-        if (sbErr) throw sbErr;
-        setOtpSent(true);
-      } catch (sbErr: any) {
-        console.warn("Supabase signInWithOtp failed, trying local fallback:", sbErr);
-        const data = await api.sendOtp(destination);
-        setOtpSent(true);
-        if (data.dev_otp) {
-          setDevOtpCode(data.dev_otp);
-        }
-      }
+      // Supabase magic link OTP
+      const { error: sbErr } = await supabase.auth.signInWithOtp({ email: destination });
+      if (sbErr) throw new Error(sbErr.message);
+      setOtpSent(true);
     } catch (err: any) {
       setError(err.message || 'Failed to send verification code.');
     } finally {
@@ -262,37 +220,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
     }
   };
 
-  const handleGoogleLoginSubmit = async (gEmail: string, gName: string, gAvatarUrl: string) => {
-    setError('');
-    setLoading(true);
-    try {
-      const data = await api.googleLogin(gEmail, gName, gAvatarUrl);
-      onAuthSuccess(data.user);
-      onClose();
-    } catch (err: any) {
-      setError(err.message || 'Google Sign-In failed.');
-    } finally {
-      setLoading(false);
-      setShowGoogleMock(false);
-    }
-  };
+
 
   const handleGoogleLogin = async () => {
     setError('');
+    setLoading(true);
     try {
       const redirectTo =
         import.meta.env.VITE_APP_URL?.replace(/\/$/, "") ||
         window.location.origin;
       const { error: sbErr } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: {
-          redirectTo,
-        },
+        options: { redirectTo },
       });
       if (sbErr) throw sbErr;
+      // Redirect will happen — nothing more to do here
     } catch (err: any) {
-      console.warn("Supabase Google auth redirect failed, trying local mock:", err);
-      setShowGoogleMock(true);
+      setError('Google Sign-In is not available. Please use email/password login.');
+      setLoading(false);
     }
   };
 
@@ -443,49 +388,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
           /* 3. Standard Login / Register Tabs */
           <div className="relative">
             {/* Google Mock Sign-In Selector Popup Overlay (inline in the tab content card) */}
+            {/* Google redirect in progress — no fake accounts */}
             {showGoogleMock && (
               <div className="absolute inset-0 z-50 flex flex-col justify-center items-center bg-[#38523A] dark:bg-[#111e11] rounded-xl p-4 text-white animate-fade-in">
-                <button 
-                  type="button"
-                  onClick={() => setShowGoogleMock(false)}
-                  className="absolute right-3 top-3 text-gray-300 hover:text-white transition-colors cursor-pointer"
-                >
-                  <X size={20} />
-                </button>
-                <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg mb-3">
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M21.35,11.1H12v2.7h5.38C16.88,16.29,14.67,17.9,12,17.9c-3.26,0-6-2.22-6.98-5.22c-0.26-0.78-0.4-1.6-0.4-2.48 s0.15-1.7,0.4-2.48C6,4.72,8.74,2.5,12,2.5c1.78,0,3.38,0.62,4.64,1.82l2.02-2.02C17.3,1.04,14.83,0,12,0 C7.33,0,3.31,2.69,1.38,6.61C1.04,7.31,0.76,8.06,0.55,8.85C0.19,10.05,0,11.32,0,12.63c0,1.31,0.19,2.58,0.55,3.78 c0.21,0.78,0.49,1.54,0.83,2.23c1.94,3.92,5.96,6.61,10.62,6.61c5.96,0,10.96-3.95,12.06-9.61c0.16-0.81,0.24-1.65,0.24-2.52 C24,12.41,23.83,11.73,21.35,11.1z" fill="#4285F4" />
-                    <path d="M12,24c3.24,0,5.97-1.07,7.96-2.91l-3.08-2.39C15.82,19.37,14.07,19.9,12,19.9c-3.26,0-6-2.22-6.98-5.22 c-0.26-0.78-0.4-1.6-0.4-2.48s0.15-1.7,0.4-2.48C6,4.72,8.74,2.5,12,2.5c1.78,0,3.38,0.62,4.64,1.82L18.66,2.3 C17.3,1.04,14.83,0,12,0C7.33,0,3.31,2.69,1.38,6.61L5.02,9.44C6,6.44,8.74,4.2,12,4.2c1.78,0,3.38,0.62,4.64,1.82l2.02-2.02 c-2.36-2.18-5.38-2.9-7.96-2.9z" fill="#EA4335" />
-                    <path d="M12,24c4.67,0,8.69-2.69,10.62-6.61l-3.64-2.83C18,17.56,15.26,19.8,12,19.8c-3.26,0-6-2.22-6.98-5.22 L1.38,17.39C3.31,21.31,7.33,24,12,24z" fill="#34A853" />
-                    <path d="M24,12c0-0.85-0.08-1.67-0.24-2.46H12v4.69h6.73c-0.29,1.53-1.15,2.83-2.45,3.7l3.08,2.39 C21.16,18.42,24,15.54,24,12z" fill="#4285F4" />
-                  </svg>
+                <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg mb-3 animate-spin">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21.35,11.1H12v2.7h5.38C16.88,16.29,14.67,17.9,12,17.9c-3.26,0-6-2.22-6.98-5.22c-0.26-0.78-0.4-1.6-0.4-2.48 s0.15-1.7,0.4-2.48C6,4.72,8.74,2.5,12,2.5c1.78,0,3.38,0.62,4.64,1.82l2.02-2.02C17.3,1.04,14.83,0,12,0 C7.33,0,3.31,2.69,1.38,6.61C1.04,7.31,0.76,8.06,0.55,8.85C0.19,10.05,0,11.32,0,12.63c0,1.31,0.19,2.58,0.55,3.78 c0.21,0.78,0.49,1.54,0.83,2.23c1.94,3.92,5.96,6.61,10.62,6.61c5.96,0,10.96-3.95,12.06-9.61c0.16-0.81,0.24-1.65,0.24-2.52 C24,12.41,23.83,11.73,21.35,11.1z" fill="#4285F4" /></svg>
                 </div>
-                <h3 className="text-lg font-bold mb-1 text-center text-white" style={{fontFamily:"'Amatic SC', cursive", fontSize:'26px'}}>
-                  Select Google Account
-                </h3>
-                <p className="text-[10px] text-gray-300 mb-4 text-center max-w-[260px]">
-                  Choose a Google account to verify and sign in automatically.
-                </p>
-                <div className="w-full space-y-2 max-w-[260px]">
-                  {[
-                    { name: "Eco Warrior", email: "eco.warrior.google@gmail.com", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=ecowarrior" },
-                    { name: "Green Earth", email: "green.earth.google@gmail.com", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=greenearth" },
-                    { name: "Admin Google", email: import.meta.env.VITE_DEFAULT_ADMIN_EMAIL || 'admin@example.com', avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=admin" }
-                  ].map((acc) => (
-                    <button
-                      key={acc.email}
-                      type="button"
-                      onClick={() => handleGoogleLoginSubmit(acc.email, acc.name, acc.avatar)}
-                      className="w-full button-responsive btn-lg rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/20 transition-all flex items-center gap-2 cursor-pointer text-left"
-                    >
-                      <img src={acc.avatar} alt={acc.name} className="w-6 h-6 rounded-full bg-white/20" />
-                      <div className="overflow-hidden">
-                        <p className="font-semibold text-xs truncate text-white">{acc.name}</p>
-                        <p className="text-[9px] text-gray-300 truncate">{acc.email}</p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
+                <p className="text-sm text-gray-200 text-center">Redirecting to Google Sign-In...</p>
               </div>
             )}
 
