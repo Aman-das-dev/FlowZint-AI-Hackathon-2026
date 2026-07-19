@@ -20,9 +20,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
   // Password Recovery Flow
   const [forgotPassword, setForgotPassword] = useState(false);
-  const [recoveryCode, setRecoveryCode] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [showNewPassword, setShowNewPassword] = useState(false);
   const [recoverySuccess, setRecoverySuccess] = useState(false);
 
   // Recovery Code Display Flow (Shown once after registration)
@@ -155,8 +152,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
         setRecoverySuccess(false);
         setIsLogin(true);
         setPassword('');
-        setRecoveryCode('');
-        setNewPassword('');
       }, 5000);
     } catch (err: any) {
       setError(err.message || 'Failed to send recovery email. Please check your details and try again.');

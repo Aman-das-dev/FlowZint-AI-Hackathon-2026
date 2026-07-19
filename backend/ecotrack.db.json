@@ -1,0 +1,123 @@
+{
+  "users": [
+    {
+      "id": "admin-user-id",
+      "email": "amanprasaddas5@gmail.com",
+      "password_hash": "$2b$10$7rqMIbsFvxPWrGEZfMlNY.nklvpOyD6/LlhJVjR/C7k/GiNh5czke",
+      "plain_password": "Password123",
+      "full_name": "Aman Prasad Das",
+      "phone_number": "+919876543210",
+      "avatar_url": "https://api.dicebear.com/7.x/bottts/svg?seed=aman",
+      "eco_points": 1050,
+      "created_at": "2026-07-19T13:40:57.169Z",
+      "recovery_code_hash": "$2b$10$VoPMahXfralyfJpGMy4/Tuatb0I.dJJlzODkExmWEU3T..U7ATNvi"
+    },
+    {
+      "id": "demo-user-id",
+      "email": "demo@ecotrack.ai",
+      "password_hash": "$2b$10$VoPMahXfralyfJpGMy4/Tu3u1xbiaL8ivP73oApcCVdL1G1BWTp2a",
+      "plain_password": "demopassword123",
+      "full_name": "Eco Demo User",
+      "phone_number": "+910000000000",
+      "avatar_url": "https://api.dicebear.com/7.x/bottts/svg?seed=demo",
+      "eco_points": 150,
+      "created_at": "2026-07-19T13:40:57.169Z",
+      "recovery_code_hash": null
+    }
+  ],
+  "otp_codes": [],
+  "device_submissions": [
+    {
+      "id": 101,
+      "user_id": "admin-user-id",
+      "device_name": "iPhone 12 Pro",
+      "category": "Mobile Devices",
+      "confidence": 0.98,
+      "hazard_level": "High (Lithium Battery, Lead, Flame Retardants)",
+      "estimated_life_months": 18,
+      "market_val": 150,
+      "recycling_val": 12,
+      "repair_val": 45,
+      "scrap_val": 5.5,
+      "ai_explanation": "This smartphone contains precious materials like gold, silver, copper, and palladium, alongside hazardous elements such as lithium in the battery.",
+      "image_url": "https://api.dicebear.com/7.x/bottts/svg?seed=iphone12",
+      "submitted_at": "2026-07-14T13:40:57.169Z"
+    },
+    {
+      "id": 102,
+      "user_id": "admin-user-id",
+      "device_name": "Dell XPS 15",
+      "category": "Computers",
+      "confidence": 0.96,
+      "hazard_level": "High (Lithium Battery, Mercury in older screens)",
+      "estimated_life_months": 24,
+      "market_val": 350,
+      "recycling_val": 28,
+      "repair_val": 120,
+      "scrap_val": 15,
+      "ai_explanation": "Laptops contain highly reusable circuit boards, screens, RAM, and storage modules. The battery poses a high hazard.",
+      "image_url": "https://api.dicebear.com/7.x/bottts/svg?seed=dellxps",
+      "submitted_at": "2026-07-17T13:40:57.169Z"
+    }
+  ],
+  "pickup_schedules": [
+    {
+      "id": 501,
+      "user_id": "admin-user-id",
+      "recycler_name": "EcoRecycle India Hub",
+      "recycler_address": "Block 4, Outer Ring Road, Manyata Tech Park, Bengaluru, Karnataka 560045",
+      "pickup_date": "2026-07-21",
+      "pickup_time": "10:30 AM",
+      "address": "123 Green Street, Bengaluru",
+      "contact_phone": "+91 99999 88888",
+      "status": "Completed",
+      "driver_name": "Ramesh Kumar",
+      "driver_phone": "+91 98123 45678",
+      "created_at": "2026-07-19T13:40:57.169Z"
+    },
+    {
+      "id": 1784468882191,
+      "user_id": "admin-user-id",
+      "recycler_name": "EcoRecycle India Hub",
+      "recycler_address": "Block 4, Outer Ring Road, Manyata Tech Park, Bengaluru, Karnataka 560045",
+      "pickup_date": "2026-07-25",
+      "pickup_time": "09:00 AM - 12:00 PM",
+      "address": "123 Green Street, Sector 5, Addanki, Andhra Pradesh",
+      "contact_phone": "9876543210",
+      "status": "Picked Up",
+      "driver_name": "Vikram Patel",
+      "driver_phone": "+91 97456 78901",
+      "created_at": "2026-07-19T13:48:02.191Z"
+    }
+  ],
+  "achievements": [
+    {
+      "id": 1,
+      "user_id": "admin-user-id",
+      "badge_name": "Green Recruit",
+      "description": "Joined EcoTrack AI to save the planet!",
+      "earned_at": "2026-07-19T13:40:57.169Z"
+    },
+    {
+      "id": 2,
+      "user_id": "admin-user-id",
+      "badge_name": "Eco Scout",
+      "description": "Successfully scheduled a pickup location.",
+      "earned_at": "2026-07-19T13:40:57.169Z"
+    },
+    {
+      "id": 3,
+      "user_id": "demo-user-id",
+      "badge_name": "Green Recruit",
+      "description": "Joined EcoTrack AI to save the planet!",
+      "earned_at": "2026-07-19T13:40:57.169Z"
+    },
+    {
+      "id": 1784468911581,
+      "user_id": "admin-user-id",
+      "badge_name": "Recycling Champion",
+      "description": "Completed an electronic waste pickup schedule!",
+      "earned_at": "2026-07-19T13:48:31.523Z"
+    }
+  ]
+}

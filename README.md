@@ -8,10 +8,10 @@ This repository houses the full-stack **EcoTrack AI** ecosystem alongside a prod
 
 The workspace is organized into two primary pillars:
 
-### 1. EcoTrack AI App (Root)
-* **Frontend**: React 19 + TypeScript + Vite + Tailwind CSS.
-* **Backend (`/backend`)**: Python FastAPI + Uvicorn + SQLite/PostgreSQL support.
-* **Service Config (`flowzint.json`)**: Configures proxy mapping for the developer runner, forwarding `/api/*` to the Python backend and all other routes to the Vite client.
+### 1. EcoTrack AI App
+* **Frontend (`src/`)**: React 19 + TypeScript + Vite + Tailwind CSS.
+* **Backend (`backend/`)**: Express.js (Node.js) server running database models and Gemini AI assistant integrations.
+* **Vercel Serverless Gateway (`api/`)**: Points Vercel serverless functions directly to our centralized backend logic.
 
 ### 2. Next.js Auth System (`/next-auth-system`)
 * **Framework**: Next.js 15+ App Router.
@@ -62,19 +62,21 @@ npm run dev
 ```
 Open [http://localhost:3000](http://localhost:3000) to view the portal.
 
-#### B. Running the EcoTrack Vite App & Python Backend
+#### B. Running the EcoTrack Vite App & Node.js Backend
 1. **Frontend**:
    ```bash
    # From root workspace directory
-   npm install
    npm run dev
    ```
 2. **Backend**:
    ```bash
    # From root workspace directory
-   cd backend
-   pip install -r requirements.txt
-   python -m uvicorn main:app --reload
+   npm run backend
+   ```
+3. **Run Both Simultaneously**:
+   ```bash
+   # From root workspace directory
+   npm run dev:fullstack
    ```
 
 ---
